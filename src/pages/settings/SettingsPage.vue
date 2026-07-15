@@ -1,14 +1,49 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import SecurityLock from './SecurityLock.vue'
+import DataManagement from './DataManagement.vue'
+
+const currentSection = ref<'main' | 'security' | 'data'>('main')
+</script>
+
 <template>
-  <div class="page-placeholder">
-    <van-nav-bar title="设置" />
-    <div class="placeholder-content">
-      <van-icon name="setting-o" size="64" color="#ccc" />
-      <p>设置页（规划中）</p>
-    </div>
+  <div class="settings-page">
+    <template v-if="currentSection === 'main'">
+      <van-nav-bar title="设置" />
+      <div class="settings-body">
+        <van-cell-group title="安全">
+          <van-cell
+            title="安全锁"
+            is-link
+            @click="currentSection = 'security'"
+          />
+        </van-cell-group>
+        <van-cell-group title="数据">
+          <van-cell
+            title="数据管理"
+            is-link
+            @click="currentSection = 'data'"
+          />
+        </van-cell-group>
+      </div>
+    </template>
+    <SecurityLock
+      v-else-if="currentSection === 'security'"
+      @back="currentSection = 'main'"
+    />
+    <DataManagement
+      v-else-if="currentSection === 'data'"
+      @back="currentSection = 'main'"
+    />
   </div>
 </template>
 
 <style scoped>
-.page-placeholder { min-height: 100%; background: #f7f8fa; }
-.placeholder-content { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 0; gap: 12px; color: #999; }
+.settings-page {
+  background: #f7f8fa;
+  min-height: 100%;
+}
+.settings-body {
+  padding: 16px 0;
+}
 </style>
