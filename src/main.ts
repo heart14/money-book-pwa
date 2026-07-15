@@ -16,4 +16,8 @@ app.mount('#app')
 navigator.storage?.persist()
 
 // 首次启动时导入预设账户和分类
-seedData()
+seedData().then(() => {
+  console.log('[钱书] 预设数据初始化完成')
+}).catch((err) => {
+  console.error('[钱书] 预设数据初始化失败:', err)
+})

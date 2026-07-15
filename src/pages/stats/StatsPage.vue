@@ -299,8 +299,6 @@ function rankLabel(index: number): string {
 <style scoped>
 .stats-page {
   background: var(--color-bg);
-  min-height: 100%;
-  padding-bottom: 80px;
 }
 
 /* Time Switcher */

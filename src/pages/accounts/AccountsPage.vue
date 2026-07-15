@@ -114,10 +114,7 @@ async function handleAdd() {
 
 <style scoped>
 .accounts-page {
-  padding: 16px;
   background: var(--color-bg);
-  min-height: 100%;
-  padding-bottom: 80px;
 }
 
 /* FAB */
