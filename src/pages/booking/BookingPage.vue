@@ -1,105 +1,141 @@
 <template>
   <div class="booking-page">
-    <div class="booking-content">
+    <div class="booking-content" @touchstart="onTouchStart" @touchend="onTouchEnd">
       <!-- Mode Switch centered -->
       <div class="mode-switch-wrapper">
         <ModeSwitch v-model="bookingMode" @update:model-value="onModeChange" />
       </div>
 
-      <!-- Amount Display - tap to show keyboard -->
+      <!-- Amount Display -->
       <div class="amount-display" @click="keyboardVisible = true">{{ displayAmount }}</div>
 
-      <!-- Account Selector -->
-      <div v-if="bookingMode !== 'transfer'" class="account-section">
-        <button class="account-btn" @click="showAccountPicker = !showAccountPicker">
-          <span class="account-btn-text">
-            {{ selectedAccount ? `${selectedAccount.icon} ${selectedAccount.name}` : '选择账户' }}
-          </span>
-          <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </button>
-        <div v-if="showAccountPicker" class="account-dropdown">
-          <button
-            v-for="acc in accounts"
-            :key="acc.id"
-            class="account-option"
-            :class="{ selected: selectedAccount?.id === acc.id }"
-            @click="selectAccount(acc)"
-          >
-            {{ acc.icon }} {{ acc.name }}
-          </button>
-        </div>
-      </div>
-
-      <!-- Transfer mode: from → to -->
-      <div v-else class="transfer-section">
-        <div class="transfer-row">
-          <div class="transfer-col">
-            <span class="transfer-label">从</span>
-            <button class="account-btn small" @click="showAccountPicker = !showAccountPicker; showToAccountPicker = false">
-              <span>{{ selectedAccount ? `${selectedAccount.icon} ${selectedAccount.name}` : '选择' }}</span>
-              <svg class="chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </button>
-            <div v-if="showAccountPicker" class="account-dropdown">
-              <button
-                v-for="acc in liquidAccounts"
-                :key="acc.id"
-                class="account-option"
-                :class="{ selected: selectedAccount?.id === acc.id }"
-                @click="selectAccount(acc)"
-              >
-                {{ acc.icon }} {{ acc.name }}
+      <!-- Animated content area -->
+      <Transition name="mode-fade" mode="out-in">
+        <div :key="bookingMode" class="mode-content">
+          <!-- Non-transfer: account + category + inputs -->
+          <template v-if="bookingMode !== 'transfer'">
+            <!-- Account Selector (overlay dropdown) -->
+            <div class="account-selector-wrap">
+              <button class="account-btn" @click="showAccountPicker = !showAccountPicker">
+                <span class="account-btn-text">
+                  {{ selectedAccount ? `${selectedAccount.icon} ${selectedAccount.name}` : '选择账户' }}
+                </span>
+                <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
               </button>
+              <div v-if="showAccountPicker" class="account-dropdown">
+                <button
+                  v-for="acc in accounts"
+                  :key="acc.id"
+                  class="account-option"
+                  :class="{ selected: selectedAccount?.id === acc.id }"
+                  @click="selectAccount(acc)"
+                >
+                  {{ acc.icon }} {{ acc.name }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Category Picker -->
+            <CategoryPicker
+              :type="bookingMode === 'expense' ? 'expense' : 'income'"
+              :selected-category-id="selectedCategoryId"
+              @select="onCategorySelect"
+            />
+          </template>
+
+          <!-- Transfer: from → to -->
+          <template v-else>
+            <div class="transfer-section">
+              <div class="transfer-row">
+                <div class="transfer-col">
+                  <span class="transfer-label">从</span>
+                  <div class="account-selector-wrap inline">
+                    <button class="account-btn small" @click="showAccountPicker = !showAccountPicker; showToAccountPicker = false">
+                      <span>{{ selectedAccount ? `${selectedAccount.icon} ${selectedAccount.name}` : '选择' }}</span>
+                      <svg class="chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                        <polyline points="6 9 12 15 18 9" />
+                      </svg>
+                    </button>
+                    <div v-if="showAccountPicker" class="account-dropdown">
+                      <button
+                        v-for="acc in liquidAccounts"
+                        :key="acc.id"
+                        class="account-option"
+                        :class="{ selected: selectedAccount?.id === acc.id }"
+                        @click="selectAccount(acc)"
+                      >
+                        {{ acc.icon }} {{ acc.name }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <span class="transfer-arrow">&rarr;</span>
+                <div class="transfer-col">
+                  <span class="transfer-label">到</span>
+                  <div class="account-selector-wrap inline">
+                    <button class="account-btn small" @click="showToAccountPicker = !showToAccountPicker; showAccountPicker = false">
+                      <span>{{ selectedToAccount ? `${selectedToAccount.icon} ${selectedToAccount.name}` : '选择' }}</span>
+                      <svg class="chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                        <polyline points="6 9 12 15 18 9" />
+                      </svg>
+                    </button>
+                    <div v-if="showToAccountPicker" class="account-dropdown">
+                      <button
+                        v-for="acc in accounts"
+                        :key="acc.id"
+                        class="account-option"
+                        :class="{ selected: selectedToAccount?.id === acc.id }"
+                        @click="selectToAccount(acc)"
+                      >
+                        {{ acc.icon }} {{ acc.name }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <!-- Tags Input -->
+          <div class="tags-section">
+            <div class="tags-chips">
+              <span
+                v-for="(tag, idx) in tags"
+                :key="idx"
+                class="tag-chip"
+              >
+                {{ tag }}
+                <button class="tag-remove" @click="removeTag(idx)">&times;</button>
+              </span>
+              <input
+                v-model="tagInput"
+                class="tag-input"
+                type="text"
+                placeholder="添加标签，按回车确认"
+                maxlength="20"
+                @keydown.enter.prevent="addTag"
+                @keydown.,.prevent="addTag"
+              />
             </div>
           </div>
-          <span class="transfer-arrow">&rarr;</span>
-          <div class="transfer-col">
-            <span class="transfer-label">到</span>
-            <button class="account-btn small" @click="showToAccountPicker = !showToAccountPicker; showAccountPicker = false">
-              <span>{{ selectedToAccount ? `${selectedToAccount.icon} ${selectedToAccount.name}` : '选择' }}</span>
-              <svg class="chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </button>
-            <div v-if="showToAccountPicker" class="account-dropdown">
-              <button
-                v-for="acc in accounts"
-                :key="acc.id"
-                class="account-option"
-                :class="{ selected: selectedToAccount?.id === acc.id }"
-                @click="selectToAccount(acc)"
-              >
-                {{ acc.icon }} {{ acc.name }}
-              </button>
-            </div>
+
+          <!-- Note Input -->
+          <div class="note-section">
+            <input
+              v-model="note"
+              class="note-input"
+              type="text"
+              placeholder="添加备注"
+              maxlength="200"
+            />
           </div>
         </div>
-      </div>
-
-      <!-- Category Picker (hidden in transfer mode) -->
-      <CategoryPicker
-        v-if="bookingMode !== 'transfer'"
-        :type="bookingMode === 'expense' ? 'expense' : 'income'"
-        :selected-category-id="selectedCategoryId"
-        @select="onCategorySelect"
-      />
-
-      <!-- Note Input -->
-      <div class="note-section">
-        <input
-          v-model="note"
-          class="note-input"
-          type="text"
-          placeholder="添加备注"
-          maxlength="200"
-        />
-      </div>
+      </Transition>
     </div>
 
-    <!-- Number Keyboard (shown when amount area is tapped) -->
+    <!-- Number Keyboard -->
     <NumberKeyboard
       :value="inputValue"
       :visible="keyboardVisible"
@@ -126,6 +162,9 @@ const categoryStore = useCategoryStore()
 const transactionStore = useTransactionStore()
 const uiStore = useUiStore()
 
+// Swipe mode order
+const modeOrder: BookingMode[] = ['income', 'expense', 'transfer']
+
 // ── State ──
 const bookingMode = ref<BookingMode>(uiStore.bookingMode)
 const inputValue = ref('0')
@@ -134,8 +173,13 @@ const selectedAccount = ref<Account | null>(null)
 const selectedToAccount = ref<Account | null>(null)
 const selectedCategoryId = ref<number | null>(null)
 const note = ref('')
+const tags = ref<string[]>([])
+const tagInput = ref('')
 const showAccountPicker = ref(false)
 const showToAccountPicker = ref(false)
+
+// Touch swipe state
+let touchStartX = 0
 
 // ── Computed ──
 const displayAmount = computed(() => {
@@ -170,6 +214,26 @@ function initDefaultAccount() {
 onMounted(initDefaultAccount)
 watch(() => accountStore.accounts.length, initDefaultAccount)
 
+// ── Swipe handlers ──
+function onTouchStart(e: TouchEvent) {
+  touchStartX = e.touches[0].clientX
+}
+
+function onTouchEnd(e: TouchEvent) {
+  const touch = e.changedTouches[0]
+  const deltaX = touch.clientX - touchStartX
+  const absDelta = Math.abs(deltaX)
+  // Require horizontal swipe > 50px and clearly more horizontal than vertical
+  if (absDelta < 50) return
+
+  const idx = modeOrder.indexOf(bookingMode.value)
+  if (deltaX < 0 && idx < modeOrder.length - 1) {
+    onModeChange(modeOrder[idx + 1])
+  } else if (deltaX > 0 && idx > 0) {
+    onModeChange(modeOrder[idx - 1])
+  }
+}
+
 // ── Mode change ──
 function onModeChange(mode: BookingMode) {
   bookingMode.value = mode
@@ -197,6 +261,19 @@ function onCategorySelect(categoryId: number) {
   keyboardVisible.value = false
 }
 
+// ── Tags ──
+function addTag() {
+  const t = tagInput.value.trim()
+  if (t && !tags.value.includes(t)) {
+    tags.value.push(t)
+  }
+  tagInput.value = ''
+}
+
+function removeTag(idx: number) {
+  tags.value.splice(idx, 1)
+}
+
 // ── Confirm (submit transaction) ──
 async function handleConfirm() {
   if (inputValue.value === '0') return
@@ -219,7 +296,7 @@ async function handleConfirm() {
       fromAccountId: selectedAccount.value.id!,
       toAccountId: selectedToAccount.value.id!,
       categoryId: null,
-      tags: [],
+      tags: tags.value,
       note: note.value,
       date: dateStr,
       time: timeStr,
@@ -232,7 +309,7 @@ async function handleConfirm() {
       fromAccountId: selectedAccount.value.id!,
       toAccountId: null,
       categoryId: selectedCategoryId.value,
-      tags: [],
+      tags: tags.value,
       note: note.value,
       date: dateStr,
       time: timeStr,
@@ -246,7 +323,7 @@ async function handleConfirm() {
       fromAccountId: null,
       toAccountId: selectedAccount.value.id!,
       categoryId: selectedCategoryId.value,
-      tags: [],
+      tags: tags.value,
       note: note.value,
       date: dateStr,
       time: timeStr,
@@ -270,6 +347,8 @@ function resetState() {
   keyboardVisible.value = false
   selectedCategoryId.value = null
   note.value = ''
+  tags.value = []
+  tagInput.value = ''
   selectedToAccount.value = null
   showAccountPicker.value = false
   showToAccountPicker.value = false
@@ -309,12 +388,21 @@ function resetState() {
   line-height: 1.2;
   margin-bottom: 20px;
   font-variant-numeric: tabular-nums;
+  cursor: text;
 }
 
-/* ── Account Selector ── */
-.account-section,
-.transfer-section {
+/* ── Account Selector (overlay fix) ── */
+.account-selector-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin-bottom: 20px;
+  z-index: 10;
+}
+
+.account-selector-wrap.inline {
+  margin-bottom: 0;
 }
 
 .account-btn {
@@ -324,7 +412,6 @@ function resetState() {
   gap: 6px;
   width: 100%;
   max-width: 240px;
-  margin: 0 auto;
   padding: 12px 16px;
   background: var(--color-card);
   backdrop-filter: blur(10px);
@@ -337,6 +424,7 @@ function resetState() {
   font-size: 15px;
   color: var(--color-text);
   transition: background 0.15s;
+  white-space: nowrap;
 }
 
 .account-btn:active {
@@ -362,14 +450,19 @@ function resetState() {
 }
 
 .account-dropdown {
-  max-width: 240px;
-  margin: 4px auto 0;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 240px;
+  margin-top: 4px;
   background: var(--color-card);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
   overflow: hidden;
+  z-index: 50;
 }
 
 .account-option {
@@ -397,6 +490,10 @@ function resetState() {
 }
 
 /* ── Transfer Mode ── */
+.transfer-section {
+  margin-bottom: 20px;
+}
+
 .transfer-row {
   display: flex;
   align-items: flex-start;
@@ -423,17 +520,81 @@ function resetState() {
   padding-top: 22px;
 }
 
+/* ── Tags Input ── */
+.tags-section {
+  margin-bottom: 12px;
+}
+
+.tags-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--color-card);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #e9e9ed;
+  border-radius: 14px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+.tag-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: none;
+  border-radius: 50%;
+  background: #c7c7cc;
+  color: #fff;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tag-remove:active {
+  background: #8e8e93;
+}
+
+.tag-input {
+  flex: 1;
+  min-width: 80px;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--color-text);
+  outline: none;
+}
+
+.tag-input::placeholder {
+  color: var(--color-secondary-text);
+}
+
 /* ── Note Input ── */
 .note-section {
-  margin-top: 16px;
+  margin-bottom: 20px;
 }
 
 .note-input {
   display: block;
   width: 100%;
-  max-width: 280px;
-  margin: 0 auto;
-  padding: 10px 16px;
+  padding: 10px 14px;
   border: none;
   border-radius: var(--radius-sm);
   background: var(--color-card);
@@ -447,5 +608,16 @@ function resetState() {
 
 .note-input::placeholder {
   color: var(--color-secondary-text);
+}
+
+/* ── Mode fade transition ── */
+.mode-fade-enter-active,
+.mode-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.mode-fade-enter-from,
+.mode-fade-leave-to {
+  opacity: 0;
 }
 </style>
