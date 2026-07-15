@@ -6,8 +6,8 @@
         <ModeSwitch v-model="bookingMode" @update:model-value="onModeChange" />
       </div>
 
-      <!-- Amount Display -->
-      <div class="amount-display">{{ displayAmount }}</div>
+      <!-- Amount Display - tap to show keyboard -->
+      <div class="amount-display" @click="keyboardVisible = true">{{ displayAmount }}</div>
 
       <!-- Account Selector -->
       <div v-if="bookingMode !== 'transfer'" class="account-section">
@@ -99,11 +99,13 @@
       </div>
     </div>
 
-    <!-- Number Keyboard (fixed at bottom) -->
+    <!-- Number Keyboard (shown when amount area is tapped) -->
     <NumberKeyboard
       :value="inputValue"
+      :visible="keyboardVisible"
       @update:value="inputValue = $event"
       @confirm="handleConfirm"
+      @close="keyboardVisible = false"
     />
   </div>
 </template>
@@ -127,6 +129,7 @@ const uiStore = useUiStore()
 // ── State ──
 const bookingMode = ref<BookingMode>(uiStore.bookingMode)
 const inputValue = ref('0')
+const keyboardVisible = ref(false)
 const selectedAccount = ref<Account | null>(null)
 const selectedToAccount = ref<Account | null>(null)
 const selectedCategoryId = ref<number | null>(null)
@@ -191,6 +194,7 @@ function selectToAccount(acc: Account) {
 // ── Category selection ──
 function onCategorySelect(categoryId: number) {
   selectedCategoryId.value = categoryId
+  keyboardVisible.value = false
 }
 
 // ── Confirm (submit transaction) ──
@@ -263,6 +267,7 @@ async function handleConfirm() {
 
 function resetState() {
   inputValue.value = '0'
+  keyboardVisible.value = false
   selectedCategoryId.value = null
   note.value = ''
   selectedToAccount.value = null

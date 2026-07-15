@@ -1,30 +1,32 @@
 <template>
-  <div class="keyboard-wrapper">
-    <div class="keyboard-grid">
-      <button
-        v-for="key in ['1', '2', '3', '4', '5', '6', '7', '8', '9']"
-        :key="key"
-        class="key num-key"
-        @click="handleDigit(key)"
-      >
-        {{ key }}
-      </button>
-      <button class="key dot-key" @click="handleDot">.</button>
-      <button class="key zero-key" @click="handleDigit('0')">0</button>
-      <button class="key backspace-key" @click="handleBackspace">
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z"/>
-          <line x1="18" y1="9" x2="12" y2="15"/>
-          <line x1="12" y1="9" x2="18" y2="15"/>
-        </svg>
-      </button>
-      <button
-        class="key confirm-key"
-        :class="{ disabled: value === '0' }"
-        @click="handleConfirm"
-      >
-        确定
-      </button>
+  <div v-if="visible" class="keyboard-mask" @click.self="emit('close')">
+    <div class="keyboard-wrapper" @click.stop>
+      <div class="keyboard-grid">
+        <button
+          v-for="key in ['1', '2', '3', '4', '5', '6', '7', '8', '9']"
+          :key="key"
+          class="key num-key"
+          @click="handleDigit(key)"
+        >
+          {{ key }}
+        </button>
+        <button class="key dot-key" @click="handleDot">.</button>
+        <button class="key zero-key" @click="handleDigit('0')">0</button>
+        <button class="key backspace-key" @click="handleBackspace">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z"/>
+            <line x1="18" y1="9" x2="12" y2="15"/>
+            <line x1="12" y1="9" x2="18" y2="15"/>
+          </svg>
+        </button>
+        <button
+          class="key confirm-key"
+          :class="{ disabled: value === '0' }"
+          @click="handleConfirm"
+        >
+          确定
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -32,11 +34,13 @@
 <script setup lang="ts">
 const props = defineProps<{
   value: string
+  visible: boolean
 }>()
 
 const emit = defineEmits<{
   'update:value': [value: string]
   confirm: []
+  close: []
 }>()
 
 function handleDigit(d: string) {
@@ -44,7 +48,6 @@ function handleDigit(d: string) {
   if (v === '0') {
     v = d
   } else {
-    // Limit to 10 digits (excluding decimal point)
     const digitsOnly = v.replace('.', '')
     if (digitsOnly.length >= 10) return
     v += d
@@ -73,28 +76,47 @@ function handleConfirm() {
 </script>
 
 <style scoped>
+.keyboard-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+}
+
 .keyboard-wrapper {
-  width: 100%;
-  background: #1c1c1e;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 901;
+  background: #f2f2f6;
   padding-bottom: env(safe-area-inset-bottom);
+  border-top: 1px solid rgba(60, 60, 67, 0.08);
   user-select: none;
+  animation: slideUp 0.25s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }
 
 .keyboard-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr) 64px;
-  grid-template-rows: repeat(4, 56px);
+  grid-template-columns: repeat(3, 1fr) 72px;
+  grid-template-rows: repeat(4, 54px);
   gap: 6px;
   padding: 8px 8px 4px;
+  max-width: 420px;
+  margin: 0 auto;
 }
 
 .key {
   border: none;
-  background: #333;
-  color: #fff;
+  background: #fff;
+  color: #1c1c1e;
   font-size: 22px;
   font-weight: 500;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -102,10 +124,11 @@ function handleConfirm() {
   -webkit-tap-highlight-color: transparent;
   transition: background 0.1s;
   font-family: inherit;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .key:active {
-  background: #555;
+  background: #e5e5ea;
 }
 
 .zero-key {
@@ -118,24 +141,26 @@ function handleConfirm() {
 
 .backspace-key {
   grid-column: 3;
+  color: #8e8e93;
 }
 
 .confirm-key {
   grid-column: 4;
   grid-row: 1 / -1;
-  background: #34c759;
-  font-size: 16px;
+  background: var(--color-primary, #007aff);
+  color: #fff;
+  font-size: 17px;
   font-weight: 600;
-  writing-mode: vertical-lr;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
+  border-radius: 10px;
 }
 
 .confirm-key:active {
-  background: #28a745;
+  background: #0056cc;
 }
 
 .confirm-key.disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   pointer-events: none;
 }
 </style>
