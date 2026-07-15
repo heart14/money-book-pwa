@@ -1,14 +1,32 @@
+<script setup lang="ts">
+import { useAccountStore } from '@/stores/accountStore'
+import NetWorthCard from '@/components/accounts/NetWorthCard.vue'
+import AccountGroup from '@/components/accounts/AccountGroup.vue'
+
+const acctStore = useAccountStore()
+</script>
+
 <template>
-  <div class="page-placeholder">
+  <div class="accounts-page">
     <van-nav-bar title="账户" />
-    <div class="placeholder-content">
-      <van-icon name="balance-o" size="64" color="#ccc" />
-      <p>账户页（规划中）</p>
+    <NetWorthCard />
+    <div class="account-list">
+      <AccountGroup
+        v-for="g in acctStore.groupedAccounts"
+        :key="g.groupName"
+        :group-name="g.groupName"
+        :accounts="g.accounts"
+      />
     </div>
   </div>
 </template>
 
 <style scoped>
-.page-placeholder { min-height: 100%; background: #f7f8fa; }
-.placeholder-content { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 0; gap: 12px; color: #999; }
+.accounts-page {
+  background: #f7f8fa;
+  min-height: 100%;
+}
+.account-list {
+  padding-bottom: 20px;
+}
 </style>
