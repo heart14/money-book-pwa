@@ -8,7 +8,9 @@ export const useCategoryStore = defineStore('categories', () => {
   const categories = ref<Category[]>([])
 
   watchEffect((onCleanup) => {
-    const observable = liveQuery(() => db.categories.orderBy('sort').toArray())
+    const observable = liveQuery(() =>
+      db.categories.toArray().then(arr => arr.sort((a, b) => a.sort - b.sort))
+    )
     const sub = observable.subscribe({
       next: (result) => {
         categories.value = result

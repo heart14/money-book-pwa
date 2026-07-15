@@ -8,7 +8,9 @@ export const useAccountStore = defineStore('accounts', () => {
   const accounts = ref<Account[]>([])
 
   watchEffect((onCleanup) => {
-    const observable = liveQuery(() => db.accounts.orderBy('sort').toArray())
+    const observable = liveQuery(() =>
+      db.accounts.toArray().then(arr => arr.sort((a, b) => a.sort - b.sort))
+    )
     const sub = observable.subscribe({
       next: (result) => {
         accounts.value = result
