@@ -186,7 +186,19 @@ let touchStartX = 0
 const displayAmount = computed(() => {
   const v = inputValue.value
   if (v === '0') return '¥0.00'
-  return '¥' + v
+
+  if (v.includes('.')) {
+    const [intPart, decPart = ''] = v.split('.')
+    const formattedInt = intPart ? parseInt(intPart).toLocaleString('zh-CN') : '0'
+    if (decPart === '') {
+      // 刚按小数点，显示 .00 占位
+      return `¥${formattedInt}.00`
+    }
+    return `¥${formattedInt}.${decPart.padEnd(2, '0')}`
+  }
+
+  // 纯整数输入，显示千分位
+  return `¥${parseInt(v).toLocaleString('zh-CN')}`
 })
 
 const accounts = computed(() => accountStore.accounts)
