@@ -6,7 +6,7 @@
       :class="{ active: currentRoute === 'transactions' }"
       @click="navigate('transactions')"
     >
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 2px;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 6px;">
         <line x1="4" y1="6" x2="20" y2="6"></line>
         <line x1="4" y1="12" x2="20" y2="12"></line>
         <line x1="4" y1="18" x2="14" y2="18"></line>
@@ -20,7 +20,7 @@
       :class="{ active: currentRoute === 'stats' }"
       @click="navigate('stats')"
     >
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 2px;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 6px;">
         <line x1="4" y1="20" x2="4" y2="10"></line>
         <line x1="10" y1="20" x2="10" y2="6"></line>
         <line x1="16" y1="20" x2="16" y2="14"></line>
@@ -32,12 +32,12 @@
     <!-- 记账 (突出) -->
     <div class="tab-item tab-item--booking">
       <button class="booking-btn" @click="navigate('booking')">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="29" height="29" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <line x1="12" y1="8" x2="12" y2="16"></line>
           <line x1="8" y1="12" x2="16" y2="12"></line>
         </svg>
       </button>
-      <!-- <span class="tab-label booking-label">记账</span> -->
+      <span class="tab-label booking-label">记账</span>
     </div>
 
     <!-- 账户 -->
@@ -46,7 +46,7 @@
       :class="{ active: currentRoute === 'accounts' || currentRoute === 'account-detail' }"
       @click="navigate('accounts')"
     >
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 2px;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 6px;">
         <rect x="2" y="4" width="20" height="16" rx="2"></rect>
         <line x1="2" y1="10" x2="22" y2="10"></line>
         <path d="M16 14h2"></path>
@@ -60,7 +60,7 @@
       :class="{ active: currentRoute === 'settings' }"
       @click="navigate('settings')"
     >
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 2px;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 6px;">
         <circle cx="12" cy="12" r="3"></circle>
         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
       </svg>
@@ -89,22 +89,32 @@ function navigate(name: string) {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 56px;
+  height: 80px;
   display: flex;
   align-items: flex-end;
   justify-content: space-around;
   background: #f2f2f6;
-  border-top: 1px solid rgba(60, 60, 67, 0.08);
-  padding: 6px 0 2px;
-  padding-bottom: env(safe-area-inset-bottom);
+  padding: 6px 0 8px;
+  padding-bottom: calc(15px + env(safe-area-inset-bottom));
   z-index: 100;
+}
+
+/* Non-full-width top separator */
+.tab-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 16px;
+  right: 16px;
+  height: 1px;
+  background: rgba(60, 60, 67, 0.08);
 }
 
 .tab-item {
   text-align: center;
-  font-size: 10px;
+  font-size: 11px;
   color: #8e8e93;
-  width: 20%;
+  width: 24%;
   border: none;
   background: none;
   cursor: pointer;
@@ -129,15 +139,15 @@ function navigate(name: string) {
 }
 
 .booking-btn {
-  width: 48px;
-  height: 48px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   border: none;
   background: linear-gradient(135deg, #007aff, #00a2ff);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 2px;
+  margin: 0 auto 6px;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0, 122, 255, 0.4);
   -webkit-tap-highlight-color: transparent;
@@ -150,6 +160,6 @@ function navigate(name: string) {
 
 .booking-label {
   font-weight: 700;
-  color: #007aff;
+  /* color: #007aff; */
 }
 </style>
