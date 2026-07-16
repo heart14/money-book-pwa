@@ -273,7 +273,7 @@ const filteredTransactions = computed(() => {
   const q = searchQuery.value.trim().toLowerCase()
   if (q) {
     list = list.filter((tx) => {
-      if (tx.title.toLowerCase().includes(q)) return true
+      if ((tx.title || '').toLowerCase().includes(q)) return true
       if (tx.note.toLowerCase().includes(q)) return true
       return tx.tags.some((t) => t.toLowerCase().includes(q))
     })
