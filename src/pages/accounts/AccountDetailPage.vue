@@ -32,6 +32,7 @@
               v-for="tx in group.transactions"
               :key="tx.id"
               :transaction="tx"
+              :title="tx.title || getCategoryName(tx.categoryId)"
               :account-name="getAccountLabel(tx)"
               :category-name="getCategoryName(tx.categoryId)"
               :category-icon="getCategoryIcon(tx.categoryId)"

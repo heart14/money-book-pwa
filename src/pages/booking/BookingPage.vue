@@ -99,6 +99,17 @@
             </div>
           </template>
 
+          <!-- Title Input -->
+          <div class="note-section">
+            <input
+              v-model="title"
+              class="note-input"
+              type="text"
+              placeholder="标题（如：晚餐-烤匠）"
+              maxlength="100"
+            />
+          </div>
+
           <!-- Tags Input -->
           <div class="tags-section">
             <div class="tags-chips">
@@ -173,6 +184,7 @@ const selectedAccount = ref<Account | null>(null)
 const selectedToAccount = ref<Account | null>(null)
 const selectedCategoryId = ref<number | null>(null)
 const note = ref('')
+const title = ref('')
 const tags = ref<string[]>([])
 const tagInput = ref('')
 const showAccountPicker = ref(false)
@@ -317,6 +329,7 @@ async function handleConfirm() {
     if (selectedAccount.value.id === selectedToAccount.value.id) return
     tx = {
       type: 'transfer',
+      title: title.value,
       amount,
       fromAccountId: selectedAccount.value.id!,
       toAccountId: selectedToAccount.value.id!,
@@ -330,6 +343,7 @@ async function handleConfirm() {
     if (!selectedAccount.value || !selectedCategoryId.value) return
     tx = {
       type: 'expense',
+      title: title.value,
       amount,
       fromAccountId: selectedAccount.value.id!,
       toAccountId: null,
@@ -344,6 +358,7 @@ async function handleConfirm() {
     if (!selectedAccount.value || !selectedCategoryId.value) return
     tx = {
       type: 'income',
+      title: title.value,
       amount,
       fromAccountId: null,
       toAccountId: selectedAccount.value.id!,
@@ -373,6 +388,7 @@ function resetState() {
   keyboardVisible.value = false
   selectedCategoryId.value = null
   note.value = ''
+  title.value = ''
   tags.value = []
   tagInput.value = ''
   selectedToAccount.value = null

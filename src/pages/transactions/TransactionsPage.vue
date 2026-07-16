@@ -46,7 +46,7 @@
           ref="searchInputRef"
           v-model="searchQuery"
           class="search-input"
-          placeholder="搜索备注或标签..."
+          placeholder="搜索标题、备注或标签..."
         />
       </div>
     </div>
@@ -82,6 +82,7 @@
               v-for="tx in group.transactions"
               :key="tx.id"
               :transaction="tx"
+              :title="tx.title || getCategoryName(tx.categoryId)"
               :account-name="getAccountLabel(tx)"
               :category-name="getCategoryName(tx.categoryId)"
               :category-icon="getCategoryIcon(tx.categoryId)"
@@ -102,7 +103,7 @@
               <div class="sheet-icon-wrap">
                 <span class="sheet-icon">{{ getCategoryIcon(detailTx.categoryId) || '🔄' }}</span>
               </div>
-              <div class="sheet-category">{{ getCategoryName(detailTx.categoryId) || '转账' }}</div>
+              <div class="sheet-title">{{ detailTx.title || getCategoryName(detailTx.categoryId) || '转账' }}</div>
               <div class="sheet-type-badge" :class="`badge-${detailTx.type}`">
                 {{ typeLabel(detailTx.type) }}
               </div>
@@ -112,6 +113,14 @@
               <span class="sheet-amount-value">{{ formatPure(detailTx.amount) }}</span>
             </div>
             <div class="sheet-details">
+              <div v-if="detailTx.title" class="detail-row">
+                <span class="detail-label">标题</span>
+                <span class="detail-value">{{ detailTx.title }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">分类</span>
+                <span class="detail-value">{{ getCategoryName(detailTx.categoryId) || '转账' }}</span>
+              </div>
               <div class="detail-row">
                 <span class="detail-label">账户</span>
                 <span class="detail-value">{{ getAccountLabel(detailTx) }}</span>
@@ -264,6 +273,7 @@ const filteredTransactions = computed(() => {
   const q = searchQuery.value.trim().toLowerCase()
   if (q) {
     list = list.filter((tx) => {
+      if (tx.title.toLowerCase().includes(q)) return true
       if (tx.note.toLowerCase().includes(q)) return true
       return tx.tags.some((t) => t.toLowerCase().includes(q))
     })
@@ -621,7 +631,7 @@ async function handleDelete() {
   line-height: 1;
 }
 
-.sheet-category {
+.sheet-title {
   font-size: 17px;
   font-weight: 600;
   color: var(--color-text);

@@ -5,8 +5,8 @@
         {{ categoryIcon || '🔄' }}
       </div>
       <div class="item-info">
-        <div class="item-category">{{ categoryName || '转账' }}</div>
-        <div class="item-sub">{{ accountName }} · {{ displayTime }}</div>
+        <div class="item-title">{{ title || categoryName || '转账' }}</div>
+        <div class="item-sub">{{ categoryName || '转账' }} · {{ displayTime }}</div>
       </div>
     </div>
     <div class="item-amount" :class="amountClass">
@@ -25,6 +25,7 @@ import { formatCurrency } from '@/utils/format'
 
 const props = defineProps<{
   transaction: Transaction
+  title: string
   accountName: string
   categoryName: string
   categoryIcon: string
@@ -101,11 +102,14 @@ const displayAmount = computed(() => {
   min-width: 0;
 }
 
-.item-category {
+.item-title {
   font-size: 15px;
   font-weight: 600;
   color: #1c1c1e;
   line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .item-sub {

@@ -19,6 +19,7 @@ export interface Category {
 export interface Transaction {
   id?: number
   type: 'expense' | 'income' | 'transfer'
+  title: string
   amount: number
   fromAccountId: number | null
   toAccountId: number | null
@@ -32,6 +33,7 @@ export interface Transaction {
 export interface RecurringRule {
   id?: number
   type: 'expense' | 'income' | 'transfer'
+  title: string
   amount: number
   fromAccountId: number
   toAccountId: number | null

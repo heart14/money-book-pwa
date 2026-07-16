@@ -471,7 +471,7 @@ function openEditRule(rule: RecurringRule) {
 }
 async function handleSaveRule() {
   const amount = Math.round(ruleForm.amountYuan * 100)
-  const ruleData: Omit<RecurringRule, 'id'> = { type: ruleForm.type, amount, fromAccountId: ruleForm.fromAccountId, toAccountId: ruleForm.type === 'transfer' ? ruleForm.toAccountId : null, categoryId: null, tags: [], note: ruleForm.note, dayOfMonth: ruleForm.dayOfMonth, enabled: true, lastExecuted: null }
+  const ruleData: Omit<RecurringRule, 'id'> = { type: ruleForm.type, title: ruleForm.note, amount, fromAccountId: ruleForm.fromAccountId, toAccountId: ruleForm.type === 'transfer' ? ruleForm.toAccountId : null, categoryId: null, tags: [], note: ruleForm.note, dayOfMonth: ruleForm.dayOfMonth, enabled: true, lastExecuted: null }
   if (editingRule.value?.id) await db.recurringRules.update(editingRule.value.id, ruleData)
   else await db.recurringRules.add(ruleData)
   showRuleModal.value = false; editingRule.value = null; await loadRules()
