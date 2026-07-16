@@ -148,10 +148,11 @@ onUnmounted(() => {
 
 <style scoped>
 .chart-card {
-  background: var(--color-card);
-  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 14px;
   padding: 16px;
-  box-shadow: var(--shadow-sm);
 }
 
 .chart-title {

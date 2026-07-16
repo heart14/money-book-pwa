@@ -313,18 +313,19 @@ async function handleDelete() {
 }
 
 .day-group {
-  margin: 8px 12px;
-  background: var(--color-card);
-  border-radius: var(--radius-md);
+  margin: 6px 12px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
 }
 
 .day-header {
-  padding: 10px 16px 6px;
-  font-size: 14px;
+  padding: 12px 16px 6px;
+  font-size: 13px;
   font-weight: 600;
-  color: var(--color-text);
+  color: #8e8e93;
 }
 
 .delete-area {
@@ -372,7 +373,9 @@ async function handleDelete() {
 .modal {
   width: 100%;
   max-width: 480px;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: 16px 16px 0 0;
   animation: slideUp 0.3s ease;
   padding: 8px 24px 32px;

@@ -3,9 +3,14 @@
     <div class="nw-label">净资产</div>
     <div class="nw-amount">{{ formatCurrency(netWorth) }}</div>
     <div class="nw-detail">
-      <span class="nw-assets">总资产 {{ formatCurrency(totalAssets) }}</span>
-      <span class="nw-sep">|</span>
-      <span class="nw-liabilities">总负债 {{ formatCurrency(totalLiabilities) }}</span>
+      <div class="nw-detail-item">
+        <div class="nw-detail-label">总资产</div>
+        <div class="nw-detail-value assets">{{ formatCurrency(totalAssets) }}</div>
+      </div>
+      <div class="nw-detail-item">
+        <div class="nw-detail-label">总负债</div>
+        <div class="nw-detail-value liabilities">{{ formatCurrency(totalLiabilities) }}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -22,42 +27,54 @@ defineProps<{
 
 <style scoped>
 .net-worth-card {
-  background: #1c1c1e;
+  background: linear-gradient(135deg, #1c1c1e, #2c2c2e);
   border-radius: 16px;
   padding: 20px;
   margin-bottom: 16px;
 }
 
 .nw-label {
-  font-size: 14px;
-  color: #8e8e93;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
   margin-bottom: 4px;
 }
 
 .nw-amount {
-  font-size: 32px;
+  font-size: 34px;
   font-weight: 700;
   color: #fff;
+  letter-spacing: -1px;
   font-variant-numeric: tabular-nums;
   margin-bottom: 8px;
 }
 
 .nw-detail {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
+  gap: 16px;
+  margin-top: 4px;
 }
 
-.nw-assets {
+.nw-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.nw-detail-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.nw-detail-value {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.nw-detail-value.assets {
   color: #34c759;
 }
 
-.nw-sep {
-  color: #8e8e93;
-}
-
-.nw-liabilities {
-  color: #ff3b30;
+.nw-detail-value.liabilities {
+  color: #ff453a;
 }
 </style>

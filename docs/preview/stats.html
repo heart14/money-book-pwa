@@ -1,0 +1,312 @@
+<div style="display:flex;flex-direction:column;gap:24px;">
+  <h2>统计页 · 设计预览</h2>
+  <p class="subtitle">月度概览 + 年度趋势 + 自定义区间</p>
+
+  <div style="display:flex;flex-wrap:wrap;gap:32px;justify-content:center;margin-top:16px;">
+
+    <!-- Mobile Mockup -->
+    <div style="flex:0 0 auto;">
+      <div style="width:320px;background:#f2f2f6;border-radius:44px;padding:12px;box-shadow:0 20px 60px rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.3);">
+        <div style="background:#1a1a1a;width:120px;height:28px;border-radius:16px;margin:0 auto 8px;"></div>
+        <div style="display:flex;justify-content:space-between;padding:0 8px 12px;color:#666;font-size:12px;font-weight:600;">
+          <span>9:41</span>
+          <span>📶 🔋</span>
+        </div>
+
+        <!-- Header with time selector -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <span style="font-size:17px;font-weight:700;color:#1c1c1e;">统计</span>
+          <div style="background:rgba(255,255,255,0.85);border-radius:8px;padding:4px;display:flex;gap:2px;">
+            <span style="padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;background:#007aff;color:#fff;">月</span>
+            <span style="padding:4px 10px;border-radius:6px;font-size:12px;color:#8e8e93;">年</span>
+            <span style="padding:4px 10px;border-radius:6px;font-size:12px;color:#8e8e93;">自选</span>
+          </div>
+        </div>
+
+        <!-- Month selector -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <span style="font-size:18px;color:#8e8e93;">‹</span>
+          <span style="font-size:15px;font-weight:600;color:#1c1c1e;">2026年7月</span>
+          <span style="font-size:18px;color:#007aff;">›</span>
+        </div>
+
+        <!-- Income/Expense summary -->
+        <div style="display:flex;gap:8px;margin-bottom:12px;">
+          <div style="flex:1;background:#34c759;border-radius:12px;padding:10px 12px;">
+            <div style="font-size:11px;color:rgba(255,255,255,0.7);">收入</div>
+            <div style="font-size:18px;font-weight:700;color:#fff;">¥12,000</div>
+          </div>
+          <div style="flex:1;background:#ff3b30;border-radius:12px;padding:10px 12px;">
+            <div style="font-size:11px;color:rgba(255,255,255,0.7);">支出</div>
+            <div style="font-size:18px;font-weight:700;color:#fff;">¥4,350</div>
+          </div>
+        </div>
+
+        <!-- Bar Chart Area -->
+        <div style="background:rgba(255,255,255,0.85);border-radius:14px;padding:16px;margin-bottom:10px;backdrop-filter:blur(10px);">
+          <div style="font-size:13px;font-weight:600;color:#1c1c1e;margin-bottom:10px;">月度趋势</div>
+          <div style="display:flex;align-items:flex-end;gap:6px;height:100px;">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+              <div style="width:100%;background:#ff3b30;border-radius:4px 4px 0 0;height:30px;opacity:0.3;"></div>
+              <div style="width:100%;background:#34c759;border-radius:4px 4px 0 0;height:60px;"></div>
+              <span style="font-size:9px;color:#8e8e93;">1月</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+              <div style="width:100%;background:#ff3b30;border-radius:4px 4px 0 0;height:40px;opacity:0.3;"></div>
+              <div style="width:100%;background:#34c759;border-radius:4px 4px 0 0;height:55px;"></div>
+              <span style="font-size:9px;color:#8e8e93;">2月</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+              <div style="width:100%;background:#ff3b30;border-radius:4px 4px 0 0;height:35px;opacity:0.3;"></div>
+              <div style="width:100%;background:#34c759;border-radius:4px 4px 0 0;height:70px;"></div>
+              <span style="font-size:9px;color:#8e8e93;">3月</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+              <div style="width:100%;background:#ff3b30;border-radius:4px 4px 0 0;height:45px;opacity:0.3;"></div>
+              <div style="width:100%;background:#34c759;border-radius:4px 4px 0 0;height:55px;"></div>
+              <span style="font-size:9px;color:#8e8e93;">4月</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+              <div style="width:100%;background:#ff3b30;border-radius:4px 4px 0 0;height:50px;opacity:0.3;"></div>
+              <div style="width:100%;background:#34c759;border-radius:4px 4px 0 0;height:45px;"></div>
+              <span style="font-size:9px;color:#8e8e93;">5月</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+              <div style="width:100%;background:#ff3b30;border-radius:4px 4px 0 0;height:55px;opacity:0.3;"></div>
+              <div style="width:100%;background:#34c759;border-radius:4px 4px 0 0;height:65px;"></div>
+              <span style="font-size:9px;color:#8e8e93;">6月</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+              <div style="width:100%;background:#ff3b30;border-radius:4px 4px 0 0;height:60px;opacity:0.3;"></div>
+              <div style="width:100%;background:#34c759;border-radius:4px 4px 0 0;height:75px;"></div>
+              <span style="font-size:9px;color:#1c1c1e;font-weight:600;">7月</span>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:center;gap:12px;margin-top:6px;">
+            <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:#8e8e93;"><span style="width:8px;height:8px;background:#34c759;border-radius:2px;"></span>收入</span>
+            <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:#8e8e93;"><span style="width:8px;height:8px;background:#ff3b30;border-radius:2px;opacity:0.3;"></span>支出</span>
+          </div>
+        </div>
+
+        <!-- Category Pie & Ranking -->
+        <div style="background:rgba(255,255,255,0.85);border-radius:14px;padding:16px;margin-bottom:10px;backdrop-filter:blur(10px);">
+          <div style="font-size:13px;font-weight:600;color:#1c1c1e;margin-bottom:10px;">支出构成</div>
+          <div style="display:flex;align-items:center;gap:16px;">
+            <!-- Pie mockup -->
+            <div style="width:80px;height:80px;border-radius:50%;background:conic-gradient(#ff3b30 0% 35%, #ff9500 35% 55%, #ffcc00 55% 70%, #34c759 70% 82%, #007aff 82% 92%, #8e8e93 92% 100%);flex-shrink:0;"></div>
+            <!-- Legend -->
+            <div style="flex:1;display:flex;flex-direction:column;gap:3px;">
+              <div style="display:flex;justify-content:space-between;font-size:11px;">
+                <span><span style="color:#ff3b30;">●</span> 餐饮</span><span style="color:#8e8e93;">35%</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;">
+                <span><span style="color:#ff9500;">●</span> 交通</span><span style="color:#8e8e93;">20%</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;">
+                <span><span style="color:#ffcc00;">●</span> 购物</span><span style="color:#8e8e93;">15%</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;">
+                <span><span style="color:#34c759;">●</span> 居住</span><span style="color:#8e8e93;">12%</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;">
+                <span><span style="color:#007aff;">●</span> 其他</span><span style="color:#8e8e93;">18%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ranking -->
+        <div style="background:rgba(255,255,255,0.85);border-radius:14px;padding:16px;margin-bottom:10px;backdrop-filter:blur(10px);">
+          <div style="font-size:13px;font-weight:600;color:#1c1c1e;margin-bottom:8px;">支出排行</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="width:18px;height:18px;background:#ff3b30;border-radius:6px;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;">1</span>
+              <div style="flex:1;font-size:13px;">🍽️ 餐饮美食</div>
+              <div style="font-size:13px;font-weight:600;">¥1,280</div>
+              <div style="font-size:11px;color:#8e8e93;">29%</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="width:18px;height:18px;background:#ff9500;border-radius:6px;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;">2</span>
+              <div style="flex:1;font-size:13px;">🚗 公共交通</div>
+              <div style="font-size:13px;font-weight:600;">¥860</div>
+              <div style="font-size:11px;color:#8e8e93;">20%</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="width:18px;height:18px;background:#ffcc00;border-radius:6px;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;">3</span>
+              <div style="flex:1;font-size:13px;">🛍️ 日用百货</div>
+              <div style="font-size:13px;font-weight:600;">¥650</div>
+              <div style="font-size:11px;color:#8e8e93;">15%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tags -->
+        <div style="background:rgba(255,255,255,0.85);border-radius:14px;padding:16px;margin-bottom:10px;backdrop-filter:blur(10px);">
+          <div style="font-size:13px;font-weight:600;color:#1c1c1e;margin-bottom:8px;">标签聚合</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <span style="padding:6px 14px;background:#f2f2f7;border-radius:10px;font-size:13px;color:#1c1c1e;">#通勤 · ¥420</span>
+            <span style="padding:6px 14px;background:#f2f2f7;border-radius:10px;font-size:13px;color:#1c1c1e;">#外卖 · ¥350</span>
+            <span style="padding:6px 14px;background:#f2f2f7;border-radius:10px;font-size:13px;color:#1c1c1e;">#午餐 · ¥280</span>
+            <span style="padding:6px 14px;background:#f2f2f7;border-radius:10px;font-size:13px;color:#1c1c1e;">#加油 · ¥200</span>
+          </div>
+        </div>
+
+        <!-- Bottom Tab -->
+       <div style="display:flex;align-items:flex-end;justify-content:space-around;padding:6px 0 2px;margin-top:8px;border-top:1px solid rgba(60,60,67,0.08);">
+
+          <!-- Tab 1: 明细 - list bars icon -->
+          <div style="text-align:center;font-size:10px;color:#8e8e93;width:20%;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 2px;">
+              <line x1="4" y1="6" x2="20" y2="6"></line>
+              <line x1="4" y1="12" x2="20" y2="12"></line>
+              <line x1="4" y1="18" x2="14" y2="18"></line>
+            </svg>
+            <span>明细</span>
+          </div>
+
+          <!-- Tab 2: 统计 - chart bar icon -->
+          <div style="text-align:center;font-size:10px;color:#8e8e93;width:20%;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 2px;">
+              <line x1="4" y1="20" x2="4" y2="10"></line>
+              <line x1="10" y1="20" x2="10" y2="6"></line>
+              <line x1="16" y1="20" x2="16" y2="14"></line>
+              <line x1="20" y1="20" x2="20" y2="4"></line>
+            </svg>
+            <span>统计</span>
+          </div>
+
+          <!-- Tab 3: 记账 (HIGHLIGHTED) - plus circle -->
+          <div style="text-align:center;font-size:10px;color:#007aff;width:24%;position:relative;top:-8px;">
+            <div style="width:48px;height:48px;background:linear-gradient(135deg,#007aff,#00a2ff);border-radius:24px;display:flex;align-items:center;justify-content:center;margin:0 auto 2px;box-shadow:0 4px 12px rgba(0,122,255,0.4);">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" stroke="none" fill="#007aff" display="none"></circle>
+                <line x1="12" y1="8" x2="12" y2="16"></line>
+                <line x1="8" y1="12" x2="16" y2="12"></line>
+              </svg>
+            </div>
+            <span style="font-weight:700;color:#007aff;">记账</span>
+          </div>
+
+          <!-- Tab 4: 账户 - wallet/card icon -->
+          <div style="text-align:center;font-size:10px;color:#8e8e93;width:20%;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 2px;">
+              <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+              <line x1="2" y1="10" x2="22" y2="10"></line>
+              <path d="M16 14h2"></path>
+            </svg>
+            <span>账户</span>
+          </div>
+
+          <!-- Tab 5: 设置 - gear icon -->
+          <div style="text-align:center;font-size:10px;color:#8e8e93;width:20%;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 2px;">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <span>设置</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Desktop Mockup -->
+    <div style="flex:0 0 auto;">
+      <div style="width:520px;background:#f2f2f6;border-radius:20px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,0.1);border:1px solid rgba(255,255,255,0.3);">
+        <div style="display:flex;gap:16px;">
+          <div style="width:100px;display:flex;flex-direction:column;gap:4px;">
+            <div style="padding:10px 12px;border-radius:10px;font-size:13px;color:#8e8e93;">📝 记账</div>
+            <div style="padding:10px 12px;border-radius:10px;font-size:13px;color:#8e8e93;">📋 明细</div>
+            <div style="padding:10px 12px;border-radius:10px;font-size:13px;color:#8e8e93;">🏦 账户</div>
+            <div style="padding:10px 12px;border-radius:10px;font-size:13px;font-weight:600;color:#007aff;background:rgba(0,122,255,0.1);">📊 统计</div>
+            <div style="padding:10px 12px;border-radius:10px;font-size:13px;color:#8e8e93;">⚙️ 设置</div>
+          </div>
+          <div style="flex:1;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+              <h3 style="margin:0;font-size:20px;font-weight:700;">统计</h3>
+              <div style="background:rgba(255,255,255,0.85);border-radius:8px;padding:3px;display:flex;">
+                <span style="padding:4px 12px;border-radius:6px;font-size:12px;font-weight:600;background:#007aff;color:#fff;">月</span>
+                <span style="padding:4px 12px;border-radius:6px;font-size:12px;color:#8e8e93;">年</span>
+                <span style="padding:4px 12px;border-radius:6px;font-size:12px;color:#8e8e93;">自选</span>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-bottom:12px;">
+              <div style="flex:1;background:#34c759;border-radius:10px;padding:8px 12px;">
+                <div style="font-size:10px;color:rgba(255,255,255,0.7);">收入</div>
+                <div style="font-size:16px;font-weight:700;color:#fff;">¥12,000</div>
+              </div>
+              <div style="flex:1;background:#ff3b30;border-radius:10px;padding:8px 12px;">
+                <div style="font-size:10px;color:rgba(255,255,255,0.7);">支出</div>
+                <div style="font-size:16px;font-weight:700;color:#fff;">¥4,350</div>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+              <!-- Bar Chart -->
+              <div style="background:rgba(255,255,255,0.85);border-radius:12px;padding:14px;backdrop-filter:blur(10px);">
+                <div style="font-size:12px;font-weight:600;margin-bottom:8px;">月度趋势</div>
+                <div style="display:flex;align-items:flex-end;gap:4px;height:70px;">
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;">
+                    <div style="width:100%;background:#ff3b30;height:20px;border-radius:2px;opacity:0.3;"></div>
+                    <div style="width:100%;background:#34c759;height:40px;border-radius:2px;"></div>
+                    <span style="font-size:8px;color:#8e8e93;">1</span>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;">
+                    <div style="width:100%;background:#ff3b30;height:25px;border-radius:2px;opacity:0.3;"></div>
+                    <div style="width:100%;background:#34c759;height:35px;border-radius:2px;"></div>
+                    <span style="font-size:8px;color:#8e8e93;">2</span>
+                  </div>
+                  <div style="flex:1;/* ... */"><span style="font-size:8px;color:#8e8e93;">6</span></div>
+                  <div style="flex:1;/* ... */"><span style="font-size:8px;color:#1c1c1e;font-weight:600;">7</span></div>
+                </div>
+              </div>
+              <!-- Pie -->
+              <div style="background:rgba(255,255,255,0.85);border-radius:12px;padding:14px;backdrop-filter:blur(10px);">
+                <div style="font-size:12px;font-weight:600;margin-bottom:8px;">支出构成</div>
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:60px;height:60px;border-radius:50%;background:conic-gradient(#ff3b30 0% 35%, #ff9500 35% 55%, #ffcc00 55% 70%, #34c759 70% 82%, #007aff 82% 100%);flex-shrink:0;"></div>
+                  <div style="font-size:10px;">
+                    <div>🍽️ 35%</div><div>🚗 20%</div><div>🛍️ 15%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <!-- Ranking -->
+              <div style="background:rgba(255,255,255,0.85);border-radius:12px;padding:14px;backdrop-filter:blur(10px);">
+                <div style="font-size:12px;font-weight:600;margin-bottom:6px;">支出排行</div>
+                <div style="display:flex;flex-direction:column;gap:5px;">
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;">
+                    <span style="width:16px;height:16px;background:#ff3b30;border-radius:4px;color:#fff;font-size:8px;display:flex;align-items:center;justify-content:center;">1</span>
+                    <span style="flex:1;">🍽️ 餐饮美食</span><span style="font-weight:600;">¥1,280</span><span style="color:#8e8e93;">29%</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;">
+                    <span style="width:16px;height:16px;background:#ff9500;border-radius:4px;color:#fff;font-size:8px;display:flex;align-items:center;justify-content:center;">2</span>
+                    <span style="flex:1;">🚗 公共交通</span><span style="font-weight:600;">¥860</span><span style="color:#8e8e93;">20%</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;">
+                    <span style="width:16px;height:16px;background:#ffcc00;border-radius:4px;color:#fff;font-size:8px;display:flex;align-items:center;justify-content:center;">3</span>
+                    <span style="flex:1;">🛍️ 日用百货</span><span style="font-weight:600;">¥650</span><span style="color:#8e8e93;">15%</span>
+                  </div>
+                </div>
+              </div>
+              <!-- Tags -->
+              <div style="background:rgba(255,255,255,0.85);border-radius:12px;padding:14px;backdrop-filter:blur(10px);">
+                <div style="font-size:12px;font-weight:600;margin-bottom:6px;">标签聚合</div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                  <span style="padding:4px 10px;background:#f2f2f7;border-radius:8px;font-size:11px;">#通勤 · ¥420</span>
+                  <span style="padding:4px 10px;background:#f2f2f7;border-radius:8px;font-size:11px;">#外卖 · ¥350</span>
+                  <span style="padding:4px 10px;background:#f2f2f7;border-radius:8px;font-size:11px;">#午餐 · ¥280</span>
+                  <span style="padding:4px 10px;background:#f2f2f7;border-radius:8px;font-size:11px;">#油价 · ¥200</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:12px;text-align:center;">
+    <p class="subtitle">左：移动端（单列滚动） · 右：桌面端（多列看板模式）</p>
+    <p style="font-size:14px;">顶部切换 月/年/自定义 · 收入/支出卡片 · 月度趋势柱状图 · 支出构成环形图 · 分类排行 · 标签聚合</p>
+  </div>
+</div>

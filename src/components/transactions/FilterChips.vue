@@ -55,21 +55,24 @@ defineEmits<{
   padding: 0 14px;
   border-radius: 18px;
   border: none;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
-  background: #e9e9ed;
-  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.8);
+  color: #1c1c1e;
   -webkit-tap-highlight-color: transparent;
-  transition: background 0.15s, color 0.15s;
+  transition: all 0.15s;
+  font-family: inherit;
 }
 
 .chip.active {
   background: #007aff;
   color: #fff;
+  font-weight: 500;
 }
 
 .chip-icon {
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1;
 }
 </style>

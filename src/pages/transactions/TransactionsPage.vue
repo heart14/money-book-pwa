@@ -1,24 +1,48 @@
 <template>
-  <div class="page transactions-page">
-    <!-- Search bar -->
-    <div class="search-bar">
-      <div class="search-inner" :class="{ expanded: searchOpen }">
-        <button class="search-btn" @click="searchOpen = !searchOpen">
-          <svg
-            viewBox="0 0 24 24"
-            width="20"
-            height="20"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-          >
-            <circle cx="10.5" cy="10.5" r="7" />
-            <line x1="15.5" y1="15.5" x2="21" y2="21" />
+  <div class="transactions-page">
+    <!-- Header: 明细 + icons -->
+    <div class="page-header">
+      <span class="page-title">明细</span>
+      <div class="header-actions">
+        <button class="header-icon-btn" @click="showDatePicker = !showDatePicker">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
           </svg>
         </button>
+        <button class="header-icon-btn" @click="searchOpen = !searchOpen">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="10.5" cy="10.5" r="7"></circle>
+            <line x1="15.5" y1="15.5" x2="21" y2="21"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Date filter bar (expandable) -->
+    <div v-if="showDatePicker" class="date-filter-bar">
+      <div class="date-filter-inner">
+        <button class="date-nav-btn" @click="prevMonth">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6" /></svg>
+        </button>
+        <span class="date-filter-label">{{ filterYear }}年{{ filterMonth }}月</span>
+        <button class="date-nav-btn" @click="nextMonth">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2.5" stroke-linecap="round"><polyline points="9 6 15 12 9 18" /></svg>
+        </button>
+        <button v-if="dateFilterActive" class="date-clear-btn" @click="clearDateFilter">清除</button>
+      </div>
+    </div>
+
+    <!-- Search bar (expandable) -->
+    <div v-if="searchOpen" class="search-bar">
+      <div class="search-inner">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+          <circle cx="10.5" cy="10.5" r="7"></circle>
+          <line x1="15.5" y1="15.5" x2="21" y2="21"></line>
+        </svg>
         <input
-          v-if="searchOpen"
           ref="searchInputRef"
           v-model="searchQuery"
           class="search-input"
@@ -49,9 +73,8 @@
           <div class="day-header">
             <span class="day-label">{{ group.dateLabel }}</span>
             <span v-if="group.dayIncome > 0 || group.dayExpense > 0" class="day-total">
-              <span v-if="group.dayIncome > 0" class="total-income">+{{ formatPure(group.dayIncome) }}</span>
-              <span v-if="group.dayIncome > 0 && group.dayExpense > 0" class="total-sep"> </span>
               <span v-if="group.dayExpense > 0" class="total-expense">-{{ formatPure(group.dayExpense) }}</span>
+              <span v-if="group.dayIncome > 0" class="total-income">+{{ formatPure(group.dayIncome) }}</span>
             </span>
           </div>
           <div class="day-items">
@@ -75,7 +98,6 @@
         <div class="sheet">
           <div class="sheet-handle"></div>
           <div class="sheet-body">
-            <!-- Header: icon + type -->
             <div class="sheet-header">
               <div class="sheet-icon-wrap">
                 <span class="sheet-icon">{{ getCategoryIcon(detailTx.categoryId) || '🔄' }}</span>
@@ -85,14 +107,10 @@
                 {{ typeLabel(detailTx.type) }}
               </div>
             </div>
-
-            <!-- Amount -->
             <div class="sheet-amount" :class="`amount-${detailTx.type}`">
               <span class="sheet-amount-sign">{{ detailTx.type === 'income' ? '+' : '-' }}</span>
               <span class="sheet-amount-value">{{ formatPure(detailTx.amount) }}</span>
             </div>
-
-            <!-- Details -->
             <div class="sheet-details">
               <div class="detail-row">
                 <span class="detail-label">账户</span>
@@ -100,21 +118,19 @@
               </div>
               <div class="detail-row">
                 <span class="detail-label">日期</span>
-                <span class="detail-value">{{ detailTx.date }} {{ detailTx.time.slice(0, 5) }}</span>
+                <span class="detail-value">{{ detailTx.date }} {{ detailTx.time?.slice(0, 5) || '' }}</span>
               </div>
               <div v-if="detailTx.note" class="detail-row">
                 <span class="detail-label">备注</span>
                 <span class="detail-value">{{ detailTx.note }}</span>
               </div>
-              <div v-if="detailTx.tags.length > 0" class="detail-row">
+              <div v-if="detailTx.tags && detailTx.tags.length > 0" class="detail-row">
                 <span class="detail-label">标签</span>
                 <span class="detail-value">
                   <span v-for="tag in detailTx.tags" :key="tag" class="detail-tag">{{ tag }}</span>
                 </span>
               </div>
             </div>
-
-            <!-- Actions -->
             <div class="sheet-actions">
               <button class="btn btn-secondary" disabled>编辑</button>
               <button class="btn btn-danger" @click="handleDelete">删除</button>
@@ -143,7 +159,6 @@ const transactionStore = useTransactionStore()
 const categoryStore = useCategoryStore()
 const accountStore = useAccountStore()
 
-// ---- Live transactions ----
 const transactions = ref<Transaction[]>([])
 
 watchEffect((onCleanup) => {
@@ -158,7 +173,6 @@ watchEffect((onCleanup) => {
   onCleanup(() => sub.unsubscribe())
 })
 
-// ---- Lookup maps ----
 const accountMap = computed(() => {
   const map = new Map<number, Account>()
   for (const a of accountStore.accounts) {
@@ -175,7 +189,6 @@ const categoryMap = computed(() => {
   return map
 })
 
-/** Parent categories from store */
 const parentCategories = computed(() => {
   return categoryStore.getParents().map((c) => ({
     id: c.id as number,
@@ -184,7 +197,6 @@ const parentCategories = computed(() => {
   }))
 })
 
-/** Map parentId -> Set of childIds */
 const childIdsByParent = computed(() => {
   const map = new Map<number, Set<number>>()
   for (const c of categoryStore.categories) {
@@ -196,24 +208,59 @@ const childIdsByParent = computed(() => {
   return map
 })
 
-// ---- Filter state ----
 const selectedCategoryId = ref<number | null>(null)
 const searchQuery = ref('')
 const searchOpen = ref(false)
+const showDatePicker = ref(false)
 const searchInputRef = ref<HTMLInputElement | null>(null)
 
-// Watch search open to auto-focus
+// Date filter state
+const now = new Date()
+const filterYear = ref(now.getFullYear())
+const filterMonth = ref(now.getMonth() + 1)
+const dateFilterActive = ref(false)
+
+function prevMonth() {
+  dateFilterActive.value = true
+  if (filterMonth.value === 1) {
+    filterMonth.value = 12
+    filterYear.value--
+  } else {
+    filterMonth.value--
+  }
+}
+
+function nextMonth() {
+  dateFilterActive.value = true
+  if (filterMonth.value === 12) {
+    filterMonth.value = 1
+    filterYear.value++
+  } else {
+    filterMonth.value++
+  }
+}
+
+function clearDateFilter() {
+  dateFilterActive.value = false
+  filterYear.value = now.getFullYear()
+  filterMonth.value = now.getMonth() + 1
+}
+
 watchEffect(() => {
   if (searchOpen.value) {
     nextTick(() => searchInputRef.value?.focus())
   }
 })
 
-// ---- Filtered transactions ----
 const filteredTransactions = computed(() => {
   let list = transactions.value
 
-  // Category filter
+  // Date filter
+  if (dateFilterActive.value) {
+    const prefix = `${filterYear.value}-${String(filterMonth.value).padStart(2, '0')}`
+    list = list.filter((tx) => tx.date.startsWith(prefix))
+  }
+
   if (selectedCategoryId.value != null) {
     const sel = selectedCategoryId.value
     const childIds = childIdsByParent.value.get(sel) ?? new Set<number>()
@@ -223,7 +270,6 @@ const filteredTransactions = computed(() => {
     })
   }
 
-  // Search filter
   const q = searchQuery.value.trim().toLowerCase()
   if (q) {
     list = list.filter((tx) => {
@@ -235,7 +281,6 @@ const filteredTransactions = computed(() => {
   return list
 })
 
-// ---- Date grouping helpers ----
 function getWeekStart(d: Date): Date {
   const day = d.getDay()
   const diff = d.getDate() - day + (day === 0 ? -6 : 1)
@@ -245,7 +290,8 @@ function getWeekStart(d: Date): Date {
   return monday
 }
 
-// ---- Grouped transactions ----
+const weekDayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+
 interface DayGroup {
   dateStr: string
   dateLabel: string
@@ -263,7 +309,6 @@ const groupedTransactions = computed(() => {
   const weekStart = getWeekStart(now)
   const weekStartStr = toDateString(weekStart)
 
-  // Group by date string
   const groups = new Map<string, Transaction[]>()
   for (const tx of filteredTransactions.value) {
     const key = tx.date
@@ -271,10 +316,9 @@ const groupedTransactions = computed(() => {
     groups.get(key)!.push(tx)
   }
 
-  // Sort by date descending
   const sortedDates = [...groups.keys()].sort().reverse()
-
   const result: DayGroup[] = []
+
   for (const dateStr of sortedDates) {
     const txs = groups.get(dateStr)!
     let dayIncome = 0
@@ -284,16 +328,18 @@ const groupedTransactions = computed(() => {
       else if (tx.type === 'expense') dayExpense += tx.amount
     }
 
-    // Determine label
+    const d = new Date(dateStr)
+    const weekday = weekDayNames[d.getDay()]
+
     let dateLabel: string
     if (dateStr === todayStr) {
       dateLabel = '今天'
     } else if (dateStr === yesterdayStr) {
       dateLabel = '昨天'
     } else if (dateStr >= weekStartStr) {
-      dateLabel = formatDate(dateStr)
+      dateLabel = `${parseInt(dateStr.split('-')[2])}日 ${weekday}`
     } else {
-      dateLabel = formatDate(dateStr)
+      dateLabel = `${parseInt(dateStr.split('-')[1])}月${parseInt(dateStr.split('-')[2])}日 ${weekday}`
     }
 
     result.push({
@@ -308,23 +354,21 @@ const groupedTransactions = computed(() => {
   return result
 })
 
-// ---- Computed for display (need to consider empty after filtering) ----
 const displayTransactions = computed(() => filteredTransactions.value)
 
-// ---- Helper functions ----
 function getAccountLabel(tx: Transaction): string {
   if (tx.type === 'transfer') {
     const fromName = tx.fromAccountId != null
-      ? (accountMap.value.get(tx.fromAccountId)?.name ?? '未知账户')
-      : '未知账户'
+      ? (accountMap.value.get(tx.fromAccountId)?.name ?? '未知')
+      : '未知'
     const toName = tx.toAccountId != null
-      ? (accountMap.value.get(tx.toAccountId)?.name ?? '未知账户')
-      : '未知账户'
+      ? (accountMap.value.get(tx.toAccountId)?.name ?? '未知')
+      : '未知'
     return `${fromName} → ${toName}`
   }
   const accountId = tx.type === 'income' ? tx.toAccountId : tx.fromAccountId
-  if (accountId == null) return '未知账户'
-  return accountMap.value.get(accountId)?.name ?? '未知账户'
+  if (accountId == null) return '未知'
+  return accountMap.value.get(accountId)?.name ?? '未知'
 }
 
 function getCategoryName(categoryId: number | null | undefined): string {
@@ -339,12 +383,9 @@ function getCategoryIcon(categoryId: number | null | undefined): string {
 
 function typeLabel(type: Transaction['type']): string {
   switch (type) {
-    case 'expense':
-      return '支出'
-    case 'income':
-      return '收入'
-    case 'transfer':
-      return '转账'
+    case 'expense': return '支出'
+    case 'income': return '收入'
+    case 'transfer': return '转账'
   }
 }
 
@@ -352,7 +393,6 @@ function formatPure(amount: number): string {
   return formatCurrency(amount).replace('¥', '')
 }
 
-// ---- Bottom sheet ----
 const detailTx = ref<Transaction | null>(null)
 
 function openDetail(tx: Transaction) {
@@ -371,8 +411,44 @@ async function handleDelete() {
 <style scoped>
 .transactions-page {
   padding: 0;
-  background: var(--color-bg);
+  background: #f2f2f6;
   min-height: 100%;
+  padding-bottom: 64px;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 0;
+}
+
+.page-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1c1c1e;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.header-icon-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 8px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.header-icon-btn:active {
+  background: rgba(0,0,0,0.05);
 }
 
 /* Search bar */
@@ -380,28 +456,63 @@ async function handleDelete() {
   padding: 8px 16px 0;
 }
 
-.search-inner {
-  display: flex;
-  align-items: center;
-  height: 36px;
-  background: rgba(118, 118, 128, 0.12);
-  border-radius: 10px;
-  padding: 0 8px;
-  transition: all 0.2s;
+/* Date filter bar */
+.date-filter-bar {
+  padding: 8px 16px 0;
 }
 
-.search-btn {
-  flex-shrink: 0;
+.date-filter-inner {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 12px;
+  height: 40px;
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  padding: 0 12px;
+}
+
+.date-nav-btn {
   width: 28px;
   height: 28px;
   border: none;
-  background: none;
-  color: var(--color-secondary-text);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+  border-radius: 6px;
+}
+
+.date-filter-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1c1c1e;
+  min-width: 80px;
+  text-align: center;
+}
+
+.date-clear-btn {
+  border: none;
+  background: #007aff;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.search-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  padding: 0 12px;
 }
 
 .search-input {
@@ -411,7 +522,7 @@ async function handleDelete() {
   font-size: 15px;
   color: var(--color-text);
   outline: none;
-  margin-left: 4px;
+  font-family: inherit;
 }
 
 .search-input::placeholder {
@@ -426,34 +537,30 @@ async function handleDelete() {
 /* Day groups */
 .day-group {
   margin: 8px 12px;
-  background: var(--color-card);
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: var(--radius-md);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
 }
 
 .day-header {
-  position: sticky;
-  top: 0;
-  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px 6px;
-  background: var(--color-card);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  padding: 12px 16px 6px;
 }
 
 .day-label {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  color: var(--color-text);
+  color: #8e8e93;
 }
 
 .day-total {
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .total-income {
@@ -462,11 +569,6 @@ async function handleDelete() {
 
 .total-expense {
   color: #ff3b30;
-}
-
-.total-sep {
-  display: inline-block;
-  width: 6px;
 }
 
 /* Bottom sheet overlay */
@@ -484,7 +586,9 @@ async function handleDelete() {
 .sheet {
   width: 100%;
   max-width: 480px;
-  background: #fff;
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: 16px 16px 0 0;
   animation: slideUp 0.3s ease;
   max-height: 85vh;
@@ -540,17 +644,9 @@ async function handleDelete() {
   color: #fff;
 }
 
-.badge-expense {
-  background: #ff3b30;
-}
-
-.badge-income {
-  background: #34c759;
-}
-
-.badge-transfer {
-  background: #007aff;
-}
+.badge-expense { background: #ff3b30; }
+.badge-income { background: #34c759; }
+.badge-transfer { background: #007aff; }
 
 .sheet-amount {
   text-align: center;
@@ -560,19 +656,10 @@ async function handleDelete() {
   margin-bottom: 24px;
 }
 
-.sheet-amount.amount-expense {
-  color: #ff3b30;
-}
+.sheet-amount.amount-expense { color: #ff3b30; }
+.sheet-amount.amount-income { color: #34c759; }
+.sheet-amount.amount-transfer { color: #007aff; }
 
-.sheet-amount.amount-income {
-  color: #34c759;
-}
-
-.sheet-amount.amount-transfer {
-  color: #007aff;
-}
-
-/* Detail rows */
 .sheet-details {
   border-top: 1px solid var(--color-separator);
   padding-top: 16px;
@@ -609,7 +696,6 @@ async function handleDelete() {
   margin-bottom: 2px;
 }
 
-/* Actions */
 .sheet-actions {
   display: flex;
   gap: 12px;
@@ -623,30 +709,14 @@ async function handleDelete() {
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
   transition: opacity 0.15s;
 }
 
-.btn:active {
-  opacity: 0.7;
-}
+.btn:active { opacity: 0.7; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-secondary { background: #f2f2f6; color: var(--color-text); }
+.btn-danger { background: #ff3b30; color: #fff; }
 
-.btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.btn-secondary {
-  background: #f2f2f6;
-  color: var(--color-text);
-}
-
-.btn-danger {
-  background: #ff3b30;
-  color: #fff;
-}
-
-/* Animations */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

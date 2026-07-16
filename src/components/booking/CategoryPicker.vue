@@ -1,5 +1,8 @@
 <template>
   <div class="category-picker">
+    <!-- "选择分类" label -->
+    <div class="picker-label">选择分类</div>
+
     <!-- Level 1: Parent grid -->
     <div class="parent-grid">
       <button
@@ -16,7 +19,6 @@
 
     <!-- Level 2: Children chips -->
     <div v-if="children.length > 0" class="children-bar">
-      <span class="children-label">子分类</span>
       <div class="children-scroll">
         <button
           v-for="child in children"
@@ -63,8 +65,6 @@ const children = computed<Category[]>(() => {
 function selectParent(parent: Category) {
   selectedParentId.value = parent.id ?? null
   selectedChildId.value = null
-
-  // Auto-select if parent has exactly 1 child
   const childList = categoryStore.getChildren(parent.id!)
   if (childList.length === 1) {
     selectChild(childList[0])
@@ -76,7 +76,6 @@ function selectChild(child: Category) {
   emit('select', child.id!)
 }
 
-// Reset when type changes
 watch(
   () => props.type,
   () => {
@@ -89,23 +88,34 @@ watch(
 <style scoped>
 .category-picker {
   width: 100%;
+  margin-bottom: 12px;
+}
+
+.picker-label {
+  font-size: 13px;
+  color: #8e8e93;
+  margin-bottom: 8px;
+  padding: 0 4px;
 }
 
 .parent-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
+  margin-bottom: 12px;
 }
 
 .parent-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 10px 4px;
-  border: 2px solid transparent;
-  border-radius: 12px;
-  background: transparent;
+  gap: 2px;
+  padding: 6px 0;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   cursor: pointer;
   transition: all 0.15s ease;
   -webkit-tap-highlight-color: transparent;
@@ -113,34 +123,32 @@ watch(
 }
 
 .parent-item.selected {
-  border-color: #007aff;
-  background: rgba(0, 122, 255, 0.08);
+  background: #007aff;
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25);
+}
+
+.parent-item.selected .parent-icon,
+.parent-item.selected .parent-name {
+  color: #fff;
 }
 
 .parent-icon {
-  font-size: 24px;
+  font-size: 22px;
   line-height: 1;
+  margin-bottom: 2px;
 }
 
 .parent-name {
-  font-size: 12px;
+  font-size: 11px;
   color: #1c1c1e;
   font-weight: 500;
   line-height: 1.2;
 }
 
 .children-bar {
-  margin-top: 12px;
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.children-label {
-  font-size: 12px;
-  color: #8e8e93;
-  white-space: nowrap;
-  flex-shrink: 0;
 }
 
 .children-scroll {
@@ -160,9 +168,9 @@ watch(
 .child-chip {
   display: inline-flex;
   padding: 6px 14px;
-  border: 1px solid rgba(60, 60, 67, 0.12);
+  border: none;
   border-radius: 16px;
-  background: #fff;
+  background: #f2f2f7;
   color: #1c1c1e;
   font-size: 13px;
   font-weight: 500;
@@ -176,6 +184,5 @@ watch(
 .child-chip.active {
   background: #007aff;
   color: #fff;
-  border-color: #007aff;
 }
 </style>

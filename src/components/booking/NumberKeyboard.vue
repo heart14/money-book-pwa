@@ -24,7 +24,7 @@
           :class="{ disabled: value === '0' }"
           @click="handleConfirm"
         >
-          确定
+          ↵
         </button>
       </div>
     </div>
@@ -88,9 +88,8 @@ function handleConfirm() {
   right: 0;
   bottom: 0;
   z-index: 901;
-  background: #f2f2f6;
+  background: #e5e5ea;
   padding-bottom: env(safe-area-inset-bottom);
-  border-top: 1px solid rgba(60, 60, 67, 0.08);
   user-select: none;
   animation: slideUp 0.25s ease-out;
 }
@@ -147,11 +146,10 @@ function handleConfirm() {
 .confirm-key {
   grid-column: 4;
   grid-row: 1 / -1;
-  background: var(--color-primary, #007aff);
+  background: #007aff;
   color: #fff;
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: 1px;
+  font-size: 24px;
+  font-weight: 500;
   border-radius: 10px;
 }
 

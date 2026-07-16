@@ -68,7 +68,7 @@ function navigate(name: string) {
   width: 160px;
   min-width: 160px;
   height: 100vh;
-  background: #fff;
+  background: #ffffff;
   border-right: 1px solid rgba(60, 60, 67, 0.08);
   box-shadow: 1px 0 4px rgba(0, 0, 0, 0.04);
   display: flex;
@@ -83,7 +83,7 @@ function navigate(name: string) {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 16px 8px;
+  padding: 20px 8px;
   flex: 1;
 }
 
@@ -93,14 +93,15 @@ function navigate(name: string) {
   gap: 8px;
   padding: 10px 12px;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   background: none;
   cursor: pointer;
   font-size: 14px;
-  color: #1c1c1e;
+  color: #8e8e93;
   text-align: left;
   transition: background 0.15s, color 0.15s;
   -webkit-tap-highlight-color: transparent;
+  font-family: inherit;
 }
 
 .nav-item:hover {
@@ -119,6 +120,7 @@ function navigate(name: string) {
 }
 
 .nav-text {
+  font-size: 14px;
   line-height: 1;
 }
 </style>

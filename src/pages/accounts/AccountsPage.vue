@@ -1,5 +1,18 @@
 <template>
-  <div class="page accounts-page">
+  <div class="accounts-page">
+    <!-- Page Header -->
+    <div class="page-header">
+      <span class="page-title">账户</span>
+      <div class="header-actions">
+        <button class="header-icon-btn" @click="showAddModal = true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2.5" stroke-linecap="round">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
     <!-- Net Worth Card -->
     <NetWorthCard
       :net-worth="accountStore.netWorth"
@@ -31,14 +44,6 @@
       :default-open="true"
     />
 
-    <!-- FAB -->
-    <button class="fab" @click="showAddModal = true">
-      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round">
-        <line x1="12" y1="5" x2="12" y2="19" />
-        <line x1="5" y1="12" x2="19" y2="12" />
-      </svg>
-    </button>
-
     <!-- Add Account Modal -->
     <Teleport to="body">
       <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
@@ -52,7 +57,7 @@
             </div>
             <div class="form-group">
               <label class="form-label">分组</label>
-              <select v-model="form.groupId" class="form-select">
+              <select v-model="form.groupId" class="form-input">
                 <option value="liquid">流动性资产</option>
                 <option value="restricted">限制性资产</option>
                 <option value="claim">债权</option>
@@ -61,7 +66,7 @@
             </div>
             <div class="form-group">
               <label class="form-label">图标</label>
-              <input v-model="form.icon" class="form-input" placeholder="🏦" maxlength="4" />
+              <input v-model="form.icon" class="form-input" placeholder="💳" maxlength="4" />
             </div>
             <div class="form-group">
               <label class="form-label">排序</label>
@@ -91,7 +96,7 @@ const showAddModal = ref(false)
 const form = reactive({
   name: '',
   groupId: 'liquid' as 'liquid' | 'restricted' | 'claim' | 'debt',
-  icon: '🏦',
+  icon: '💳',
   sort: 0,
 })
 
@@ -100,13 +105,13 @@ async function handleAdd() {
   await accountStore.addAccount({
     name: form.name.trim(),
     groupId: form.groupId,
-    icon: form.icon || '🏦',
+    icon: form.icon || '💳',
     balance: 0,
     sort: form.sort,
   })
   form.name = ''
   form.groupId = 'liquid'
-  form.icon = '🏦'
+  form.icon = '💳'
   form.sort = 0
   showAddModal.value = false
 }
@@ -114,31 +119,47 @@ async function handleAdd() {
 
 <style scoped>
 .accounts-page {
+  padding: 16px;
   background: var(--color-bg);
+  min-height: 100%;
+  padding-bottom: 80px;
 }
 
-/* FAB */
-.fab {
-  position: fixed;
-  right: 20px;
-  bottom: 90px;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: #007aff;
+.page-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.page-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1c1c1e;
+  flex: 1;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.header-icon-btn {
+  width: 36px;
+  height: 36px;
   border: none;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.4);
-  transition: opacity 0.15s;
+  border-radius: 8px;
   -webkit-tap-highlight-color: transparent;
-  z-index: 100;
+  transition: background 0.15s;
 }
 
-.fab:active {
-  opacity: 0.7;
+.header-icon-btn:active {
+  background: rgba(0, 122, 255, 0.1);
 }
 
 /* Modal overlay */

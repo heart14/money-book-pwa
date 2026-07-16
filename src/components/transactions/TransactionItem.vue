@@ -1,19 +1,19 @@
 <template>
   <div class="transaction-item" @click="$emit('click')">
-    <div class="item-left">
-      <span class="item-icon">{{ categoryIcon || '🔄' }}</span>
-      <span class="item-category">{{ categoryName || '转账' }}</span>
-    </div>
-    <div class="item-center">
-      <div class="item-account">{{ accountName }}</div>
-      <div class="item-meta">
-        <span class="item-time">{{ displayTime }}</span>
-        <span v-for="tag in transaction.tags" :key="tag" class="item-tag">{{ tag }}</span>
+    <div class="item-col">
+      <div class="item-icon">
+        {{ categoryIcon || '🔄' }}
+      </div>
+      <div class="item-info">
+        <div class="item-category">{{ categoryName || '转账' }}</div>
+        <div class="item-sub">{{ accountName }} · {{ displayTime }}</div>
       </div>
     </div>
-    <div class="item-right" :class="amountClass">
-      <span class="amount-sign">{{ amountSign }}</span>
-      <span class="amount-value">{{ displayAmount }}</span>
+    <div class="item-amount" :class="amountClass">
+      {{ amountSign }}¥{{ displayAmount }}
+      <div v-if="transaction.tags?.length" class="item-tags">
+        <span v-for="tag in transaction.tags" :key="tag">#{{ tag }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -38,23 +38,17 @@ const displayTime = computed(() => props.transaction.time.slice(0, 5))
 
 const amountClass = computed(() => {
   switch (props.transaction.type) {
-    case 'expense':
-      return 'amount-expense'
-    case 'income':
-      return 'amount-income'
-    case 'transfer':
-      return 'amount-transfer'
+    case 'expense': return 'amount-expense'
+    case 'income': return 'amount-income'
+    case 'transfer': return 'amount-transfer'
   }
 })
 
 const amountSign = computed(() => {
   switch (props.transaction.type) {
-    case 'expense':
-      return '-'
-    case 'income':
-      return '+'
-    case 'transfer':
-      return '-'
+    case 'expense': return '-'
+    case 'income': return '+'
+    case 'transfer': return ''
   }
 })
 
@@ -68,98 +62,85 @@ const displayAmount = computed(() => {
 .transaction-item {
   display: flex;
   align-items: center;
-  height: 64px;
-  padding: 0 16px;
-  background: #fff;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  margin-bottom: 6px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  border-bottom: 1px solid var(--color-separator);
+  transition: opacity 0.15s;
 }
 
 .transaction-item:active {
-  opacity: 0.7;
+  opacity: 0.75;
 }
 
-.item-left {
+.item-col {
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-width: 60px;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
 }
 
 .item-icon {
-  font-size: 24px;
-  line-height: 1;
   width: 36px;
   height: 36px;
+  background: #f2f2f7;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  background: #f2f2f6;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.item-info {
+  min-width: 0;
 }
 
 .item-category {
   font-size: 15px;
-  font-weight: 500;
-  color: var(--color-text);
-  white-space: nowrap;
+  font-weight: 600;
+  color: #1c1c1e;
+  line-height: 1.3;
 }
 
-.item-center {
-  flex: 1;
-  min-width: 0;
-  padding: 0 12px;
-}
-
-.item-account {
+.item-sub {
   font-size: 12px;
-  color: var(--color-secondary-text);
-  line-height: 1.2;
-}
-
-.item-meta {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 4px;
-  flex-wrap: nowrap;
+  color: #8e8e93;
+  margin-top: 1px;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.item-time {
-  font-size: 12px;
-  color: var(--color-secondary-text);
-  white-space: nowrap;
-}
-
-.item-tag {
-  font-size: 10px;
-  color: var(--color-secondary-text);
-  background: #f2f2f6;
-  padding: 1px 6px;
-  border-radius: 4px;
-  white-space: nowrap;
-}
-
-.item-right {
-  display: flex;
-  align-items: baseline;
-  white-space: nowrap;
+.item-amount {
+  text-align: right;
+  flex-shrink: 0;
+  margin-left: 12px;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
+  line-height: 1.3;
 }
 
-.amount-expense {
-  color: #ff3b30;
+.amount-expense { color: #ff3b30; }
+.amount-income { color: #34c759; }
+.amount-transfer { color: #007aff; }
+
+.item-tags {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 1px;
 }
 
-.amount-income {
-  color: #34c759;
-}
-
-.amount-transfer {
-  color: #007aff;
+.item-tags span {
+  font-size: 10px;
+  color: #8e8e93;
+  white-space: nowrap;
 }
 </style>

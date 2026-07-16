@@ -17,6 +17,7 @@
             <!-- Account Selector (overlay dropdown) -->
             <div class="account-selector-wrap">
               <button class="account-btn" @click="showAccountPicker = !showAccountPicker">
+                <span class="account-btn-label">从</span>
                 <span class="account-btn-text">
                   {{ selectedAccount ? `${selectedAccount.icon} ${selectedAccount.name}` : '选择账户' }}
                 </span>
@@ -376,65 +377,65 @@ function resetState() {
 .mode-switch-wrapper {
   display: flex;
   justify-content: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 /* ── Amount Display ── */
 .amount-display {
   text-align: center;
-  font-size: 48px;
-  font-weight: 600;
-  color: var(--color-text);
+  font-size: 40px;
+  font-weight: 700;
+  color: #1c1c1e;
+  letter-spacing: -1px;
   line-height: 1.2;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   font-variant-numeric: tabular-nums;
   cursor: text;
 }
 
-/* ── Account Selector (overlay fix) ── */
+/* ── Account Selector (row style matching preview) ── */
 .account-selector-wrap {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   z-index: 10;
 }
 
 .account-selector-wrap.inline {
   margin-bottom: 0;
+  min-width: 150px;
+}
+
+.account-selector-wrap.inline .account-dropdown {
+  min-width: 180px;
+  white-space: nowrap;
 }
 
 .account-btn {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  width: 100%;
-  max-width: 240px;
-  padding: 12px 16px;
-  background: var(--color-card);
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: 10px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   font-family: inherit;
-  font-size: 15px;
-  color: var(--color-text);
+  font-size: 13px;
+  color: #1c1c1e;
   transition: background 0.15s;
-  white-space: nowrap;
+  width: 100%;
 }
 
 .account-btn:active {
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .account-btn.small {
-  max-width: 160px;
-  padding: 8px 12px;
-  font-size: 13px;
+  padding: 6px 10px;
+  font-size: 12px;
 }
 
 .account-btn-text {
@@ -442,25 +443,31 @@ function resetState() {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: #007aff;
+  font-weight: 600;
+}
+
+.account-btn-label {
+  color: #1c1c1e;
+  font-weight: 400;
 }
 
 .chevron {
   flex-shrink: 0;
-  color: var(--color-secondary-text);
+  color: #8e8e93;
 }
 
 .account-dropdown {
   position: absolute;
   top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 240px;
+  left: 0;
+  right: 0;
   margin-top: 4px;
-  background: var(--color-card);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-lg);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   overflow: hidden;
   z-index: 50;
 }
@@ -473,7 +480,7 @@ function resetState() {
   background: transparent;
   font-family: inherit;
   font-size: 14px;
-  color: var(--color-text);
+  color: #1c1c1e;
   text-align: left;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -485,7 +492,7 @@ function resetState() {
 }
 
 .account-option.selected {
-  color: var(--color-primary);
+  color: #007aff;
   font-weight: 600;
 }
 
@@ -523,6 +530,7 @@ function resetState() {
 /* ── Tags Input ── */
 .tags-section {
   margin-bottom: 12px;
+  margin-top: 16px;
 }
 
 .tags-chips {
@@ -531,8 +539,8 @@ function resetState() {
   align-items: center;
   gap: 8px;
   padding: 10px 14px;
-  border-radius: var(--radius-sm);
-  background: var(--color-card);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -596,13 +604,13 @@ function resetState() {
   width: 100%;
   padding: 10px 14px;
   border: none;
-  border-radius: var(--radius-sm);
-  background: var(--color-card);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   font-family: inherit;
   font-size: 14px;
-  color: var(--color-text);
+  color: #1c1c1e;
   outline: none;
 }
 

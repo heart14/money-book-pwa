@@ -87,10 +87,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { exportData, importData, destroyAllData } from '@/utils/export'
 
-defineEmits<{
+const props = withDefaults(defineProps<{
+  initialAction?: 'export' | 'import' | 'destroy'
+}>(), {
+  initialAction: 'export',
+})
+
+const emit = defineEmits<{
   (e: 'back'): void
 }>()
 
@@ -102,6 +108,18 @@ const showDestroyConfirm2 = ref(false)
 const pendingImportFile = ref<File | null>(null)
 const successMsg = ref('')
 const errorMsg = ref('')
+
+// Auto-trigger action based on initialAction prop
+onMounted(() => {
+  if (props.initialAction === 'export') {
+    // auto-trigger export after mount
+    setTimeout(() => handleExport(), 300)
+  } else if (props.initialAction === 'import') {
+    setTimeout(() => triggerImport(), 300)
+  } else if (props.initialAction === 'destroy') {
+    setTimeout(() => { showDestroyConfirm1.value = true }, 300)
+  }
+})
 
 // ── Export ──
 async function handleExport() {
