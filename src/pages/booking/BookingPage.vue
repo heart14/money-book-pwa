@@ -141,7 +141,7 @@
       :value="inputValue"
       :visible="keyboardVisible"
       @update:value="inputValue = $event"
-      @close="onKeyboardClose"
+      @close="keyboardVisible = false"
     />
   </div>
 </template>
@@ -310,6 +310,8 @@ async function handleConfirm() {
 
   let tx: Omit<Transaction, 'id'>
 
+  const plainTags = [...tags.value]
+
   if (bookingMode.value === 'transfer') {
     if (!selectedAccount.value || !selectedToAccount.value) return
     if (selectedAccount.value.id === selectedToAccount.value.id) return
@@ -319,7 +321,7 @@ async function handleConfirm() {
       fromAccountId: selectedAccount.value.id!,
       toAccountId: selectedToAccount.value.id!,
       categoryId: null,
-      tags: tags.value,
+      tags: plainTags,
       note: note.value,
       date: dateStr,
       time: timeStr,
@@ -332,7 +334,7 @@ async function handleConfirm() {
       fromAccountId: selectedAccount.value.id!,
       toAccountId: null,
       categoryId: selectedCategoryId.value,
-      tags: tags.value,
+      tags: plainTags,
       note: note.value,
       date: dateStr,
       time: timeStr,
@@ -346,7 +348,7 @@ async function handleConfirm() {
       fromAccountId: null,
       toAccountId: selectedAccount.value.id!,
       categoryId: selectedCategoryId.value,
-      tags: tags.value,
+      tags: plainTags,
       note: note.value,
       date: dateStr,
       time: timeStr,
@@ -381,20 +383,19 @@ function resetState() {
 // ── Bridge to TabBar checkmark save ──
 watch(canSave, (v) => { uiStore.bookingCanSave = v }, { immediate: true })
 
+// Show save hint when keyboard closes (by any means: ↵, mask tap, category select)
+watch(keyboardVisible, (visible) => {
+  if (!visible && canSave.value) {
+    uiStore.showBookingHint()
+  }
+})
+
 watch(
   () => uiStore.bookingSaveTrigger,
   () => {
     if (uiStore.bookingSaveTrigger > 0) handleConfirm()
   },
 )
-
-function onKeyboardClose() {
-  keyboardVisible.value = false
-  // After closing keyboard on booking page, show save hint on the checkmark
-  if (canSave.value) {
-    uiStore.showBookingHint()
-  }
-}
 </script>
 
 <style scoped>
