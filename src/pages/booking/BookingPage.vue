@@ -141,8 +141,7 @@
       :value="inputValue"
       :visible="keyboardVisible"
       @update:value="inputValue = $event"
-      @confirm="handleConfirm"
-      @close="keyboardVisible = false"
+      @close="onKeyboardClose"
     />
   </div>
 </template>
@@ -203,6 +202,17 @@ const displayAmount = computed(() => {
 
 const accounts = computed(() => accountStore.accounts)
 const liquidAccounts = computed(() => accountStore.getAccountsByGroup('liquid'))
+
+const canSave = computed(() => {
+  if (inputValue.value === '0') return false
+  const amount = parseFloat(inputValue.value)
+  if (isNaN(amount) || amount <= 0) return false
+
+  if (bookingMode.value === 'transfer') {
+    return selectedAccount.value != null && selectedToAccount.value != null
+  }
+  return selectedAccount.value != null && selectedCategoryId.value != null
+})
 
 // ── Init default account ──
 function initDefaultAccount() {
@@ -349,6 +359,7 @@ async function handleConfirm() {
     if (selectedCategoryId.value) {
       uiStore.setLastCategory(selectedCategoryId.value)
     }
+    uiStore.hideBookingHint()
     resetState()
   } catch (e) {
     console.error('记账失败', e)
@@ -365,6 +376,24 @@ function resetState() {
   selectedToAccount.value = null
   showAccountPicker.value = false
   showToAccountPicker.value = false
+}
+
+// ── Bridge to TabBar checkmark save ──
+watch(canSave, (v) => { uiStore.bookingCanSave = v }, { immediate: true })
+
+watch(
+  () => uiStore.bookingSaveTrigger,
+  () => {
+    if (uiStore.bookingSaveTrigger > 0) handleConfirm()
+  },
+)
+
+function onKeyboardClose() {
+  keyboardVisible.value = false
+  // After closing keyboard on booking page, show save hint on the checkmark
+  if (canSave.value) {
+    uiStore.showBookingHint()
+  }
 }
 </script>
 

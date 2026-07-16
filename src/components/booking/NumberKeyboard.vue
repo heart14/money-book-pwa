@@ -21,8 +21,7 @@
         </button>
         <button
           class="key confirm-key"
-          :class="{ disabled: value === '0' }"
-          @click="handleConfirm"
+          @click="handleComplete"
         >
           ↵
         </button>
@@ -39,7 +38,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:value': [value: string]
-  confirm: []
   close: []
 }>()
 
@@ -69,9 +67,8 @@ function handleBackspace() {
   emit('update:value', v.slice(0, -1))
 }
 
-function handleConfirm() {
-  if (props.value === '0') return
-  emit('confirm')
+function handleComplete() {
+  emit('close')
 }
 </script>
 
