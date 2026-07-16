@@ -144,11 +144,11 @@
 
 <script setup lang="ts">
 import { ref, computed, watchEffect, nextTick } from 'vue'
-import { liveQuery } from 'dexie'
 import { db } from '@/db'
 import { useTransactionStore } from '@/stores/transactionStore'
 import { useCategoryStore } from '@/stores/categoryStore'
 import { useAccountStore } from '@/stores/accountStore'
+import { useLiveQuery } from '@/composables/useLiveQuery'
 import { formatCurrency, formatDate, toDateString } from '@/utils/format'
 import type { Transaction, Category, Account } from '@/types'
 import TransactionItem from '@/components/transactions/TransactionItem.vue'
@@ -159,19 +159,10 @@ const transactionStore = useTransactionStore()
 const categoryStore = useCategoryStore()
 const accountStore = useAccountStore()
 
-const transactions = ref<Transaction[]>([])
-
-watchEffect((onCleanup) => {
-  const observable = liveQuery(() =>
-    db.transactions.orderBy('id').reverse().toArray(),
-  )
-  const sub = observable.subscribe({
-    next: (result) => {
-      transactions.value = result
-    },
-  })
-  onCleanup(() => sub.unsubscribe())
-})
+const transactions = useLiveQuery<Transaction[]>(() =>
+  db.transactions.orderBy('id').reverse().toArray(),
+  [],
+)
 
 const accountMap = computed(() => {
   const map = new Map<number, Account>()

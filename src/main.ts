@@ -5,6 +5,7 @@ import 'uno.css'
 import './styles/main.css'
 import router from './router'
 import { seedData } from '@/db/seed'
+import '@/utils/echarts-setup'
 
 const app = createApp(App)
 

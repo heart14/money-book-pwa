@@ -73,12 +73,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watchEffect, reactive } from 'vue'
+import { ref, computed, reactive, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { liveQuery } from 'dexie'
 import { db } from '@/db'
 import { useAccountStore } from '@/stores/accountStore'
 import { useCategoryStore } from '@/stores/categoryStore'
+import { useLiveQuery } from '@/composables/useLiveQuery'
 import { formatCurrency, formatDate, toDateString } from '@/utils/format'
 import type { Transaction, Category, Account } from '@/types'
 import TransactionItem from '@/components/transactions/TransactionItem.vue'
@@ -95,26 +95,16 @@ const account = computed(() => {
 })
 
 // ---- Live transactions for this account ----
-const transactions = ref<Transaction[]>([])
-
-watchEffect((onCleanup) => {
-  const id = accountId.value
-  const observable = liveQuery(() =>
-    db.transactions
-      .where('fromAccountId')
-      .equals(id)
-      .or('toAccountId')
-      .equals(id)
-      .reverse()
-      .toArray(),
-  )
-  const sub = observable.subscribe({
-    next: (result) => {
-      transactions.value = result
-    },
-  })
-  onCleanup(() => sub.unsubscribe())
-})
+const transactions = useLiveQuery<Transaction[]>(() =>
+  db.transactions
+    .where('fromAccountId')
+    .equals(accountId.value)
+    .or('toAccountId')
+    .equals(accountId.value)
+    .reverse()
+    .toArray(),
+  [],
+)
 
 // ---- Lookup maps ----
 const accountMap = computed(() => {

@@ -70,42 +70,13 @@
     <!-- Monthly Trend Bar Chart -->
     <div class="chart-card">
       <div class="chart-title">月度趋势</div>
-      <div class="bar-chart">
-        <div v-for="(bar, idx) in barChartData" :key="idx" class="bar-column">
-          <div class="bar-stack">
-            <div
-              class="bar-expense"
-              :style="{ height: bar.expenseHeight + '%', opacity: 0.3 }"
-            ></div>
-            <div
-              class="bar-income"
-              :style="{ height: bar.incomeHeight + '%' }"
-            ></div>
-          </div>
-          <span class="bar-label" :class="{ active: bar.active }">{{ bar.label }}</span>
-        </div>
-      </div>
-      <div class="bar-legend">
-        <span class="legend-item"><span class="legend-dot income"></span>收入</span>
-        <span class="legend-item"><span class="legend-dot expense"></span>支出</span>
-      </div>
+      <v-chart class="echart-bar" :option="barOption" autoresize />
     </div>
 
     <!-- Expense Composition (Pie) -->
     <div class="chart-card">
       <div class="chart-title">支出构成</div>
-      <div class="pie-section">
-        <div class="pie-visual" v-if="pieSegments.length > 0">
-          <div class="pie" :style="pieGradient"></div>
-        </div>
-        <div class="pie-legend">
-          <div v-for="seg in pieSegments" :key="seg.name" class="pie-legend-row">
-            <span class="pie-dot" :style="{ color: seg.color }">●</span>
-            <span class="pie-name">{{ seg.name }}</span>
-            <span class="pie-pct">{{ seg.percent }}%</span>
-          </div>
-        </div>
-      </div>
+      <v-chart class="echart-pie" :option="pieOption" autoresize />
     </div>
 
     <!-- Expense Ranking + Tags Grid -->
@@ -145,14 +116,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import { liveQuery } from 'dexie'
-import { useTransactionStore } from '@/stores/transactionStore'
+import { ref, computed } from 'vue'
+import { db } from '@/db'
 import { useCategoryStore } from '@/stores/categoryStore'
+import { useLiveQuery } from '@/composables/useLiveQuery'
 import { formatCurrency } from '@/utils/format'
+import VChart from 'vue-echarts'
 import type { Transaction } from '@/types'
-
-const txStore = useTransactionStore()
 const categoryStore = useCategoryStore()
 
 const timeMode = ref<'month' | 'year' | 'custom'>('month')
@@ -203,18 +173,13 @@ const dateRange = computed(() => {
   return { start: toDateStr(startOfMonth(currentDate.value)), end: toDateStr(endOfMonth(currentDate.value)) }
 })
 
-const transactions = ref<Transaction[]>([])
-
-watch(
-  () => [dateRange.value.start, dateRange.value.end],
-  ([start, end]) => {
-    const observable = txStore.getByDateRange(start, end)
-    const sub = observable.subscribe({
-      next: (result: Transaction[]) => { transactions.value = result },
-    })
-    return () => sub.unsubscribe()
-  },
-  { immediate: true },
+const transactions = useLiveQuery<Transaction[]>(() =>
+  db.transactions
+    .where('date')
+    .between(dateRange.value.start, dateRange.value.end)
+    .reverse()
+    .toArray(),
+  [],
 )
 
 function prevPeriod() {
@@ -238,52 +203,87 @@ const totalExpense = computed(() =>
   transactions.value.filter((tx) => tx.type === 'expense').reduce((sum, tx) => sum + tx.amount, 0),
 )
 
-const barChartData = computed(() => {
-  const now = new Date()
-  const currentMonth = now.getMonth()
-  const currentYear = now.getFullYear()
+const barOption = computed(() => {
+  let categories: string[] = []
+  const incomes: number[] = []
+  const expenses: number[] = []
+
   if (timeMode.value === 'year') {
-    const months = Array.from({ length: 12 }, (_, i) => i)
-    const incomes = Array(12).fill(0)
-    const expenses = Array(12).fill(0)
-    let maxVal = 0
+    categories = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+    for (let i = 0; i < 12; i++) { incomes[i] = 0; expenses[i] = 0 }
     for (const tx of transactions.value) {
-      const monthIdx = parseInt(tx.date.split('-')[1], 10) - 1
-      if (tx.type === 'income') { incomes[monthIdx] += tx.amount; maxVal = Math.max(maxVal, incomes[monthIdx]) }
-      else if (tx.type === 'expense') { expenses[monthIdx] += tx.amount; maxVal = Math.max(maxVal, expenses[monthIdx]) }
+      const idx = parseInt(tx.date.split('-')[1], 10) - 1
+      if (tx.type === 'income') incomes[idx] += tx.amount
+      else if (tx.type === 'expense') expenses[idx] += tx.amount
     }
-    maxVal = maxVal || 1
-    return months.map((m) => ({
-      label: `${m + 1}月`,
-      incomeHeight: (incomes[m] / maxVal) * 100,
-      expenseHeight: (expenses[m] / maxVal) * 100,
-      active: m === currentMonth,
-    }))
+  } else {
+    const daysInMonth = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1, 0).getDate()
+    categories = Array.from({ length: daysInMonth }, (_, i) => `${i + 1}日`)
+    for (let i = 0; i < daysInMonth; i++) { incomes[i] = 0; expenses[i] = 0 }
+    for (const tx of transactions.value) {
+      const idx = parseInt(tx.date.split('-')[2], 10) - 1
+      if (tx.type === 'income') incomes[idx] += tx.amount
+      else if (tx.type === 'expense') expenses[idx] += tx.amount
+    }
   }
-  const year = currentDate.value.getFullYear()
-  const month = currentDate.value.getMonth()
-  const daysInMonth = new Date(year, month + 1, 0).getDate()
-  const today = now.getDate()
-  const incomes = Array(daysInMonth).fill(0)
-  const expenses = Array(daysInMonth).fill(0)
-  let maxVal = 0
-  for (const tx of transactions.value) {
-    const dayIdx = parseInt(tx.date.split('-')[2], 10) - 1
-    if (tx.type === 'income') { incomes[dayIdx] += tx.amount; maxVal = Math.max(maxVal, incomes[dayIdx]) }
-    else if (tx.type === 'expense') { expenses[dayIdx] += tx.amount; maxVal = Math.max(maxVal, expenses[dayIdx]) }
+
+  // Convert from 分 to 元
+  const incomeYuan = incomes.map(v => Math.round(v / 100))
+  const expenseYuan = expenses.map(v => Math.round(v / 100))
+
+  return {
+    tooltip: { trigger: 'axis' },
+    legend: { data: ['收入', '支出'], bottom: 0, icon: 'roundRect', itemWidth: 8, itemHeight: 8, itemGap: 12 },
+    grid: { left: 8, right: 8, top: 8, bottom: 32, containLabel: true },
+    xAxis: {
+      type: 'category',
+      data: categories,
+      axisLabel: { fontSize: 10, color: '#8e8e93' },
+      axisLine: { show: false },
+      axisTick: { show: false },
+    },
+    yAxis: { type: 'value', show: false },
+    series: [
+      {
+        name: '收入',
+        type: 'bar',
+        data: incomeYuan,
+        itemStyle: { color: '#34c759', borderRadius: [4, 4, 0, 0] },
+        barMaxWidth: 16,
+      },
+      {
+        name: '支出',
+        type: 'bar',
+        data: expenseYuan,
+        itemStyle: { color: '#ff3b30', opacity: 0.3, borderRadius: [4, 4, 0, 0] },
+        barMaxWidth: 16,
+      },
+    ],
   }
-  const step = Math.max(1, Math.floor(daysInMonth / 7))
-  maxVal = maxVal || 1
-  return Array.from({ length: daysInMonth }, (_, i) => ({
-    label: i % step === 0 ? `${i + 1}` : '',
-    incomeHeight: (incomes[i] / maxVal) * 100,
-    expenseHeight: (expenses[i] / maxVal) * 100,
-    active: year === now.getFullYear() && month === currentMonth && i + 1 === today,
-  }))
 })
 
-// Pie segments
+// Pie colors
 const pieColors = ['#ff3b30', '#ff9500', '#ffcc00', '#34c759', '#007aff', '#8e8e93', '#af52de', '#ff2d55']
+
+const pieOption = computed(() => {
+  const items = categoryAggregation.value.slice(0, 6).map((item, idx) => ({
+    name: item.name,
+    value: Math.round(item.amount / 100),
+    itemStyle: { color: pieColors[idx % pieColors.length] },
+  }))
+
+  return {
+    tooltip: { trigger: 'item', formatter: '{b}: ¥{c}' },
+    series: [{
+      type: 'pie',
+      radius: ['45%', '70%'],
+      center: ['50%', '50%'],
+      data: items,
+      label: { show: true, formatter: '{b}\n{d}%', fontSize: 11, color: '#1c1c1e' },
+      emphasis: { label: { show: true, fontSize: 13, fontWeight: 'bold' } },
+    }],
+  }
+})
 
 function aggregateByCategory(txList: Transaction[]): { name: string; icon: string; amount: number }[] {
   const map = new Map<number, { name: string; icon: string; amount: number }>()
@@ -314,26 +314,6 @@ const categoryAggregation = computed(() => aggregateByCategory(transactions.valu
 
 const totalExpenseForPercent = computed(() => categoryAggregation.value.reduce((sum, item) => sum + item.amount, 0))
 
-const pieSegments = computed(() => {
-  const total = totalExpenseForPercent.value || 1
-  return categoryAggregation.value.slice(0, 6).map((item, idx) => ({
-    name: item.name,
-    percent: Math.round((item.amount / total) * 100),
-    color: pieColors[idx % pieColors.length],
-    amount: item.amount,
-  }))
-})
-
-const pieGradient = computed(() => {
-  if (pieSegments.value.length === 0) return ''
-  let angle = 0
-  const parts = pieSegments.value.map((seg) => {
-    const start = angle
-    angle += seg.percent * 3.6
-    return `${seg.color} ${start}deg ${angle}deg`
-  })
-  return { background: `conic-gradient(${parts.join(', ')})` }
-})
 
 const expenseRanking = computed(() =>
   categoryAggregation.value.slice(0, 5).map((item) => ({
@@ -517,126 +497,15 @@ function rankLabel(index: number): string {
   color: var(--color-secondary-text);
 }
 
-/* Bar Chart */
-.bar-chart {
-  display: flex;
-  align-items: flex-end;
-  gap: 4px;
-  height: 100px;
-}
-
-.bar-column {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-
-.bar-stack {
+/* ECharts containers */
+.echart-bar {
   width: 100%;
-  display: flex;
-  flex-direction: column-reverse;
-  align-items: center;
-  position: relative;
-  flex: 1;
-  justify-content: flex-end;
+  height: 140px;
 }
 
-.bar-income {
+.echart-pie {
   width: 100%;
-  background: #34c759;
-  border-radius: 3px 3px 0 0;
-  min-height: 2px;
-  transition: height 0.3s ease;
-}
-
-.bar-expense {
-  width: 100%;
-  background: #ff3b30;
-  border-radius: 3px 3px 0 0;
-  min-height: 2px;
-  transition: height 0.3s ease;
-}
-
-.bar-label {
-  font-size: 8px;
-  color: #8e8e93;
-  white-space: nowrap;
-}
-
-.bar-label.active {
-  color: #1c1c1e;
-  font-weight: 600;
-}
-
-.bar-legend {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 6px;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 10px;
-  color: #8e8e93;
-}
-
-.legend-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-}
-
-.legend-dot.income { background: #34c759; }
-.legend-dot.expense { background: #ff3b30; opacity: 0.3; }
-
-/* Pie Section */
-.pie-section {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.pie-visual {
-  flex-shrink: 0;
-}
-
-.pie {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-}
-
-.pie-legend {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.pie-legend-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-}
-
-.pie-dot {
-  font-size: 14px;
-  line-height: 1;
-}
-
-.pie-name {
-  flex: 1;
-  color: #1c1c1e;
-}
-
-.pie-pct {
-  color: #8e8e93;
+  height: 200px;
 }
 
 /* Bottom Grid */
