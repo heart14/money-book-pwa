@@ -109,8 +109,8 @@ watch(
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 6px 0;
+  gap: 5px;
+  padding: 12px 0;
   border: none;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.8);

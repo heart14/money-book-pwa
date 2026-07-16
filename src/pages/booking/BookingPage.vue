@@ -441,7 +441,7 @@ watch(
 /* ── Amount Display ── */
 .amount-display {
   text-align: center;
-  font-size: 40px;
+  font-size: 60px;
   font-weight: 700;
   color: #1c1c1e;
   letter-spacing: -1px;
@@ -472,7 +472,7 @@ watch(
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
+  padding: 10px 14px;
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
