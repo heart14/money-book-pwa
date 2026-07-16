@@ -205,7 +205,7 @@ const liquidAccounts = computed(() => accountStore.getAccountsByGroup('liquid'))
 
 const canSave = computed(() => {
   if (inputValue.value === '0') return false
-  const amount = parseFloat(inputValue.value)
+  const amount = Math.round(parseFloat(inputValue.value) * 100)
   if (isNaN(amount) || amount <= 0) return false
 
   if (bookingMode.value === 'transfer') {
@@ -301,7 +301,7 @@ function removeTag(idx: number) {
 async function handleConfirm() {
   if (inputValue.value === '0') return
 
-  const amount = parseFloat(inputValue.value)
+  const amount = Math.round(parseFloat(inputValue.value) * 100)
   if (isNaN(amount) || amount <= 0) return
 
   const now = new Date()
