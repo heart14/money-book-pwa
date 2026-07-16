@@ -141,8 +141,74 @@
               </div>
             </div>
             <div class="sheet-actions">
-              <button class="btn btn-secondary" disabled>编辑</button>
+              <button class="btn btn-secondary" @click="openEdit(detailTx)">编辑</button>
               <button class="btn btn-danger" @click="handleDelete">删除</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- Edit bottom sheet -->
+    <Teleport to="body">
+      <div v-if="editTx != null" class="sheet-overlay" @click.self="editTx = null">
+        <div class="sheet">
+          <div class="sheet-handle"></div>
+          <div class="sheet-body">
+            <h3 class="edit-sheet-title">编辑交易</h3>
+            <div class="edit-form">
+              <div class="edit-row">
+                <label class="edit-label">标题</label>
+                <input v-model="editForm.title" class="edit-input" maxlength="100" />
+              </div>
+              <div class="edit-row">
+                <label class="edit-label">金额</label>
+                <div class="edit-amount-wrap">
+                  <span class="edit-amount-sign">¥</span>
+                  <input v-model.number="editForm.amountYuan" class="edit-input edit-amount-input" type="number" step="0.01" min="0" />
+                </div>
+              </div>
+              <div class="edit-row">
+                <label class="edit-label">日期</label>
+                <input v-model="editForm.date" class="edit-input" type="date" />
+              </div>
+              <div class="edit-row">
+                <label class="edit-label">时间</label>
+                <input v-model="editForm.time" class="edit-input" type="time" />
+              </div>
+              <div class="edit-row">
+                <label class="edit-label">备注</label>
+                <input v-model="editForm.note" class="edit-input" maxlength="200" />
+              </div>
+              <div class="edit-row">
+                <label class="edit-label">标签</label>
+                <div class="edit-tags-area">
+                  <span v-for="(tag, idx) in editForm.tags" :key="idx" class="edit-tag-chip">
+                    {{ tag }}
+                    <button class="edit-tag-remove" @click="editForm.tags.splice(idx, 1)">&times;</button>
+                  </span>
+                  <input
+                    v-model="editTagInput"
+                    class="edit-tag-input"
+                    placeholder="添加标签"
+                    maxlength="20"
+                    @keydown.enter.prevent="addEditTag"
+                    @keydown.,.prevent="addEditTag"
+                  />
+                </div>
+              </div>
+              <div class="edit-row edit-row--meta">
+                <span class="edit-label">分类</span>
+                <span class="edit-meta">{{ getCategoryName(editTx.categoryId) || '转账' }}</span>
+              </div>
+              <div class="edit-row edit-row--meta">
+                <span class="edit-label">账户</span>
+                <span class="edit-meta">{{ getAccountLabel(editTx) }}</span>
+              </div>
+            </div>
+            <div class="edit-actions">
+              <button class="btn btn-secondary" @click="editTx = null">取消</button>
+              <button class="btn btn-primary" :disabled="!editCanSave" @click="handleEditSave">保存</button>
             </div>
           </div>
         </div>
@@ -152,7 +218,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watchEffect, nextTick } from 'vue'
+import { ref, computed, reactive, watchEffect, nextTick } from 'vue'
 import { db } from '@/db'
 import { useTransactionStore } from '@/stores/transactionStore'
 import { useCategoryStore } from '@/stores/categoryStore'
@@ -406,6 +472,60 @@ async function handleDelete() {
   if (!confirm('确定要删除这条记录吗？')) return
   await transactionStore.deleteTransaction(tx.id)
   detailTx.value = null
+}
+
+// ── Edit transaction ──
+const editTx = ref<Transaction | null>(null)
+const editTagInput = ref('')
+const editForm = reactive({
+  title: '',
+  amountYuan: 0,
+  date: '',
+  time: '',
+  note: '',
+  tags: [] as string[],
+})
+
+const editCanSave = computed(() => editForm.amountYuan > 0)
+
+function openEdit(tx: Transaction) {
+  editForm.title = tx.title || ''
+  editForm.amountYuan = Math.round(tx.amount) / 100
+  editForm.date = tx.date
+  editForm.time = tx.time?.slice(0, 5) || ''
+  editForm.note = tx.note || ''
+  editForm.tags = [...(tx.tags || [])]
+  editTagInput.value = ''
+  editTx.value = tx
+}
+
+function addEditTag() {
+  const t = editTagInput.value.trim()
+  if (t && !editForm.tags.includes(t)) {
+    editForm.tags.push(t)
+  }
+  editTagInput.value = ''
+}
+
+async function handleEditSave() {
+  const tx = editTx.value
+  if (!tx || tx.id == null) return
+
+  const updates: Partial<Transaction> = {
+    title: editForm.title,
+    amount: Math.round(editForm.amountYuan * 100),
+    date: editForm.date,
+    time: editForm.time,
+    note: editForm.note,
+    tags: [...editForm.tags],
+  }
+
+  try {
+    await transactionStore.updateTransaction(tx.id, updates)
+    editTx.value = null
+  } catch (e) {
+    console.error('编辑失败', e)
+  }
 }
 </script>
 
@@ -717,6 +837,140 @@ async function handleDelete() {
 .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .btn-secondary { background: #f2f2f6; color: var(--color-text); }
 .btn-danger { background: #ff3b30; color: #fff; }
+.btn-primary { background: #007aff; color: #fff; }
+
+/* ── Edit Sheet ── */
+.edit-sheet-title {
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #1c1c1e;
+}
+
+.edit-form {
+  margin-bottom: 24px;
+}
+
+.edit-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.edit-label {
+  width: 48px;
+  flex-shrink: 0;
+  font-size: 14px;
+  color: #8e8e93;
+}
+
+.edit-input {
+  flex: 1;
+  height: 36px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 8px;
+  background: #f2f2f6;
+  font-size: 15px;
+  color: #1c1c1e;
+  outline: none;
+  font-family: inherit;
+}
+
+.edit-amount-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #f2f2f6;
+  border-radius: 8px;
+  padding: 0 12px;
+}
+
+.edit-amount-sign {
+  font-size: 16px;
+  font-weight: 600;
+  color: #8e8e93;
+}
+
+.edit-amount-input {
+  flex: 1;
+  background: none;
+  padding: 0;
+}
+
+.edit-amount-input::-webkit-outer-spin-button,
+.edit-amount-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.edit-tags-area {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  background: #f2f2f6;
+  border-radius: 8px;
+  min-height: 36px;
+}
+
+.edit-tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #fff;
+  color: #007aff;
+}
+
+.edit-tag-remove {
+  border: none;
+  background: none;
+  color: #8e8e93;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.edit-tag-input {
+  flex: 1;
+  min-width: 80px;
+  border: none;
+  background: none;
+  font-size: 13px;
+  color: #1c1c1e;
+  outline: none;
+  font-family: inherit;
+  padding: 2px 0;
+}
+
+.edit-tag-input::placeholder {
+  color: #c7c7cc;
+}
+
+.edit-row--meta {
+  padding: 4px 0;
+  border-top: 1px solid #f2f2f2;
+  margin-top: 4px;
+  padding-top: 12px;
+}
+
+.edit-meta {
+  font-size: 14px;
+  color: #1c1c1e;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 12px;
+}
 
 @keyframes fadeIn {
   from { opacity: 0; }
