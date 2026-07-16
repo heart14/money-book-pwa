@@ -131,8 +131,8 @@ const displayAmount = computed(() => {
   line-height: 1.3;
 }
 
-.amount-expense { color: #ff3b30; }
-.amount-income { color: #34c759; }
+.amount-expense { color: #34c759; }
+.amount-income { color: #ff3b30; }
 .amount-transfer { color: #007aff; }
 
 .item-tags {

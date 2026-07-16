@@ -565,11 +565,11 @@ async function handleDelete() {
 }
 
 .total-income {
-  color: #34c759;
+  color: #ff3b30;
 }
 
 .total-expense {
-  color: #ff3b30;
+  color: #34c759;
 }
 
 /* Bottom sheet overlay */
@@ -645,8 +645,8 @@ async function handleDelete() {
   color: #fff;
 }
 
-.badge-expense { background: #ff3b30; }
-.badge-income { background: #34c759; }
+.badge-expense { background: #34c759; }
+.badge-income { background: #ff3b30; }
 .badge-transfer { background: #007aff; }
 
 .sheet-amount {
@@ -657,8 +657,8 @@ async function handleDelete() {
   margin-bottom: 24px;
 }
 
-.sheet-amount.amount-expense { color: #ff3b30; }
-.sheet-amount.amount-income { color: #34c759; }
+.sheet-amount.amount-expense { color: #34c759; }
+.sheet-amount.amount-income { color: #ff3b30; }
 .sheet-amount.amount-transfer { color: #007aff; }
 
 .sheet-details {

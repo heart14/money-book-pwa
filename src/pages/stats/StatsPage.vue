@@ -248,14 +248,14 @@ const barOption = computed(() => {
         name: '收入',
         type: 'bar',
         data: incomeYuan,
-        itemStyle: { color: '#34c759', borderRadius: [4, 4, 0, 0] },
+        itemStyle: { color: '#ff3b30', borderRadius: [4, 4, 0, 0] },
         barMaxWidth: 16,
       },
       {
         name: '支出',
         type: 'bar',
         data: expenseYuan,
-        itemStyle: { color: '#ff3b30', opacity: 0.3, borderRadius: [4, 4, 0, 0] },
+        itemStyle: { color: '#34c759', opacity: 0.3, borderRadius: [4, 4, 0, 0] },
         barMaxWidth: 16,
       },
     ],
@@ -457,8 +457,8 @@ function rankLabel(index: number): string {
   padding: 10px 12px;
 }
 
-.overview-card.income { background: #34c759; }
-.overview-card.expense { background: #ff3b30; }
+.overview-card.income { background: #ff3b30; }
+.overview-card.expense { background: #34c759; }
 
 .overview-label {
   font-size: 11px;
@@ -564,7 +564,7 @@ function rankLabel(index: number): string {
 .ranking-amount {
   font-size: 13px;
   font-weight: 600;
-  color: #ff3b30;
+  color: #34c759;
   white-space: nowrap;
 }
 
