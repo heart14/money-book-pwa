@@ -115,7 +115,7 @@ export const useTransactionStore = defineStore('transactions', () => {
     return liveQuery(() =>
       db.transactions
         .where('date')
-        .between(start, end)
+        .between(start, end, true, true)
         .reverse()
         .toArray(),
     )

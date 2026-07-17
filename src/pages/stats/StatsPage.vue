@@ -176,7 +176,7 @@ const dateRange = computed(() => {
 const transactions = useLiveQuery<Transaction[]>(() =>
   db.transactions
     .where('date')
-    .between(dateRange.value.start, dateRange.value.end)
+    .between(dateRange.value.start, dateRange.value.end, true, true)
     .reverse()
     .toArray(),
   [],
