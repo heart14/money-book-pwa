@@ -188,6 +188,10 @@
               <input v-model="accountForm.icon" class="form-input" placeholder="💳" maxlength="4" />
             </div>
             <div class="form-group">
+              <label class="form-label">初始余额 (¥)</label>
+              <input v-model.number="accountForm.initialBalance" class="form-input" type="number" step="0.01" placeholder="0.00" />
+            </div>
+            <div class="form-group">
               <label class="form-label">排序</label>
               <input v-model.number="accountForm.sort" class="form-input" type="number" placeholder="0" />
             </div>
@@ -212,6 +216,10 @@
             <div class="form-group">
               <label class="form-label">图标</label>
               <input v-model="editAccountForm.icon" class="form-input" placeholder="💳" maxlength="4" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">余额 (¥)</label>
+              <input v-model.number="editAccountForm.balanceYuan" class="form-input" type="number" step="0.01" placeholder="0.00" />
             </div>
             <div class="form-group">
               <label class="form-label">排序</label>
@@ -488,18 +496,36 @@ const editAccountTarget = ref<Account | null>(null)
 const accountToDelete = ref<Account | null>(null)
 const accountDeleteMsg = ref('')
 const accountDeleteCanDelete = ref(false)
-const accountForm = reactive({ name: '', groupId: 'liquid' as Account['groupId'], icon: '🏦', sort: 0 })
-const editAccountForm = reactive({ name: '', icon: '🏦', sort: 0 })
+const accountForm = reactive({ name: '', groupId: 'liquid' as Account['groupId'], icon: '🏦', initialBalance: 0, sort: 0 })
+const editAccountForm = reactive({ name: '', icon: '🏦', balanceYuan: 0, sort: 0 })
 
-function openEditAccount(acc: Account) { editAccountTarget.value = acc; editAccountForm.name = acc.name; editAccountForm.icon = acc.icon; editAccountForm.sort = acc.sort }
+function openEditAccount(acc: Account) {
+  editAccountTarget.value = acc
+  editAccountForm.name = acc.name
+  editAccountForm.icon = acc.icon
+  editAccountForm.balanceYuan = Math.round(acc.balance) / 100
+  editAccountForm.sort = acc.sort
+}
 async function handleAddAccount() {
   if (!accountForm.name.trim()) return
-  await accountStore.addAccount({ name: accountForm.name.trim(), groupId: accountForm.groupId, icon: accountForm.icon || '🏦', balance: 0, sort: accountForm.sort })
-  accountForm.name = ''; accountForm.groupId = 'liquid'; accountForm.icon = '🏦'; accountForm.sort = 0; showAddAccount.value = false
+  await accountStore.addAccount({
+    name: accountForm.name.trim(),
+    groupId: accountForm.groupId,
+    icon: accountForm.icon || '🏦',
+    balance: Math.round(parseFloat(String(accountForm.initialBalance || '0')) * 100),
+    sort: accountForm.sort,
+  })
+  accountForm.name = ''; accountForm.groupId = 'liquid'; accountForm.icon = '🏦'; accountForm.initialBalance = 0; accountForm.sort = 0
+  showAddAccount.value = false
 }
 async function handleEditAccount() {
   if (!editAccountTarget.value?.id || !editAccountForm.name.trim()) return
-  await accountStore.updateAccount(editAccountTarget.value.id, { name: editAccountForm.name.trim(), icon: editAccountForm.icon || '🏦', sort: editAccountForm.sort })
+  await accountStore.updateAccount(editAccountTarget.value.id, {
+    name: editAccountForm.name.trim(),
+    icon: editAccountForm.icon || '🏦',
+    balance: Math.round(parseFloat(String(editAccountForm.balanceYuan || '0')) * 100),
+    sort: editAccountForm.sort,
+  })
   editAccountTarget.value = null
 }
 async function deleteAccount(acc: Account) {

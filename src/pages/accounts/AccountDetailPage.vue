@@ -62,6 +62,10 @@
               <label class="form-label">图标</label>
               <input v-model="editForm.icon" class="form-input" placeholder="🏦" maxlength="4" />
             </div>
+            <div class="form-group">
+              <label class="form-label">余额 (¥)</label>
+              <input v-model.number="editForm.balanceYuan" class="form-input" type="number" step="0.01" placeholder="0.00" />
+            </div>
           </div>
           <div class="modal-actions">
             <button class="btn btn-cancel" @click="showEditModal = false">取消</button>
@@ -198,12 +202,14 @@ const showEditModal = ref(false)
 const editForm = reactive({
   name: '',
   icon: '',
+  balanceYuan: 0,
 })
 
 watchEffect(() => {
   if (account.value) {
     editForm.name = account.value.name
     editForm.icon = account.value.icon
+    editForm.balanceYuan = Math.round(account.value.balance) / 100
   }
 })
 
@@ -212,6 +218,7 @@ async function handleEdit() {
   await accountStore.updateAccount(account.value.id, {
     name: editForm.name.trim(),
     icon: editForm.icon || '🏦',
+    balance: Math.round(parseFloat(String(editForm.balanceYuan || '0')) * 100),
   })
   showEditModal.value = false
 }

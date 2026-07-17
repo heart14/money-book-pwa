@@ -69,6 +69,10 @@
               <input v-model="form.icon" class="form-input" placeholder="💳" maxlength="4" />
             </div>
             <div class="form-group">
+              <label class="form-label">初始余额 (¥)</label>
+              <input v-model.number="form.initialBalance" class="form-input" type="number" step="0.01" placeholder="0.00" />
+            </div>
+            <div class="form-group">
               <label class="form-label">排序</label>
               <input v-model.number="form.sort" class="form-input" type="number" placeholder="0" />
             </div>
@@ -97,6 +101,7 @@ const form = reactive({
   name: '',
   groupId: 'liquid' as 'liquid' | 'restricted' | 'claim' | 'debt',
   icon: '💳',
+  initialBalance: 0,
   sort: 0,
 })
 
@@ -106,12 +111,13 @@ async function handleAdd() {
     name: form.name.trim(),
     groupId: form.groupId,
     icon: form.icon || '💳',
-    balance: 0,
+    balance: Math.round(parseFloat(String(form.initialBalance || '0')) * 100),
     sort: form.sort,
   })
   form.name = ''
   form.groupId = 'liquid'
   form.icon = '💳'
+  form.initialBalance = 0
   form.sort = 0
   showAddModal.value = false
 }
