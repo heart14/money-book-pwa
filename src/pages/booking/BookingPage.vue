@@ -105,7 +105,7 @@
               v-model="title"
               class="note-input"
               type="text"
-              placeholder="标题（如：晚餐-烤匠）"
+              placeholder="添加标题"
               maxlength="100"
             />
           </div>
@@ -125,7 +125,7 @@
                 v-model="tagInput"
                 class="tag-input"
                 type="text"
-                placeholder="添加标签，按回车确认"
+                placeholder="添加标签"
                 maxlength="20"
                 @keydown.enter.prevent="addTag"
                 @keydown.,.prevent="addTag"
@@ -279,6 +279,8 @@ function onModeChange(mode: BookingMode) {
   bookingMode.value = mode
   uiStore.setMode(mode)
   selectedCategoryId.value = null
+  showAccountPicker.value = false
+  showToAccountPicker.value = false
   if (mode === 'transfer') {
     selectedToAccount.value = null
   }
