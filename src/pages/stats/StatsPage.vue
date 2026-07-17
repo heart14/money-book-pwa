@@ -229,10 +229,20 @@ const barOption = computed(() => {
 
   // Convert from 分 to 元
   const incomeYuan = incomes.map(v => Math.round(v / 100))
-  const expenseYuan = expenses.map(v => Math.round(v / 100))
+  const expenseYuan = expenses.map(v => -Math.round(v / 100))
 
   return {
-    tooltip: { trigger: 'axis' },
+    tooltip: {
+      trigger: 'axis',
+      formatter: (params: any) => {
+        let html = `<div style="font-weight:600;margin-bottom:4px">${params[0].axisValue}</div>`
+        for (const p of params) {
+          const val = Math.abs(p.value)
+          html += `<div style="display:flex;align-items:center;gap:6px"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${p.color}"></span>${p.seriesName}: ¥${val.toLocaleString()}</div>`
+        }
+        return html
+      },
+    },
     legend: { data: ['收入', '支出'], bottom: 0, icon: 'roundRect', itemWidth: 8, itemHeight: 8, itemGap: 12 },
     grid: { left: 8, right: 8, top: 8, bottom: 32, containLabel: true },
     xAxis: {
@@ -250,13 +260,15 @@ const barOption = computed(() => {
         data: incomeYuan,
         itemStyle: { color: '#ff3b30', borderRadius: [4, 4, 0, 0] },
         barMaxWidth: 16,
+        label: { show: false },
       },
       {
         name: '支出',
         type: 'bar',
         data: expenseYuan,
-        itemStyle: { color: '#34c759', opacity: 0.3, borderRadius: [4, 4, 0, 0] },
+        itemStyle: { color: '#34c759', opacity: 0.3, borderRadius: [0, 0, 4, 4] },
         barMaxWidth: 16,
+        label: { show: false },
       },
     ],
   }
