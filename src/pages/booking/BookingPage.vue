@@ -154,6 +154,11 @@
       @update:value="inputValue = $event"
       @close="keyboardVisible = false"
     />
+
+    <!-- Save Toast -->
+    <Transition name="toast">
+      <div v-if="toastVisible" class="save-toast">{{ toastMessage }}</div>
+    </Transition>
   </div>
 </template>
 
@@ -309,6 +314,18 @@ function removeTag(idx: number) {
   tags.value.splice(idx, 1)
 }
 
+// ── Toast ──
+const toastVisible = ref(false)
+const toastMessage = ref('')
+let toastTimer = 0
+
+function showToast(msg: string) {
+  toastMessage.value = msg
+  toastVisible.value = true
+  clearTimeout(toastTimer)
+  toastTimer = window.setTimeout(() => { toastVisible.value = false }, 2000)
+}
+
 // ── Confirm (submit transaction) ──
 async function handleConfirm() {
   if (inputValue.value === '0') return
@@ -377,6 +394,8 @@ async function handleConfirm() {
       uiStore.setLastCategory(selectedCategoryId.value)
     }
     uiStore.hideBookingHint()
+    const typeLabel = bookingMode.value === 'expense' ? '支出' : bookingMode.value === 'income' ? '收入' : '转账'
+    showToast(`${typeLabel}已记录 · ${displayAmount.value}`)
     resetState()
   } catch (e) {
     console.error('记账失败', e)
@@ -685,5 +704,42 @@ watch(
 .mode-fade-enter-from,
 .mode-fade-leave-to {
   opacity: 0;
+}
+
+/* ── Save Toast ── */
+.save-toast {
+  position: fixed;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 24px;
+  border-radius: 20px;
+  white-space: nowrap;
+  z-index: 2000;
+  pointer-events: none;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.toast-enter-active {
+  transition: all 0.25s ease;
+}
+
+.toast-leave-active {
+  transition: all 0.3s ease;
+}
+
+.toast-enter-from {
+  opacity: 0;
+  transform: translateX(-50%) translateY(12px);
+}
+
+.toast-leave-to {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-8px);
 }
 </style>
