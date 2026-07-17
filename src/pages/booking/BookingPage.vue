@@ -245,9 +245,8 @@ function initDefaultAccount() {
     }
   }
 
-  const liquid = accountStore.getAccountsByGroup('liquid')
-  if (liquid.length > 0) {
-    selectedAccount.value = liquid[0]
+  if (accountStore.accounts.length > 0) {
+    selectedAccount.value = accountStore.accounts[0]
   }
 }
 
