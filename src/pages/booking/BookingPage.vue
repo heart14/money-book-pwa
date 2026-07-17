@@ -418,7 +418,13 @@ function resetState() {
 }
 
 // ── Bridge to TabBar checkmark save ──
-watch(canSave, (v) => { uiStore.bookingCanSave = v }, { immediate: true })
+watch(canSave, (v) => {
+  uiStore.bookingCanSave = v
+  // Show hint when canSave becomes true and keyboard is already closed
+  if (v && !keyboardVisible.value) {
+    uiStore.showBookingHint()
+  }
+}, { immediate: true })
 
 // Show save hint when keyboard closes (by any means: ↵, mask tap, category select)
 watch(keyboardVisible, (visible) => {
