@@ -56,7 +56,19 @@
           </button>
           <div v-if="expanded.account" class="expanded-content">
             <div v-if="accountStore.accounts.length === 0" class="empty-hint">暂无账户</div>
-            <div v-for="acc in accountStore.accounts" :key="acc.id" class="account-item">
+            <div
+              v-for="(acc, idx) in accountStore.accounts"
+              :key="acc.id"
+              class="account-item"
+              draggable="true"
+              :class="{ 'drag-over': dragOverIdx === idx }"
+              @dragstart="onDragStart($event, idx)"
+              @dragover.prevent="onDragOver(idx)"
+              @dragleave="onDragLeave"
+              @drop.prevent="onDrop($event, idx)"
+              @dragend="onDragEnd"
+            >
+              <span class="drag-handle">⠿</span>
               <span class="account-icon">{{ acc.icon }}</span>
               <div class="account-info">
                 <span class="account-name">{{ acc.name }}</span>
@@ -491,6 +503,51 @@ function showRuleDeleteConfirm(rule: RecurringRule) { ruleToDelete.value = rule 
 async function confirmRuleDelete() { if (ruleToDelete.value?.id) { await db.recurringRules.delete(ruleToDelete.value.id); ruleToDelete.value = null; await loadRules() } }
 
 // Accounts management
+// ── Account Drag & Drop Sort ──
+const dragIdx = ref<number | null>(null)
+const dragOverIdx = ref<number | null>(null)
+
+function onDragStart(e: DragEvent, idx: number) {
+  dragIdx.value = idx
+  if (e.dataTransfer) {
+    e.dataTransfer.effectAllowed = 'move'
+    e.dataTransfer.setData('text/plain', String(idx))
+  }
+}
+
+function onDragOver(idx: number) {
+  dragOverIdx.value = idx
+}
+
+function onDragLeave() {
+  dragOverIdx.value = null
+}
+
+async function onDrop(e: DragEvent, dropIdx: number) {
+  const fromIdx = dragIdx.value
+  if (fromIdx == null || fromIdx === dropIdx) return
+
+  const list = [...accountStore.accounts]
+  const [moved] = list.splice(fromIdx, 1)
+  list.splice(dropIdx, 0, moved)
+
+  // Update sort values in DB for all affected accounts
+  for (let i = 0; i < list.length; i++) {
+    const acc = list[i]
+    if (acc.id != null && acc.sort !== i + 1) {
+      await accountStore.updateAccount(acc.id, { sort: i + 1 })
+    }
+  }
+
+  dragIdx.value = null
+  dragOverIdx.value = null
+}
+
+function onDragEnd() {
+  dragIdx.value = null
+  dragOverIdx.value = null
+}
+
 const showAddAccount = ref(false)
 const editAccountTarget = ref<Account | null>(null)
 const accountToDelete = ref<Account | null>(null)
@@ -636,7 +693,29 @@ async function confirmAccountDelete() { if (accountToDelete.value?.id && account
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 0;
+  cursor: default;
+  transition: background 0.15s;
+  border-radius: 6px;
+  margin: 0 -4px;
+  padding: 8px 4px;
+}
+.account-item.drag-over {
+  background: rgba(0, 122, 255, 0.08);
+}
+.account-item:active {
+  opacity: 0.8;
+}
+.drag-handle {
+  font-size: 16px;
+  color: #c7c7cc;
+  cursor: grab;
+  user-select: none;
+  line-height: 1;
+  padding: 2px;
+  flex-shrink: 0;
+}
+.drag-handle:active {
+  cursor: grabbing;
 }
 .account-icon { font-size: 16px; }
 .account-info { flex: 1; display: flex; flex-direction: column; gap: 1px; }
