@@ -522,6 +522,10 @@ async function handleEditSave() {
 
   try {
     await transactionStore.updateTransaction(tx.id, updates)
+    // apply updates to detail sheet so it reflects changes immediately
+    if (detailTx.value?.id === tx.id) {
+      Object.assign(detailTx.value, updates)
+    }
     editTx.value = null
   } catch (e) {
     console.error('编辑失败', e)
