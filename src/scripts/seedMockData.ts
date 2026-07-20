@@ -218,11 +218,14 @@ async function generateIncomes(count: number, endDate: Date): Promise<Transactio
   const passiveCat = incomeChildren.find((c) => c.name === '利息分红')
   const otherCats = incomeChildren.filter((c) => c.name === '转卖返现' || c.name === '红包转账')
 
-  // Generate salary for past 12 months
+  // Generate salary for past 12 months. For current month (m=0),
+  // cap day at todayDate to avoid future dates.
   const now = endDate
+  const todayDate = now.getDate()
   for (let m = 0; m < 12; m++) {
-    const payDate = new Date(now.getFullYear(), now.getMonth() - m, rand(8, 15))
     if (salaryCat) {
+      const salaryDay = m === 0 ? rand(Math.min(8, todayDate), Math.min(15, todayDate)) : rand(8, 15)
+      const payDate = new Date(now.getFullYear(), now.getMonth() - m, salaryDay)
       txs.push({
         type: 'income',
         title: '工资',
@@ -236,7 +239,10 @@ async function generateIncomes(count: number, endDate: Date): Promise<Transactio
     }
     // Quarterly bonus
     if (m % 3 === 0 && bonusCats.length > 0) {
-      const bonusDate = new Date(now.getFullYear(), now.getMonth() - m, rand(15, 25))
+      const bonusDay = m === 0
+        ? rand(Math.min(15, todayDate), Math.min(25, todayDate))
+        : rand(15, 25)
+      const bonusDate = new Date(now.getFullYear(), now.getMonth() - m, bonusDay)
       txs.push({
         type: 'income',
         title: '绩效奖金',
