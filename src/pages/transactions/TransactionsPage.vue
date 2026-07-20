@@ -1,4 +1,5 @@
 <template>
+  <PullToRefresh ref="ptrRef" @refresh="handleRefresh">
   <div class="transactions-page">
     <!-- Header: 明细 + icons -->
     <div class="page-header">
@@ -117,10 +118,11 @@
       @close="editTx = null"
     />
   </div>
+  </PullToRefresh>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, watchEffect, nextTick } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { db } from '@/db'
 import { useTransactionStore } from '@/stores/transactionStore'
@@ -133,6 +135,7 @@ import TransactionDetail from '@/components/transactions/TransactionDetail.vue'
 import TransactionEdit from '@/components/transactions/TransactionEdit.vue'
 import FilterChips from '@/components/transactions/FilterChips.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
+import PullToRefresh from '@/components/common/PullToRefresh.vue'
 
 const transactionStore = useTransactionStore()
 const categoryStore = useCategoryStore()
@@ -143,6 +146,8 @@ const searchQuery = ref('')
 const searchOpen = ref(false)
 const showDatePicker = ref(false)
 const searchInputRef = ref<HTMLInputElement | null>(null)
+const refreshKey = ref(0)
+const ptrRef = ref<InstanceType<typeof PullToRefresh> | null>(null)
 
 // ── Initialize search from route query tag param ──
 const route = useRoute()
@@ -164,6 +169,7 @@ const PAGE_SIZE = 100
 const loadLimit = ref(PAGE_SIZE + 1) // +1 to detect if more records exist
 
 const transactions = useLiveQuery<Transaction[]>(() => {
+  void refreshKey.value // track as reactive dep for pull-to-refresh re-query
   let query
   if (dateFilterActive.value) {
     const start = new Date(filterYear.value, filterMonth.value - 1, 1)
@@ -193,6 +199,22 @@ function loadMore() {
 watch([dateFilterActive, filterYear, filterMonth, () => route.query.tag], () => {
   loadLimit.value = PAGE_SIZE + 1
 })
+
+// ── Pull-to-refresh ──
+async function handleRefresh() {
+  refreshKey.value++ // triggers useLiveQuery re-subscribe
+  // Wait for next tick so the updated query fires
+  await nextTick()
+  // Watch for the data to settle, then hide indicator
+  const unwatch = watch(transactions, () => {
+    ptrRef.value?.doneRefreshing()
+    unwatch()
+  })
+  // Safety timeout (3s) in case watcher doesn't fire
+  setTimeout(() => {
+    ptrRef.value?.doneRefreshing()
+  }, 3000)
+}
 
 const categoryMap = computed(() => {
   const map = new Map<number, Category>()
