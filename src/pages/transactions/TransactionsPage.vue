@@ -208,12 +208,16 @@ async function handleRefresh() {
   searchQuery.value = ''
   searchOpen.value = false
   selectedCategoryId.value = null
+  showDatePicker.value = false
   clearDateFilter()
 
-  // 2. Trigger re-query
+  // 2. Reset pagination to initial state
+  loadLimit.value = PAGE_SIZE + 1
+
+  // 3. Trigger re-query
   refreshKey.value++
 
-  // 3. Keep spinner visible for at least REFRESH_MIN_MS
+  // 4. Keep spinner visible for at least REFRESH_MIN_MS
   const start = Date.now()
 
   const unwatch = watch(transactions, () => {
@@ -306,6 +310,13 @@ watch(searchOpen, (open, prev) => {
   } else if (prev !== undefined && !open) {
     // Closing search bar — clear search query
     searchQuery.value = ''
+  }
+})
+
+// Closing the calendar picker → reset date filter
+watch(showDatePicker, (open, prev) => {
+  if (prev !== undefined && !open && dateFilterActive.value) {
+    clearDateFilter()
   }
 })
 
