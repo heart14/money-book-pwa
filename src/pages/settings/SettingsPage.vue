@@ -43,6 +43,11 @@
             <div class="row-left"><span class="row-icon">🗑️</span><span class="row-label row-label--danger">彻底销毁数据</span></div>
             <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c7c7cc" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6" /></svg>
           </button>
+          <div class="separator"></div>
+          <button class="section-row section-row--dev" @click="showMockConfirm = true">
+            <div class="row-left"><span class="row-icon">🧪</span><span class="row-label row-label--dev">导入测试数据</span></div>
+            <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c7c7cc" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6" /></svg>
+          </button>
         </div>
       </div>
 
@@ -120,6 +125,18 @@
         </div>
       </div>
 
+      <!-- Import mock data confirm -->
+      <div v-if="showMockConfirm" class="modal-overlay" @click.self="showMockConfirm = false">
+        <div class="modal-content">
+          <p class="modal-title">导入测试数据</p>
+          <p class="modal-desc">将生成约 350 条模拟交易记录（含近 12 个月的工资/消费数据），是否继续？</p>
+          <div class="modal-actions">
+            <button class="btn-cancel" @click="showMockConfirm = false">取消</button>
+            <button class="btn-primary" @click="handleMockImport">确定</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Toasts -->
       <div v-if="dataSuccessMsg" class="data-msg success" @click="dataSuccessMsg = ''">{{ dataSuccessMsg }}</div>
       <div v-if="dataErrorMsg" class="data-msg error" @click="dataErrorMsg = ''">{{ dataErrorMsg }}</div>
@@ -147,6 +164,7 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
 const showImportConfirm = ref(false)
 const showDestroyConfirm1 = ref(false)
 const showDestroyConfirm2 = ref(false)
+const showMockConfirm = ref(false)
 const pendingImportFile = ref<File | null>(null)
 const dataSuccessMsg = ref('')
 const dataErrorMsg = ref('')
@@ -202,6 +220,19 @@ async function handleDestroy() {
     dataErrorMsg.value = ''
   } catch (e) {
     dataErrorMsg.value = '销毁失败：' + (e instanceof Error ? e.message : '未知错误')
+    dataSuccessMsg.value = ''
+  }
+}
+
+async function handleMockImport() {
+  showMockConfirm.value = false
+  try {
+    const { seedMockData } = await import('@/scripts/seedMockData')
+    const result = await seedMockData()
+    dataSuccessMsg.value = `已导入 ${result.transactions} 条交易记录、${result.tags} 个标签`
+    dataErrorMsg.value = ''
+  } catch (e) {
+    dataErrorMsg.value = '导入失败：' + (e instanceof Error ? e.message : '未知错误')
     dataSuccessMsg.value = ''
   }
 }
@@ -264,6 +295,8 @@ async function handleDestroy() {
 .row-right { display: flex; align-items: center; gap: 6px; }
 .row-status { font-size: 13px; color: #8e8e93; }
 .row-value { font-size: 13px; color: #8e8e93; }
+.row-label--dev { font-size: 13px; color: #8e8e93; }
+.section-row--dev:active { background: rgba(0,0,0,0.03); }
 
 .chevron { color: #c7c7cc; flex-shrink: 0; transition: transform 0.2s; }
 
@@ -277,6 +310,7 @@ async function handleDestroy() {
 .modal-actions { display: flex; gap: 12px; justify-content: center; }
 .btn-cancel { flex: 1; height: 44px; border-radius: 10px; border: none; background: #f2f2f6; color: #1c1c1e; font-size: 16px; font-weight: 500; cursor: pointer; font-family: inherit; }
 .btn-danger { height: 44px; padding: 0 24px; border-radius: 10px; border: none; background: #ff3b30; color: #fff; font-size: 16px; font-weight: 500; cursor: pointer; font-family: inherit; }
+.btn-primary { height: 44px; padding: 0 24px; border-radius: 10px; border: none; background: #007aff; color: #fff; font-size: 16px; font-weight: 500; cursor: pointer; font-family: inherit; }
 
 /* Toast messages */
 .data-msg {
