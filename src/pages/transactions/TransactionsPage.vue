@@ -89,6 +89,14 @@
             />
           </div>
         </div>
+        <!-- Load more button (only in default mode, when not filtered by a specific month) -->
+        <button
+          v-if="!dateFilterActive && transactions.length > 0"
+          class="load-more-btn"
+          @click="defaultBackMonths += 3"
+        >
+          加载更早记录
+        </button>
       </div>
     </div>
 
@@ -129,8 +137,30 @@ import EmptyState from '@/components/common/EmptyState.vue'
 const transactionStore = useTransactionStore()
 const categoryStore = useCategoryStore()
 
+// ── Paginated / Date-Range-Bounded data loading ──
+// Default: show last N months of data. "加载更早记录" extends by 3.
+const DEFAULT_BACK_MONTHS = 3
+const defaultBackMonths = ref(DEFAULT_BACK_MONTHS)
+
+const queryDateRange = computed(() => {
+  const now = new Date()
+  if (dateFilterActive.value) {
+    // Specific month selected via date filter bar
+    const start = new Date(filterYear.value, filterMonth.value - 1, 1)
+    const end = new Date(filterYear.value, filterMonth.value, 0)
+    return { start: toDateString(start), end: toDateString(end) }
+  }
+  // Default: from N months ago to end of current month (to catch future-dated entries)
+  const startDate = new Date(now.getFullYear(), now.getMonth() - defaultBackMonths.value + 1, 1)
+  return { start: toDateString(startDate), end: toDateString(now) }
+})
+
 const transactions = useLiveQuery<Transaction[]>(() =>
-  db.transactions.orderBy('id').reverse().toArray(),
+  db.transactions
+    .where('date')
+    .between(queryDateRange.value.start, queryDateRange.value.end, true, true)
+    .reverse()
+    .toArray(),
   [],
 )
 
@@ -215,6 +245,7 @@ function clearDateFilter() {
   dateFilterActive.value = false
   filterYear.value = now.getFullYear()
   filterMonth.value = now.getMonth() + 1
+  defaultBackMonths.value = DEFAULT_BACK_MONTHS
 }
 
 watch(searchOpen, (open, prev) => {
@@ -228,12 +259,6 @@ watch(searchOpen, (open, prev) => {
 
 const filteredTransactions = computed(() => {
   let list = transactions.value
-
-  // Date filter
-  if (dateFilterActive.value) {
-    const prefix = `${filterYear.value}-${String(filterMonth.value).padStart(2, '0')}`
-    list = list.filter((tx) => tx.date.startsWith(prefix))
-  }
 
   if (selectedCategoryId.value != null) {
     const sel = selectedCategoryId.value
@@ -542,5 +567,27 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 
 .total-expense {
   color: #34c759;
+}
+
+/* Load more button */
+.load-more-btn {
+  display: block;
+  width: calc(100% - 24px);
+  margin: 12px;
+  padding: 12px;
+  border: 1px dashed #c7c7cc;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.5);
+  font-size: 14px;
+  color: #007aff;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: center;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.load-more-btn:active {
+  background: rgba(0, 122, 255, 0.08);
 }
 </style>
