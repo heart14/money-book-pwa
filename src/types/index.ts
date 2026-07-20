@@ -27,6 +27,11 @@ export interface Transaction {
   time: string
 }
 
+export interface Tag {
+  id?: number
+  name: string
+}
+
 export interface RecurringRule {
   id?: number
   type: 'expense' | 'income'

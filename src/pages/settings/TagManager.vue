@@ -6,8 +6,8 @@
     </button>
     <div v-if="expanded" class="expanded-content">
       <div v-if="tags.length === 0" class="empty-hint">暂无标签</div>
-      <div v-for="tag in tags" :key="tag" class="tag-item">
-        <span class="tag-name">{{ tag }}</span>
+      <div v-for="tag in tags" :key="tag.id" class="tag-item">
+        <span class="tag-name">{{ tag.name }}</span>
         <button class="tag-delete" @click="confirmDelete(tag)">删除</button>
       </div>
       <div class="tag-add-row">
@@ -16,54 +16,97 @@
       </div>
     </div>
 
-    <!-- Delete confirm -->
-    <div v-if="tagToDelete" class="modal-overlay" @click.self="tagToDelete = ''">
+    <!-- Delete confirm: also remove from transactions? -->
+    <div v-if="deleteTarget" class="modal-overlay" @click.self="deleteTarget = null">
       <div class="modal-content">
-        <p class="modal-desc">确认删除标签「{{ tagToDelete }}」？</p>
-        <div class="modal-actions">
-          <button class="btn-cancel" @click="tagToDelete = ''">取消</button>
-          <button class="btn-danger" @click="handleDelete">删除</button>
+        <p class="modal-desc">确认删除标签「{{ deleteTarget.name }}」？<br v-if="deleteUsageCount > 0"><span v-if="deleteUsageCount > 0" class="modal-hint">该标签用于 {{ deleteUsageCount }} 条交易记录</span></p>
+        <div class="modal-actions-col">
+          <button class="btn-block btn-danger" v-if="deleteUsageCount > 0" @click="handleDeleteRemovingFromTxs">删除并从交易记录移除</button>
+          <button class="btn-block btn-cancel" @click="handleDeleteRegistryOnly">仅从标签列表删除</button>
+          <button class="btn-block btn-cancel" @click="deleteTarget = null">取消</button>
         </div>
       </div>
     </div>
+
+    <!-- Toast -->
+    <div v-if="toastMsg" class="toast-msg" @click="toastMsg = ''">{{ toastMsg }}</div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue'
+import { ref } from 'vue'
 import { db } from '@/db'
+import { useLiveQuery } from '@/composables/useLiveQuery'
+import type { Tag } from '@/types'
 
 const expanded = ref(false)
 
-const tags = ref<string[]>([])
+// Live-query the tags table — reactive, persisted
+const tags = useLiveQuery<Tag[]>(
+  () => db.tags.orderBy('name').toArray(),
+  [],
+)
+
+// ── Add ──
 const newTag = ref('')
-const tagToDelete = ref('')
 
-async function loadTags() {
-  const allTxs = await db.transactions.toArray()
-  const tagSet = new Set<string>()
-  for (const tx of allTxs) {
-    for (const tag of tx.tags) tagSet.add(tag)
+async function addTag() {
+  const name = newTag.value.trim()
+  if (!name) return
+  // Prevent duplicate via unique index — Dexie will throw, catch gracefully
+  try {
+    await db.tags.add({ name })
+    newTag.value = ''
+  } catch (e) {
+    toastMsg.value = `标签「${name}」已存在`
   }
-  tags.value = Array.from(tagSet).sort()
-}
-watchEffect(() => { loadTags() })
-
-function addTag() {
-  const t = newTag.value.trim()
-  if (!t || tags.value.includes(t)) return
-  tags.value.push(t)
-  tags.value.sort()
-  newTag.value = ''
 }
 
-function confirmDelete(tag: string) {
-  tagToDelete.value = tag
+// ── Delete ──
+const deleteTarget = ref<Tag | null>(null)
+const deleteUsageCount = ref(0)
+const toastMsg = ref('')
+
+async function confirmDelete(tag: Tag) {
+  // Count usages in transactions
+  const allTxs = await db.transactions.toArray()
+  deleteUsageCount.value = allTxs.filter((tx) => tx.tags.includes(tag.name)).length
+  deleteTarget.value = tag
 }
 
-function handleDelete() {
-  tags.value = tags.value.filter((t) => t !== tagToDelete.value)
-  tagToDelete.value = ''
+/** Remove tag from registry AND from all transactions */
+async function handleDeleteRemovingFromTxs() {
+  const tag = deleteTarget.value
+  if (!tag || tag.id == null) return
+  const name = tag.name
+
+  // Remove from transactions
+  const txs = await db.transactions
+    .filter((tx) => tx.tags.includes(name))
+    .toArray()
+  for (const tx of txs) {
+    if (tx.id != null) {
+      await db.transactions.update(tx.id, {
+        tags: tx.tags.filter((t) => t !== name),
+      })
+    }
+  }
+
+  // Remove from registry
+  await db.tags.delete(tag.id)
+
+  deleteTarget.value = null
+  toastMsg.value = `标签「${name}」已删除（已从 ${txs.length} 条记录中移除）`
+}
+
+/** Remove tag from registry only — leave transactions untouched */
+async function handleDeleteRegistryOnly() {
+  const tag = deleteTarget.value
+  if (!tag || tag.id == null) return
+
+  await db.tags.delete(tag.id)
+  deleteTarget.value = null
+  toastMsg.value = `标签「${tag.name}」已从标签列表删除`
 }
 </script>
 
@@ -106,9 +149,37 @@ function handleDelete() {
 
 /* Modal */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; display: flex; align-items: center; justify-content: center; }
-.modal-content { width: 280px; background: #fff; border-radius: 16px; padding: 24px; }
-.modal-desc { font-size: 14px; color: #1c1c1e; text-align: center; margin-bottom: 16px; }
-.modal-actions { display: flex; gap: 12px; justify-content: center; }
-.btn-cancel { flex: 1; height: 44px; border-radius: 10px; border: none; background: #f2f2f6; color: #1c1c1e; font-size: 16px; font-weight: 500; cursor: pointer; font-family: inherit; }
-.btn-danger { height: 44px; padding: 0 24px; border-radius: 10px; border: none; background: #ff3b30; color: #fff; font-size: 16px; font-weight: 500; cursor: pointer; font-family: inherit; }
+.modal-content { width: 300px; background: #fff; border-radius: 16px; padding: 24px; }
+.modal-desc { font-size: 14px; color: #1c1c1e; text-align: center; margin-bottom: 8px; }
+.modal-hint { font-size: 12px; color: #8e8e93; }
+.modal-actions-col { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+
+.btn-block { width: 100%; height: 44px; border-radius: 10px; border: none; font-size: 15px; font-weight: 500; cursor: pointer; font-family: inherit; }
+.btn-block:active { opacity: 0.7; }
+.btn-danger { background: #ff3b30; color: #fff; }
+.btn-cancel { background: #f2f2f6; color: #1c1c1e; }
+
+/* Toast */
+.toast-msg {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 24px;
+  border-radius: 12px;
+  background: #1c1c1e;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 1100;
+  cursor: pointer;
+  animation: toastIn 0.25s ease;
+  max-width: 80%;
+  text-align: center;
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
 </style>
