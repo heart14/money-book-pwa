@@ -1,11 +1,5 @@
 <template>
-  <div
-    class="ptr-container"
-    @touchstart="onTouchStart"
-    @touchmove="onTouchMove"
-    @touchend="onTouchEnd"
-    @touchcancel="onTouchEnd"
-  >
+  <div ref="containerEl" class="ptr-container">
     <!-- Pull indicator -->
     <div
       class="ptr-indicator"
@@ -29,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 const emit = defineEmits<{
   refresh: []
@@ -40,19 +34,20 @@ const MAX_PULL = 120
 
 let touchStartY = 0
 let isPulling = false
-let isAtTop = false
 
 const pullDist = ref(0)
 const refreshing = ref(false)
 
+const containerEl = ref<HTMLElement | null>(null)
+
 function onTouchStart(e: TouchEvent) {
   if (refreshing.value) return
   if (e.touches.length !== 1) return
-  // Only activate when scrolled to top
-  isAtTop = window.scrollY === 0
-  if (!isAtTop) return
+  if (window.scrollY !== 0) return
   touchStartY = e.touches[0].clientY
   isPulling = true
+  // Lock body scroll so the page can't fight the pull gesture
+  document.body.style.overflow = 'hidden'
 }
 
 function onTouchMove(e: TouchEvent) {
@@ -62,15 +57,15 @@ function onTouchMove(e: TouchEvent) {
     pullDist.value = 0
     return
   }
-  // Prevent native scroll bounce while pulling
-  e.preventDefault()
-  // Rubber-band damping
+  // Rubber-band damping (body.overflow=hidden already stops native scroll)
   pullDist.value = Math.min(raw * 0.5, MAX_PULL)
 }
 
 function onTouchEnd() {
   if (!isPulling) return
   isPulling = false
+  // Restore body scroll
+  document.body.style.overflow = ''
 
   if (pullDist.value >= THRESHOLD) {
     refreshing.value = true
@@ -87,6 +82,24 @@ function doneRefreshing() {
 }
 
 defineExpose({ doneRefreshing })
+
+onMounted(() => {
+  const el = containerEl.value
+  if (!el) return
+  el.addEventListener('touchstart', onTouchStart as EventListener, { passive: true })
+  el.addEventListener('touchmove', onTouchMove as EventListener)
+  el.addEventListener('touchend', onTouchEnd)
+  el.addEventListener('touchcancel', onTouchEnd)
+})
+
+onUnmounted(() => {
+  const el = containerEl.value
+  if (!el) return
+  el.removeEventListener('touchstart', onTouchStart as EventListener)
+  el.removeEventListener('touchmove', onTouchMove as EventListener)
+  el.removeEventListener('touchend', onTouchEnd)
+  el.removeEventListener('touchcancel', onTouchEnd)
+})
 
 const indicatorStyle = computed(() => ({
   height: refreshing.value ? `${THRESHOLD}px` : `${pullDist.value}px`,
@@ -105,7 +118,6 @@ const contentStyle = computed(() => {
 <style scoped>
 .ptr-container {
   position: relative;
-  /* Intentionally no overflow hidden — let window scroll naturally */
 }
 
 .ptr-indicator {
@@ -155,6 +167,5 @@ const contentStyle = computed(() => {
 .ptr-content {
   will-change: transform;
   transition: transform 0.3s ease;
-  /* minimal top padding so indicator doesn't overlap content when visible */
 }
 </style>

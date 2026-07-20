@@ -52,7 +52,7 @@
           placeholder="搜索标题、备注或标签..."
         />
         <button v-if="searchQuery" class="search-clear-btn" @click="searchQuery = ''">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="#8e8e93"><circle cx="12" cy="12" r="12"/></svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="#007aff"><circle cx="12" cy="12" r="12"/></svg>
           <span class="search-clear-x">✕</span>
         </button>
       </div>
