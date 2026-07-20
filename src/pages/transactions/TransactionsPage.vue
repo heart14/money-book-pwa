@@ -25,13 +25,15 @@
     <!-- Date filter bar (expandable) -->
     <div v-if="showDatePicker" class="date-filter-bar">
       <div class="date-filter-inner">
-        <button class="date-nav-btn" @click="prevMonth">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6" /></svg>
-        </button>
-        <span class="date-filter-label">{{ filterYear }}年{{ filterMonth }}月</span>
-        <button class="date-nav-btn" @click="nextMonth">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2.5" stroke-linecap="round"><polyline points="9 6 15 12 9 18" /></svg>
-        </button>
+        <div class="date-nav-group">
+          <button class="date-nav-btn" @click="prevMonth">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6" /></svg>
+          </button>
+          <span class="date-filter-label">{{ filterYear }}年{{ filterMonth }}月</span>
+          <button class="date-nav-btn" @click="nextMonth">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2.5" stroke-linecap="round"><polyline points="9 6 15 12 9 18" /></svg>
+          </button>
+        </div>
         <button v-if="dateFilterActive" class="date-clear-btn" @click="clearDateFilter">清除</button>
       </div>
     </div>
@@ -49,6 +51,10 @@
           class="search-input"
           placeholder="搜索标题、备注或标签..."
         />
+        <button v-if="searchQuery" class="search-clear-btn" @click="searchQuery = ''">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#8e8e93"><circle cx="12" cy="12" r="12"/></svg>
+          <span class="search-clear-x">✕</span>
+        </button>
       </div>
     </div>
 
@@ -530,15 +536,21 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 }
 
 .date-filter-inner {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
   height: 40px;
   background: rgba(255,255,255,0.8);
   backdrop-filter: blur(10px);
   border-radius: 10px;
   padding: 0 12px;
+}
+
+.date-nav-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .date-nav-btn {
@@ -562,6 +574,8 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 }
 
 .date-clear-btn {
+  position: absolute;
+  right: 12px;
   border: none;
   background: #007aff;
   color: #fff;
@@ -595,6 +609,28 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 
 .search-input::placeholder {
   color: var(--color-secondary-text);
+}
+
+.search-clear-btn {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.search-clear-x {
+  position: absolute;
+  font-size: 10px;
+  color: #fff;
+  line-height: 1;
+  pointer-events: none;
 }
 
 /* Content area */
