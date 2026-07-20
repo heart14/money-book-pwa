@@ -137,6 +137,26 @@ import EmptyState from '@/components/common/EmptyState.vue'
 const transactionStore = useTransactionStore()
 const categoryStore = useCategoryStore()
 
+// ── Core reactive state (must be declared before any usage) ──
+const selectedCategoryId = ref<number | null>(null)
+const searchQuery = ref('')
+const searchOpen = ref(false)
+const showDatePicker = ref(false)
+const searchInputRef = ref<HTMLInputElement | null>(null)
+
+// ── Initialize search from route query tag param ──
+const route = useRoute()
+if (route.query.tag && typeof route.query.tag === 'string') {
+  searchQuery.value = route.query.tag
+  searchOpen.value = true
+}
+
+// ── Date filter state (must be declared before queryDateRange) ──
+const now = new Date()
+const filterYear = ref(now.getFullYear())
+const filterMonth = ref(now.getMonth() + 1)
+const dateFilterActive = ref(false)
+
 // ── Paginated / Date-Range-Bounded data loading ──
 // Default: show last N months of data. "加载更早记录" extends by 3.
 const DEFAULT_BACK_MONTHS = 3
@@ -191,19 +211,6 @@ const childIdsByParent = computed(() => {
   return map
 })
 
-const selectedCategoryId = ref<number | null>(null)
-const searchQuery = ref('')
-const searchOpen = ref(false)
-const showDatePicker = ref(false)
-const searchInputRef = ref<HTMLInputElement | null>(null)
-
-// Initialize search from route query tag param
-const route = useRoute()
-if (route.query.tag && typeof route.query.tag === 'string') {
-  searchQuery.value = route.query.tag
-  searchOpen.value = true
-}
-
 // React to route query changes (e.g. navigating from stats page while already on transactions page)
 watch(
   () => route.query.tag,
@@ -214,12 +221,6 @@ watch(
     }
   },
 )
-
-// Date filter state
-const now = new Date()
-const filterYear = ref(now.getFullYear())
-const filterMonth = ref(now.getMonth() + 1)
-const dateFilterActive = ref(false)
 
 function prevMonth() {
   dateFilterActive.value = true
