@@ -101,17 +101,18 @@
         <div class="chart-title">标签聚合</div>
         <div v-if="tagAggregation.length === 0" class="empty-text">暂无数据</div>
         <div class="tags-wrap" v-if="tagAggregation.length > 0">
-          <div class="tag-chip tag-chip--total">
+          <div class="tag-chip tag-chip--total" @click="navigateToTag('')">
             <span class="tag-text">汇总</span>
-            <span class="tag-amount">{{ formatShortCurrency(tagTotalAmount) }}</span>
+            <span class="tag-amount">{{ formatCurrency(tagTotalAmount) }}</span>
           </div>
           <div
             v-for="tag in tagAggregation"
             :key="tag.name"
             class="tag-chip"
+            @click="navigateToTag(tag.name)"
           >
             <span class="tag-text">#{{ tag.name }}</span>
-            <span class="tag-amount">{{ formatShortCurrency(tag.amount) }}</span>
+            <span class="tag-amount">{{ formatCurrency(tag.amount) }}</span>
           </div>
         </div>
       </div>
@@ -121,10 +122,11 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { db } from '@/db'
 import { useCategoryStore } from '@/stores/categoryStore'
 import { useLiveQuery } from '@/composables/useLiveQuery'
-import { formatCurrency, formatShortCurrency } from '@/utils/format'
+import { formatCurrency } from '@/utils/format'
 import VChart from 'vue-echarts'
 import type { Transaction } from '@/types'
 const categoryStore = useCategoryStore()
@@ -331,6 +333,16 @@ const tagAggregation = computed(() => aggregateByTag(transactions.value))
 const tagTotalAmount = computed(() =>
   tagAggregation.value.reduce((sum, t) => sum + t.amount, 0),
 )
+
+const router = useRouter()
+
+function navigateToTag(tagName: string) {
+  if (tagName) {
+    router.push({ name: 'transactions', query: { tag: tagName } })
+  } else {
+    router.push({ name: 'transactions' })
+  }
+}
 
 const rankColors = ['#ff3b30', '#ff9500', '#ffcc00']
 
@@ -596,6 +608,13 @@ function rankLabel(index: number): string {
   padding: 6px 14px;
   font-size: 13px;
   color: #1c1c1e;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  user-select: none;
+}
+
+.tag-chip:active {
+  opacity: 0.6;
 }
 
 .tag-chip--total {

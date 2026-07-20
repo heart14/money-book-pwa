@@ -112,7 +112,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watchEffect, nextTick } from 'vue'
+import { ref, computed, watch, watchEffect, nextTick } from 'vue'
+import { useRoute } from 'vue-router'
 import { db } from '@/db'
 import { useTransactionStore } from '@/stores/transactionStore'
 import { useCategoryStore } from '@/stores/categoryStore'
@@ -165,6 +166,24 @@ const searchQuery = ref('')
 const searchOpen = ref(false)
 const showDatePicker = ref(false)
 const searchInputRef = ref<HTMLInputElement | null>(null)
+
+// Initialize search from route query tag param
+const route = useRoute()
+if (route.query.tag && typeof route.query.tag === 'string') {
+  searchQuery.value = route.query.tag
+  searchOpen.value = true
+}
+
+// React to route query changes (e.g. navigating from stats page while already on transactions page)
+watch(
+  () => route.query.tag,
+  (tag) => {
+    if (typeof tag === 'string') {
+      searchQuery.value = tag
+      searchOpen.value = true
+    }
+  },
+)
 
 // Date filter state
 const now = new Date()
