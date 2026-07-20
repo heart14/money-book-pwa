@@ -201,15 +201,35 @@ watch([dateFilterActive, filterYear, filterMonth, () => route.query.tag], () => 
 })
 
 // ── Pull-to-refresh ──
+const REFRESH_MIN_MS = 800
+
 async function handleRefresh() {
-  refreshKey.value++ // triggers useLiveQuery re-subscribe
-  // Wait for next tick so the updated query fires
-  await nextTick()
-  // Watch for the data to settle, then hide indicator
+  // 1. Reset filters
+  searchQuery.value = ''
+  searchOpen.value = false
+  selectedCategoryId.value = null
+  clearDateFilter()
+
+  // 2. Trigger re-query
+  refreshKey.value++
+
+  // 3. Keep spinner visible for at least REFRESH_MIN_MS
+  const start = Date.now()
+
   const unwatch = watch(transactions, () => {
-    ptrRef.value?.doneRefreshing()
-    unwatch()
+    const elapsed = Date.now() - start
+    const remaining = REFRESH_MIN_MS - elapsed
+    if (remaining <= 0) {
+      ptrRef.value?.doneRefreshing()
+      unwatch()
+    } else {
+      setTimeout(() => {
+        ptrRef.value?.doneRefreshing()
+        unwatch()
+      }, remaining)
+    }
   })
+
   // Safety timeout (3s) in case watcher doesn't fire
   setTimeout(() => {
     ptrRef.value?.doneRefreshing()
