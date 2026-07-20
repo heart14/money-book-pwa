@@ -40,7 +40,7 @@ import { useCategoryStore } from '@/stores/categoryStore'
 import type { Category } from '@/types'
 
 const props = defineProps<{
-  type: 'expense' | 'income'
+  type: 'expense' | 'income' | 'transfer'
   selectedCategoryId: number | null
 }>()
 

@@ -21,7 +21,7 @@
 
       <button
         class="nav-item"
-        :class="{ active: currentRoute === 'accounts' || currentRoute === 'account-detail' }"
+        :class="{ active: currentRoute === 'accounts' }"
         @click="navigate('accounts')"
       >
         <span class="nav-emoji">🏦</span>

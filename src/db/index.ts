@@ -9,10 +9,10 @@ export class MoneyBookDB extends Dexie {
 
   constructor() {
     super('moneybook')
-    this.version(1).stores({
-      accounts: '++id, groupId, name',
+    this.version(2).stores({
+      accounts: '++id, name',
       categories: '++id, type, parentId',
-      transactions: '++id, type, date, fromAccountId, toAccountId, categoryId',
+      transactions: '++id, type, date, categoryId',
       recurringRules: '++id, enabled, dayOfMonth',
     })
   }

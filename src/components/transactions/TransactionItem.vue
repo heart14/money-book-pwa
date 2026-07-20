@@ -2,15 +2,22 @@
   <div class="transaction-item" @click="$emit('click')">
     <div class="item-col">
       <div class="item-icon">
-        {{ categoryIcon || '🔄' }}
+        {{ categoryIcon || '📋' }}
       </div>
       <div class="item-info">
-        <div class="item-title">{{ title || categoryName || '转账' }}</div>
-        <div class="item-sub">{{ categoryName || '转账' }} · {{ displayTime }}</div>
+        <div class="item-title">{{ title || categoryName }}</div>
+        <div class="item-sub">
+          <template v-if="transaction.type !== 'transfer'">
+            {{ categoryName }} · {{ displayTime }}
+          </template>
+          <template v-else>
+            转账 · {{ displayTime }}
+          </template>
+        </div>
       </div>
     </div>
     <div class="item-amount" :class="amountClass">
-      {{ amountSign }}¥{{ displayAmount }}
+      {{ amountSign }}{{ displayAmount }}
       <div v-if="transaction.tags?.length" class="item-tags">
         <span v-for="tag in transaction.tags" :key="tag">#{{ tag }}</span>
       </div>
@@ -26,7 +33,6 @@ import { formatCurrency } from '@/utils/format'
 const props = defineProps<{
   transaction: Transaction
   title: string
-  accountName: string
   categoryName: string
   categoryIcon: string
 }>()
@@ -47,13 +53,14 @@ const amountClass = computed(() => {
 
 const amountSign = computed(() => {
   switch (props.transaction.type) {
-    case 'expense': return '-'
-    case 'income': return '+'
+    case 'expense': return '-¥'
+    case 'income': return '+¥'
     case 'transfer': return ''
   }
 })
 
 const displayAmount = computed(() => {
+  // For consistency, always truncate ¥ from formatCurrency result
   const full = formatCurrency(props.transaction.amount)
   return full.replace('¥', '')
 })

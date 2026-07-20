@@ -1,7 +1,6 @@
 export interface Account {
   id?: number
   name: string
-  groupId: 'liquid' | 'restricted' | 'claim' | 'debt'
   balance: number
   icon: string
   sort: number
@@ -9,7 +8,7 @@ export interface Account {
 
 export interface Category {
   id?: number
-  type: 'expense' | 'income'
+  type: 'expense' | 'income' | 'transfer'
   parentId: number | null
   name: string
   icon: string
@@ -21,8 +20,6 @@ export interface Transaction {
   type: 'expense' | 'income' | 'transfer'
   title: string
   amount: number
-  fromAccountId: number | null
-  toAccountId: number | null
   categoryId: number | null
   tags: string[]
   note: string
@@ -32,11 +29,9 @@ export interface Transaction {
 
 export interface RecurringRule {
   id?: number
-  type: 'expense' | 'income' | 'transfer'
+  type: 'expense' | 'income'
   title: string
   amount: number
-  fromAccountId: number
-  toAccountId: number | null
   categoryId: number | null
   tags: string[]
   note: string

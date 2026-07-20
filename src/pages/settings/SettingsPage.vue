@@ -187,15 +187,6 @@
               <input v-model="accountForm.name" class="form-input" placeholder="账户名称" />
             </div>
             <div class="form-group">
-              <label class="form-label">分组</label>
-              <select v-model="accountForm.groupId" class="form-input">
-                <option value="liquid">流动性资产</option>
-                <option value="restricted">限制性资产</option>
-                <option value="claim">债权</option>
-                <option value="debt">负债</option>
-              </select>
-            </div>
-            <div class="form-group">
               <label class="form-label">图标</label>
               <input v-model="accountForm.icon" class="form-input" placeholder="💳" maxlength="4" />
             </div>
@@ -256,26 +247,11 @@
               <select v-model="ruleForm.type" class="form-input">
                 <option value="expense">支出</option>
                 <option value="income">收入</option>
-                <option value="transfer">转账</option>
               </select>
             </div>
             <div class="form-group">
               <label class="form-label">金额（元）</label>
               <input v-model.number="ruleForm.amountYuan" class="form-input" type="number" step="0.01" min="0.01" placeholder="0.00" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">账户</label>
-              <select v-model="ruleForm.fromAccountId" class="form-input">
-                <option :value="0" disabled>选择账户</option>
-                <option v-for="acc in accountStore.accounts" :key="acc.id" :value="acc.id">{{ acc.icon }} {{ acc.name }}</option>
-              </select>
-            </div>
-            <div v-if="ruleForm.type === 'transfer'" class="form-group">
-              <label class="form-label">目标账户</label>
-              <select v-model="ruleForm.toAccountId" class="form-input">
-                <option :value="0" disabled>选择目标账户</option>
-                <option v-for="acc in accountStore.accounts" :key="acc.id" :value="acc.id">{{ acc.icon }} {{ acc.name }}</option>
-              </select>
             </div>
             <div class="form-group">
               <label class="form-label">每月第几日</label>
@@ -480,18 +456,18 @@ watchEffect(() => { loadRules() })
 const showRuleModal = ref(false)
 const editingRule = ref<RecurringRule | null>(null)
 const ruleToDelete = ref<RecurringRule | null>(null)
-const ruleForm = reactive({ type: 'expense' as 'expense' | 'income' | 'transfer', amountYuan: 0, fromAccountId: 0, toAccountId: 0, dayOfMonth: 1, note: '' })
-const canSaveRule = computed(() => ruleForm.amountYuan > 0 && ruleForm.fromAccountId > 0 && ruleForm.dayOfMonth >= 1 && ruleForm.dayOfMonth <= 31)
-function ruleTypeLabel(type: string): string { return type === 'expense' ? '支出' : type === 'income' ? '收入' : '转账' }
+const ruleForm = reactive({ type: 'expense' as 'expense' | 'income', amountYuan: 0, dayOfMonth: 1, note: '' })
+const canSaveRule = computed(() => ruleForm.amountYuan > 0 && ruleForm.dayOfMonth >= 1 && ruleForm.dayOfMonth <= 31)
+function ruleTypeLabel(type: string): string { return type === 'expense' ? '支出' : '收入' }
 function openAddRule() {
-  editingRule.value = null; ruleForm.type = 'expense'; ruleForm.amountYuan = 0; ruleForm.fromAccountId = 0; ruleForm.toAccountId = 0; ruleForm.dayOfMonth = 1; ruleForm.note = ''; showRuleModal.value = true
+  editingRule.value = null; ruleForm.type = 'expense'; ruleForm.amountYuan = 0; ruleForm.dayOfMonth = 1; ruleForm.note = ''; showRuleModal.value = true
 }
 function openEditRule(rule: RecurringRule) {
-  editingRule.value = rule; ruleForm.type = rule.type; ruleForm.amountYuan = rule.amount / 100; ruleForm.fromAccountId = rule.fromAccountId; ruleForm.toAccountId = rule.toAccountId ?? 0; ruleForm.dayOfMonth = rule.dayOfMonth; ruleForm.note = rule.note; showRuleModal.value = true
+  editingRule.value = rule; ruleForm.type = rule.type; ruleForm.amountYuan = rule.amount / 100; ruleForm.dayOfMonth = rule.dayOfMonth; ruleForm.note = rule.note; showRuleModal.value = true
 }
 async function handleSaveRule() {
   const amount = Math.round(ruleForm.amountYuan * 100)
-  const ruleData: Omit<RecurringRule, 'id'> = { type: ruleForm.type, title: ruleForm.note, amount, fromAccountId: ruleForm.fromAccountId, toAccountId: ruleForm.type === 'transfer' ? ruleForm.toAccountId : null, categoryId: null, tags: [], note: ruleForm.note, dayOfMonth: ruleForm.dayOfMonth, enabled: true, lastExecuted: null }
+  const ruleData: Omit<RecurringRule, 'id'> = { type: ruleForm.type, title: ruleForm.note, amount, categoryId: null, tags: [], note: ruleForm.note, dayOfMonth: ruleForm.dayOfMonth, enabled: true, lastExecuted: null }
   if (editingRule.value?.id) await db.recurringRules.update(editingRule.value.id, ruleData)
   else await db.recurringRules.add(ruleData)
   showRuleModal.value = false; editingRule.value = null; await loadRules()
@@ -553,7 +529,7 @@ const editAccountTarget = ref<Account | null>(null)
 const accountToDelete = ref<Account | null>(null)
 const accountDeleteMsg = ref('')
 const accountDeleteCanDelete = ref(false)
-const accountForm = reactive({ name: '', groupId: 'liquid' as Account['groupId'], icon: '🏦', initialBalance: 0, sort: 0 })
+const accountForm = reactive({ name: '', icon: '🏦', initialBalance: 0, sort: 0 })
 const editAccountForm = reactive({ name: '', icon: '🏦', balanceYuan: 0, sort: 0 })
 
 function openEditAccount(acc: Account) {
@@ -567,12 +543,11 @@ async function handleAddAccount() {
   if (!accountForm.name.trim()) return
   await accountStore.addAccount({
     name: accountForm.name.trim(),
-    groupId: accountForm.groupId,
     icon: accountForm.icon || '🏦',
     balance: Math.round(parseFloat(String(accountForm.initialBalance || '0')) * 100),
     sort: accountForm.sort,
   })
-  accountForm.name = ''; accountForm.groupId = 'liquid'; accountForm.icon = '🏦'; accountForm.initialBalance = 0; accountForm.sort = 0
+  accountForm.name = ''; accountForm.icon = '🏦'; accountForm.initialBalance = 0; accountForm.sort = 0
   showAddAccount.value = false
 }
 async function handleEditAccount() {
@@ -586,9 +561,8 @@ async function handleEditAccount() {
   editAccountTarget.value = null
 }
 async function deleteAccount(acc: Account) {
-  const count = await db.transactions.where('fromAccountId').equals(acc.id!).or('toAccountId').equals(acc.id!).count()
-  if (count > 0) { accountDeleteMsg.value = '该账户已有流水记录，无法删除'; accountDeleteCanDelete.value = false }
-  else { accountDeleteMsg.value = '确认删除账户「' + acc.name + '」？'; accountDeleteCanDelete.value = true }
+  accountDeleteMsg.value = '确认删除资产「' + acc.name + '」？'
+  accountDeleteCanDelete.value = true
   accountToDelete.value = acc
 }
 async function confirmAccountDelete() { if (accountToDelete.value?.id && accountDeleteCanDelete.value) { await accountStore.deleteAccount(accountToDelete.value.id) }; accountToDelete.value = null }

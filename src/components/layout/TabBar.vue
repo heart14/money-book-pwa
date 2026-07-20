@@ -66,7 +66,7 @@
     <!-- 账户 -->
     <button
       class="tab-item"
-      :class="{ active: currentRoute === 'accounts' || currentRoute === 'account-detail' }"
+      :class="{ active: currentRoute === 'accounts' }"
       @click="navigate('accounts')"
     >
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 6px;">

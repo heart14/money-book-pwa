@@ -83,7 +83,6 @@
               :key="tx.id"
               :transaction="tx"
               :title="tx.title || getCategoryName(tx.categoryId)"
-              :account-name="getAccountLabel(tx)"
               :category-name="getCategoryName(tx.categoryId)"
               :category-icon="getCategoryIcon(tx.categoryId)"
               @click="openDetail(tx)"
@@ -101,16 +100,21 @@
           <div class="sheet-body">
             <div class="sheet-header">
               <div class="sheet-icon-wrap">
-                <span class="sheet-icon">{{ getCategoryIcon(detailTx.categoryId) || '🔄' }}</span>
+                <span class="sheet-icon">{{ detailTx.type === 'transfer' ? '🔄' : getCategoryIcon(detailTx.categoryId) || '📋' }}</span>
               </div>
-              <div class="sheet-title">{{ detailTx.title || getCategoryName(detailTx.categoryId) || '转账' }}</div>
+              <div class="sheet-title">{{ detailTx.title || getCategoryName(detailTx.categoryId) }}</div>
               <div class="sheet-type-badge" :class="`badge-${detailTx.type}`">
                 {{ typeLabel(detailTx.type) }}
               </div>
             </div>
             <div class="sheet-amount" :class="`amount-${detailTx.type}`">
-              <span class="sheet-amount-sign">{{ detailTx.type === 'income' ? '+' : '-' }}</span>
-              <span class="sheet-amount-value">{{ formatPure(detailTx.amount) }}</span>
+              <template v-if="detailTx.type === 'transfer'">
+                <span class="sheet-amount-value">{{ formatPure(detailTx.amount) }}</span>
+              </template>
+              <template v-else>
+                <span class="sheet-amount-sign">{{ detailTx.type === 'income' ? '+' : '-' }}</span>
+                <span class="sheet-amount-value">{{ formatPure(detailTx.amount) }}</span>
+              </template>
             </div>
             <div class="sheet-details">
               <div v-if="detailTx.title" class="detail-row">
@@ -119,11 +123,7 @@
               </div>
               <div class="detail-row">
                 <span class="detail-label">分类</span>
-                <span class="detail-value">{{ getCategoryName(detailTx.categoryId) || '转账' }}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">账户</span>
-                <span class="detail-value">{{ getAccountLabel(detailTx) }}</span>
+                <span class="detail-value">{{ getCategoryName(detailTx.categoryId) }}</span>
               </div>
               <div class="detail-row">
                 <span class="detail-label">日期</span>
@@ -199,11 +199,7 @@
               </div>
               <div class="edit-row edit-row--meta">
                 <span class="edit-label">分类</span>
-                <span class="edit-meta">{{ getCategoryName(editTx.categoryId) || '转账' }}</span>
-              </div>
-              <div class="edit-row edit-row--meta">
-                <span class="edit-label">账户</span>
-                <span class="edit-meta">{{ getAccountLabel(editTx) }}</span>
+                <span class="edit-meta">{{ getCategoryName(editTx.categoryId) }}</span>
               </div>
             </div>
             <div class="edit-actions">
@@ -222,30 +218,20 @@ import { ref, computed, reactive, watchEffect, nextTick } from 'vue'
 import { db } from '@/db'
 import { useTransactionStore } from '@/stores/transactionStore'
 import { useCategoryStore } from '@/stores/categoryStore'
-import { useAccountStore } from '@/stores/accountStore'
 import { useLiveQuery } from '@/composables/useLiveQuery'
 import { formatCurrency, formatDate, toDateString } from '@/utils/format'
-import type { Transaction, Category, Account } from '@/types'
+import type { Transaction, Category } from '@/types'
 import TransactionItem from '@/components/transactions/TransactionItem.vue'
 import FilterChips from '@/components/transactions/FilterChips.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 
 const transactionStore = useTransactionStore()
 const categoryStore = useCategoryStore()
-const accountStore = useAccountStore()
 
 const transactions = useLiveQuery<Transaction[]>(() =>
   db.transactions.orderBy('id').reverse().toArray(),
   [],
 )
-
-const accountMap = computed(() => {
-  const map = new Map<number, Account>()
-  for (const a of accountStore.accounts) {
-    if (a.id != null) map.set(a.id, a)
-  }
-  return map
-})
 
 const categoryMap = computed(() => {
   const map = new Map<number, Category>()
@@ -422,21 +408,6 @@ const groupedTransactions = computed(() => {
 })
 
 const displayTransactions = computed(() => filteredTransactions.value)
-
-function getAccountLabel(tx: Transaction): string {
-  if (tx.type === 'transfer') {
-    const fromName = tx.fromAccountId != null
-      ? (accountMap.value.get(tx.fromAccountId)?.name ?? '未知')
-      : '未知'
-    const toName = tx.toAccountId != null
-      ? (accountMap.value.get(tx.toAccountId)?.name ?? '未知')
-      : '未知'
-    return `${fromName} → ${toName}`
-  }
-  const accountId = tx.type === 'income' ? tx.toAccountId : tx.fromAccountId
-  if (accountId == null) return '未知'
-  return accountMap.value.get(accountId)?.name ?? '未知'
-}
 
 function getCategoryName(categoryId: number | null | undefined): string {
   if (categoryId == null) return ''

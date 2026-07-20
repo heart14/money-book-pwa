@@ -19,11 +19,11 @@ export const useCategoryStore = defineStore('categories', () => {
     onCleanup(() => sub.unsubscribe())
   })
 
-  function getByType(type: 'expense' | 'income'): Category[] {
+  function getByType(type: 'expense' | 'income' | 'transfer'): Category[] {
     return categories.value.filter((c: Category) => c.type === type)
   }
 
-  function getParents(type?: 'expense' | 'income'): Category[] {
+  function getParents(type?: 'expense' | 'income' | 'transfer'): Category[] {
     let list = categories.value
     if (type !== undefined) list = list.filter((c: Category) => c.type === type)
     return list.filter((c: Category) => c.parentId === null)

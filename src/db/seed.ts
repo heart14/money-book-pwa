@@ -6,16 +6,10 @@ async function seedAccounts() {
   if (count > 0) return
 
   const accounts: Account[] = [
-    { name: '微信零钱', groupId: 'liquid', balance: 0, icon: '💳', sort: 1 },
-    { name: '支付宝余额', groupId: 'liquid', balance: 0, icon: '💳', sort: 2 },
-    { name: '银行卡', groupId: 'liquid', balance: 0, icon: '💳', sort: 3 },
-    { name: '支付宝小荷包', groupId: 'liquid', balance: 0, icon: '💳', sort: 4 },
-    { name: '公积金账户', groupId: 'restricted', balance: 0, icon: '💳', sort: 5 },
-    { name: '投资理财账户', groupId: 'restricted', balance: 0, icon: '💳', sort: 6 },
-    { name: '借出款项', groupId: 'claim', balance: 0, icon: '💳', sort: 7 },
-    { name: '信用卡', groupId: 'debt', balance: 0, icon: '💳', sort: 8 },
-    { name: '借入款项', groupId: 'debt', balance: 0, icon: '💳', sort: 9 },
-    { name: '房贷本金', groupId: 'debt', balance: 0, icon: '💳', sort: 10 },
+    { name: '银行卡', balance: 0, icon: '💳', sort: 1 },
+    { name: '支付宝', balance: 0, icon: '💳', sort: 2 },
+    { name: '微信', balance: 0, icon: '💳', sort: 3 },
+    { name: '现金', balance: 0, icon: '💵', sort: 4 },
   ]
 
   await db.accounts.bulkAdd(accounts)
@@ -126,6 +120,31 @@ async function seedCategories() {
     },
   ]
 
+  // --- Transfer Categories ---
+  const transferCategories: { parent: Omit<Category, 'id'>; children: Omit<Category, 'id'>[] }[] = [
+    {
+      parent: { type: 'transfer', parentId: null, name: '借入借出', icon: '🤝', sort: 1 },
+      children: [
+        { type: 'transfer', parentId: null, name: '借出', icon: '', sort: 1 },
+        { type: 'transfer', parentId: null, name: '收回', icon: '', sort: 2 },
+      ],
+    },
+    {
+      parent: { type: 'transfer', parentId: null, name: '存钱账户', icon: '🏦', sort: 2 },
+      children: [
+        { type: 'transfer', parentId: null, name: '存入', icon: '', sort: 1 },
+        { type: 'transfer', parentId: null, name: '取出', icon: '', sort: 2 },
+      ],
+    },
+    {
+      parent: { type: 'transfer', parentId: null, name: '理财账户', icon: '📈', sort: 3 },
+      children: [
+        { type: 'transfer', parentId: null, name: '买入', icon: '', sort: 1 },
+        { type: 'transfer', parentId: null, name: '赎回', icon: '', sort: 2 },
+      ],
+    },
+  ]
+
   // Insert parents first, then children with correct parentId
   for (const group of expenseCategories) {
     const parentId = await db.categories.add(group.parent)
@@ -136,6 +155,14 @@ async function seedCategories() {
   }
 
   for (const group of incomeCategories) {
+    const parentId = await db.categories.add(group.parent)
+    for (const child of group.children) {
+      child.parentId = parentId
+      await db.categories.add(child)
+    }
+  }
+
+  for (const group of transferCategories) {
     const parentId = await db.categories.add(group.parent)
     for (const child of group.children) {
       child.parentId = parentId
