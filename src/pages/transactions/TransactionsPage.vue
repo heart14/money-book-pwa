@@ -89,13 +89,13 @@
             />
           </div>
         </div>
-        <!-- Load more button (only in default mode, when not filtered by a specific month) -->
+        <!-- Load more button -->
         <button
-          v-if="!dateFilterActive && transactions.length > 0"
+          v-if="hasMore"
           class="load-more-btn"
-          @click="defaultBackMonths += 3"
+          @click="loadMore"
         >
-          加载更早记录
+          加载更多
         </button>
       </div>
     </div>
@@ -157,32 +157,42 @@ const filterYear = ref(now.getFullYear())
 const filterMonth = ref(now.getMonth() + 1)
 const dateFilterActive = ref(false)
 
-// ── Paginated / Date-Range-Bounded data loading ──
-// Default: show last N months of data. "加载更早记录" extends by 3.
-const DEFAULT_BACK_MONTHS = 3
-const defaultBackMonths = ref(DEFAULT_BACK_MONTHS)
+// ── Count-based pagination ──
+// Always load from DB with a count limit. If results exceed PAGE_SIZE,
+// show a "加载更多" button to increase the limit.
+const PAGE_SIZE = 100
+const loadLimit = ref(PAGE_SIZE + 1) // +1 to detect if more records exist
 
-const queryDateRange = computed(() => {
-  const now = new Date()
+const transactions = useLiveQuery<Transaction[]>(() => {
+  let query
   if (dateFilterActive.value) {
-    // Specific month selected via date filter bar
     const start = new Date(filterYear.value, filterMonth.value - 1, 1)
     const end = new Date(filterYear.value, filterMonth.value, 0)
-    return { start: toDateString(start), end: toDateString(end) }
+    query = db.transactions
+      .where('date')
+      .between(toDateString(start), toDateString(end), true, true)
+  } else {
+    query = db.transactions
+      .where('date')
+      .above('') // all records, ordered by date index
   }
-  // Default: from N months ago to end of current month (to catch future-dated entries)
-  const startDate = new Date(now.getFullYear(), now.getMonth() - defaultBackMonths.value + 1, 1)
-  return { start: toDateString(startDate), end: toDateString(now) }
-})
-
-const transactions = useLiveQuery<Transaction[]>(() =>
-  db.transactions
-    .where('date')
-    .between(queryDateRange.value.start, queryDateRange.value.end, true, true)
+  return query
     .reverse()
-    .toArray(),
-  [],
-)
+    .limit(loadLimit.value)
+    .toArray()
+}, [])
+
+/** Whether there are more DB records beyond the current limit */
+const hasMore = computed(() => transactions.value.length === loadLimit.value)
+
+function loadMore() {
+  loadLimit.value += PAGE_SIZE
+}
+
+// Reset pagination whenever the query scope changes
+watch([dateFilterActive, filterYear, filterMonth, () => route.query.tag], () => {
+  loadLimit.value = PAGE_SIZE + 1
+})
 
 const categoryMap = computed(() => {
   const map = new Map<number, Category>()
@@ -246,7 +256,6 @@ function clearDateFilter() {
   dateFilterActive.value = false
   filterYear.value = now.getFullYear()
   filterMonth.value = now.getMonth() + 1
-  defaultBackMonths.value = DEFAULT_BACK_MONTHS
 }
 
 watch(searchOpen, (open, prev) => {
@@ -355,7 +364,14 @@ const groupedTransactions = computed(() => {
   return result
 })
 
-const displayTransactions = computed(() => filteredTransactions.value)
+const displayTransactions = computed(() => {
+  // When hasMore is true, only render the first PAGE_SIZE items in DOM
+  const all = filteredTransactions.value
+  if (hasMore.value && all.length > PAGE_SIZE) {
+    return all.slice(0, PAGE_SIZE)
+  }
+  return all
+})
 
 function getCategoryName(categoryId: number | null | undefined): string {
   if (categoryId == null) return ''
