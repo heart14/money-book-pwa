@@ -17,19 +17,23 @@
     </div>
 
     <!-- Delete confirm: also remove from transactions? -->
-    <div v-if="deleteTarget" class="modal-overlay" @click.self="deleteTarget = null">
-      <div class="modal-content">
-        <p class="modal-desc">确认删除标签「{{ deleteTarget.name }}」？<br v-if="deleteUsageCount > 0"><span v-if="deleteUsageCount > 0" class="modal-hint">该标签用于 {{ deleteUsageCount }} 条交易记录</span></p>
-        <div class="modal-actions-col">
-          <button class="btn-block btn-danger" v-if="deleteUsageCount > 0" @click="handleDeleteRemovingFromTxs">删除并从交易记录移除</button>
-          <button class="btn-block btn-cancel" @click="handleDeleteRegistryOnly">仅从标签列表删除</button>
-          <button class="btn-block btn-cancel" @click="deleteTarget = null">取消</button>
+    <Teleport to="body">
+      <div v-if="deleteTarget" class="modal-overlay" @click.self="deleteTarget = null">
+        <div class="modal-content">
+          <p class="modal-desc">确认删除标签「{{ deleteTarget.name }}」？<br v-if="deleteUsageCount > 0"><span v-if="deleteUsageCount > 0" class="modal-hint">该标签用于 {{ deleteUsageCount }} 条交易记录</span></p>
+          <div class="modal-actions-col">
+            <button class="btn-block btn-danger" v-if="deleteUsageCount > 0" @click="handleDeleteRemovingFromTxs">删除并从交易记录移除</button>
+            <button class="btn-block btn-cancel" @click="handleDeleteRegistryOnly">仅从标签列表删除</button>
+            <button class="btn-block btn-cancel" @click="deleteTarget = null">取消</button>
+          </div>
         </div>
       </div>
-    </div>
+    </Teleport>
 
     <!-- Toast -->
-    <div v-if="toastMsg" class="toast-msg" @click="toastMsg = ''">{{ toastMsg }}</div>
+    <Teleport to="body">
+      <div v-if="toastMsg" class="toast-msg" @click="toastMsg = ''">{{ toastMsg }}</div>
+    </Teleport>
   </div>
 </template>
 

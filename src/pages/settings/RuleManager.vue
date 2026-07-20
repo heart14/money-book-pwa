@@ -29,48 +29,52 @@
     </div>
 
     <!-- Rule Modal (Add / Edit) -->
-    <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
-      <div class="modal-bottom tall">
-        <div class="modal-handle"></div>
-        <h3 class="modal-title">{{ editingRule ? '编辑规则' : '新增规则' }}</h3>
-        <div class="modal-body">
-          <div class="form-group">
-            <label class="form-label">类型</label>
-            <select v-model="form.type" class="form-input">
-              <option value="expense">支出</option>
-              <option value="income">收入</option>
-            </select>
+    <Teleport to="body">
+      <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
+        <div class="modal-bottom tall">
+          <div class="modal-handle"></div>
+          <h3 class="modal-title">{{ editingRule ? '编辑规则' : '新增规则' }}</h3>
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label">类型</label>
+              <select v-model="form.type" class="form-input">
+                <option value="expense">支出</option>
+                <option value="income">收入</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">金额（元）</label>
+              <input v-model.number="form.amountYuan" class="form-input" type="number" step="0.01" min="0.01" placeholder="0.00" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">每月第几日</label>
+              <input v-model.number="form.dayOfMonth" class="form-input" type="number" min="1" max="31" placeholder="1" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">备注</label>
+              <input v-model="form.note" class="form-input" placeholder="备注（可选）" maxlength="200" />
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label">金额（元）</label>
-            <input v-model.number="form.amountYuan" class="form-input" type="number" step="0.01" min="0.01" placeholder="0.00" />
+          <div class="modal-bottom-actions">
+            <button class="btn-primary" :disabled="!canSave" @click="handleSave">保存</button>
+            <button class="btn-cancel" @click="showModal = false">取消</button>
           </div>
-          <div class="form-group">
-            <label class="form-label">每月第几日</label>
-            <input v-model.number="form.dayOfMonth" class="form-input" type="number" min="1" max="31" placeholder="1" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">备注</label>
-            <input v-model="form.note" class="form-input" placeholder="备注（可选）" maxlength="200" />
-          </div>
-        </div>
-        <div class="modal-bottom-actions">
-          <button class="btn-primary" :disabled="!canSave" @click="handleSave">保存</button>
-          <button class="btn-cancel" @click="showModal = false">取消</button>
         </div>
       </div>
-    </div>
+    </Teleport>
 
     <!-- Delete confirm -->
-    <div v-if="deleteTarget" class="modal-overlay" @click.self="deleteTarget = null">
-      <div class="modal-content">
-        <p class="modal-desc">确认删除此周期规则？</p>
-        <div class="modal-actions">
-          <button class="btn-cancel" @click="deleteTarget = null">取消</button>
-          <button class="btn-danger" @click="handleDelete">删除</button>
+    <Teleport to="body">
+      <div v-if="deleteTarget" class="modal-overlay" @click.self="deleteTarget = null">
+        <div class="modal-content">
+          <p class="modal-desc">确认删除此周期规则？</p>
+          <div class="modal-actions">
+            <button class="btn-cancel" @click="deleteTarget = null">取消</button>
+            <button class="btn-danger" @click="handleDelete">删除</button>
+          </div>
         </div>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 

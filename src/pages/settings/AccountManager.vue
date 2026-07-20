@@ -35,75 +35,81 @@
     </div>
 
     <!-- Add Account Modal -->
-    <div v-if="showAddAccount" class="modal-overlay" @click.self="showAddAccount = false">
-      <div class="modal-bottom">
-        <div class="modal-handle"></div>
-        <h3 class="modal-title">新增账户</h3>
-        <div class="modal-body">
-          <div class="form-group">
-            <label class="form-label">名称</label>
-            <input v-model="addForm.name" class="form-input" placeholder="账户名称" />
+    <Teleport to="body">
+      <div v-if="showAddAccount" class="modal-overlay" @click.self="showAddAccount = false">
+        <div class="modal-bottom">
+          <div class="modal-handle"></div>
+          <h3 class="modal-title">新增账户</h3>
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label">名称</label>
+              <input v-model="addForm.name" class="form-input" placeholder="账户名称" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">图标</label>
+              <input v-model="addForm.icon" class="form-input" placeholder="💳" maxlength="4" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">初始余额 (¥)</label>
+              <input v-model.number="addForm.initialBalance" class="form-input" type="number" step="0.01" placeholder="0.00" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">排序</label>
+              <input v-model.number="addForm.sort" class="form-input" type="number" placeholder="0" />
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label">图标</label>
-            <input v-model="addForm.icon" class="form-input" placeholder="💳" maxlength="4" />
+          <div class="modal-bottom-actions">
+            <button class="btn-primary" :disabled="!addForm.name.trim()" @click="handleAdd">确认</button>
+            <button class="btn-cancel" @click="showAddAccount = false">取消</button>
           </div>
-          <div class="form-group">
-            <label class="form-label">初始余额 (¥)</label>
-            <input v-model.number="addForm.initialBalance" class="form-input" type="number" step="0.01" placeholder="0.00" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">排序</label>
-            <input v-model.number="addForm.sort" class="form-input" type="number" placeholder="0" />
-          </div>
-        </div>
-        <div class="modal-bottom-actions">
-          <button class="btn-primary" :disabled="!addForm.name.trim()" @click="handleAdd">确认</button>
-          <button class="btn-cancel" @click="showAddAccount = false">取消</button>
         </div>
       </div>
-    </div>
+    </Teleport>
 
     <!-- Edit Account Modal -->
-    <div v-if="editTarget" class="modal-overlay" @click.self="editTarget = null">
-      <div class="modal-bottom">
-        <div class="modal-handle"></div>
-        <h3 class="modal-title">编辑账户</h3>
-        <div class="modal-body">
-          <div class="form-group">
-            <label class="form-label">名称</label>
-            <input v-model="editForm.name" class="form-input" placeholder="账户名称" />
+    <Teleport to="body">
+      <div v-if="editTarget" class="modal-overlay" @click.self="editTarget = null">
+        <div class="modal-bottom">
+          <div class="modal-handle"></div>
+          <h3 class="modal-title">编辑账户</h3>
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label">名称</label>
+              <input v-model="editForm.name" class="form-input" placeholder="账户名称" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">图标</label>
+              <input v-model="editForm.icon" class="form-input" placeholder="💳" maxlength="4" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">余额 (¥)</label>
+              <input v-model.number="editForm.balanceYuan" class="form-input" type="number" step="0.01" placeholder="0.00" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">排序</label>
+              <input v-model.number="editForm.sort" class="form-input" type="number" placeholder="0" />
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label">图标</label>
-            <input v-model="editForm.icon" class="form-input" placeholder="💳" maxlength="4" />
+          <div class="modal-bottom-actions">
+            <button class="btn-primary" :disabled="!editForm.name.trim()" @click="handleEdit">保存</button>
+            <button class="btn-cancel" @click="editTarget = null">取消</button>
           </div>
-          <div class="form-group">
-            <label class="form-label">余额 (¥)</label>
-            <input v-model.number="editForm.balanceYuan" class="form-input" type="number" step="0.01" placeholder="0.00" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">排序</label>
-            <input v-model.number="editForm.sort" class="form-input" type="number" placeholder="0" />
-          </div>
-        </div>
-        <div class="modal-bottom-actions">
-          <button class="btn-primary" :disabled="!editForm.name.trim()" @click="handleEdit">保存</button>
-          <button class="btn-cancel" @click="editTarget = null">取消</button>
         </div>
       </div>
-    </div>
+    </Teleport>
 
     <!-- Delete Confirm -->
-    <div v-if="deleteTarget" class="modal-overlay" @click.self="deleteTarget = null">
-      <div class="modal-content">
-        <p class="modal-desc">确认删除资产「{{ deleteTarget.name }}」？</p>
-        <div class="modal-actions">
-          <button class="btn-cancel" @click="deleteTarget = null">取消</button>
-          <button class="btn-danger" @click="handleDelete">删除</button>
+    <Teleport to="body">
+      <div v-if="deleteTarget" class="modal-overlay" @click.self="deleteTarget = null">
+        <div class="modal-content">
+          <p class="modal-desc">确认删除资产「{{ deleteTarget.name }}」？</p>
+          <div class="modal-actions">
+            <button class="btn-cancel" @click="deleteTarget = null">取消</button>
+            <button class="btn-danger" @click="handleDelete">删除</button>
+          </div>
         </div>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
