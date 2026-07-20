@@ -217,9 +217,12 @@ function clearDateFilter() {
   filterMonth.value = now.getMonth() + 1
 }
 
-watchEffect(() => {
-  if (searchOpen.value) {
+watch(searchOpen, (open, prev) => {
+  if (open) {
     nextTick(() => searchInputRef.value?.focus())
+  } else if (prev !== undefined && !open) {
+    // Closing search bar — clear search query
+    searchQuery.value = ''
   }
 })
 
