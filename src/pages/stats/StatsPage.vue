@@ -100,14 +100,18 @@
       <div class="chart-card">
         <div class="chart-title">标签聚合</div>
         <div v-if="tagAggregation.length === 0" class="empty-text">暂无数据</div>
-        <div class="tags-wrap">
+        <div class="tags-wrap" v-if="tagAggregation.length > 0">
+          <div class="tag-chip tag-chip--total">
+            <span class="tag-text">汇总</span>
+            <span class="tag-amount">{{ formatShortCurrency(tagTotalAmount) }}</span>
+          </div>
           <div
             v-for="tag in tagAggregation"
             :key="tag.name"
             class="tag-chip"
           >
             <span class="tag-text">#{{ tag.name }}</span>
-            <span class="tag-amount">· {{ formatCurrency(tag.amount) }}</span>
+            <span class="tag-amount">{{ formatShortCurrency(tag.amount) }}</span>
           </div>
         </div>
       </div>
@@ -120,7 +124,7 @@ import { ref, computed } from 'vue'
 import { db } from '@/db'
 import { useCategoryStore } from '@/stores/categoryStore'
 import { useLiveQuery } from '@/composables/useLiveQuery'
-import { formatCurrency } from '@/utils/format'
+import { formatCurrency, formatShortCurrency } from '@/utils/format'
 import VChart from 'vue-echarts'
 import type { Transaction } from '@/types'
 const categoryStore = useCategoryStore()
@@ -323,6 +327,10 @@ const expenseRanking = computed(() =>
 )
 
 const tagAggregation = computed(() => aggregateByTag(transactions.value))
+
+const tagTotalAmount = computed(() =>
+  tagAggregation.value.reduce((sum, t) => sum + t.amount, 0),
+)
 
 const rankColors = ['#ff3b30', '#ff9500', '#ffcc00']
 
@@ -590,11 +598,21 @@ function rankLabel(index: number): string {
   color: #1c1c1e;
 }
 
+.tag-chip--total {
+  background: #007aff;
+  color: #fff;
+}
+
+.tag-chip--total .tag-amount {
+  color: rgba(255,255,255,0.85);
+}
+
 .tag-text {
   font-weight: 500;
 }
 
 .tag-amount {
   color: #8e8e93;
+  margin-left: 4px;
 }
 </style>

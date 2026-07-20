@@ -10,6 +10,20 @@ export function formatCurrency(n: number): string {
 }
 
 /**
+ * Format a number (in 分/cents) to a short currency string without forced decimals.
+ * Example: 128000 → "¥1,280", 35000 → "¥350", 12990 → "¥129.9"
+ */
+export function formatShortCurrency(n: number): string {
+  const yuan = n / 100
+  // Use up to 2 decimals, but omit trailing zeros
+  const formatted = yuan.toLocaleString('zh-CN', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  })
+  return `¥${formatted}`
+}
+
+/**
  * Format a date string (YYYY-MM-DD) to a human-readable label.
  * - Today → "今天"
  * - Yesterday → "昨天"
