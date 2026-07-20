@@ -93,135 +93,35 @@
     </div>
 
     <!-- Detail bottom sheet -->
-    <Teleport to="body">
-      <div v-if="detailTx != null" class="sheet-overlay" @click.self="detailTx = null">
-        <div class="sheet">
-          <div class="sheet-handle"></div>
-          <div class="sheet-body">
-            <div class="sheet-header">
-              <div class="sheet-icon-wrap">
-                <span class="sheet-icon">{{ detailTx.type === 'transfer' ? '🔄' : getCategoryIcon(detailTx.categoryId) || '📋' }}</span>
-              </div>
-              <div class="sheet-title">{{ detailTx.title || getCategoryName(detailTx.categoryId) }}</div>
-              <div class="sheet-type-badge" :class="`badge-${detailTx.type}`">
-                {{ typeLabel(detailTx.type) }}
-              </div>
-            </div>
-            <div class="sheet-amount" :class="`amount-${detailTx.type}`">
-              <template v-if="detailTx.type === 'transfer'">
-                <span class="sheet-amount-value">{{ formatPure(detailTx.amount) }}</span>
-              </template>
-              <template v-else>
-                <span class="sheet-amount-sign">{{ detailTx.type === 'income' ? '+' : '-' }}</span>
-                <span class="sheet-amount-value">{{ formatPure(detailTx.amount) }}</span>
-              </template>
-            </div>
-            <div class="sheet-details">
-              <div v-if="detailTx.title" class="detail-row">
-                <span class="detail-label">标题</span>
-                <span class="detail-value">{{ detailTx.title }}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">分类</span>
-                <span class="detail-value">{{ getCategoryName(detailTx.categoryId) }}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">日期</span>
-                <span class="detail-value">{{ detailTx.date }} {{ detailTx.time?.slice(0, 5) || '' }}</span>
-              </div>
-              <div v-if="detailTx.note" class="detail-row">
-                <span class="detail-label">备注</span>
-                <span class="detail-value">{{ detailTx.note }}</span>
-              </div>
-              <div v-if="detailTx.tags && detailTx.tags.length > 0" class="detail-row">
-                <span class="detail-label">标签</span>
-                <span class="detail-value">
-                  <span v-for="tag in detailTx.tags" :key="tag" class="detail-tag">{{ tag }}</span>
-                </span>
-              </div>
-            </div>
-            <div class="sheet-actions">
-              <button class="btn btn-secondary" @click="openEdit(detailTx)">编辑</button>
-              <button class="btn btn-danger" @click="handleDelete">删除</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Teleport>
+    <TransactionDetail
+      v-if="detailTx != null"
+      :transaction="detailTx"
+      @edit="openEdit"
+      @delete="handleDelete"
+      @close="detailTx = null"
+    />
 
     <!-- Edit bottom sheet -->
-    <Teleport to="body">
-      <div v-if="editTx != null" class="sheet-overlay" @click.self="editTx = null">
-        <div class="sheet">
-          <div class="sheet-handle"></div>
-          <div class="sheet-body">
-            <h3 class="edit-sheet-title">编辑交易</h3>
-            <div class="edit-form">
-              <div class="edit-row">
-                <label class="edit-label">标题</label>
-                <input v-model="editForm.title" class="edit-input" maxlength="100" />
-              </div>
-              <div class="edit-row">
-                <label class="edit-label">金额</label>
-                <div class="edit-amount-wrap">
-                  <span class="edit-amount-sign">¥</span>
-                  <input v-model.number="editForm.amountYuan" class="edit-input edit-amount-input" type="number" step="0.01" min="0" />
-                </div>
-              </div>
-              <div class="edit-row">
-                <label class="edit-label">日期</label>
-                <input v-model="editForm.date" class="edit-input" type="date" />
-              </div>
-              <div class="edit-row">
-                <label class="edit-label">时间</label>
-                <input v-model="editForm.time" class="edit-input" type="time" />
-              </div>
-              <div class="edit-row">
-                <label class="edit-label">备注</label>
-                <input v-model="editForm.note" class="edit-input" maxlength="200" />
-              </div>
-              <div class="edit-row">
-                <label class="edit-label">标签</label>
-                <div class="edit-tags-area">
-                  <span v-for="(tag, idx) in editForm.tags" :key="idx" class="edit-tag-chip">
-                    {{ tag }}
-                    <button class="edit-tag-remove" @click="editForm.tags.splice(idx, 1)">&times;</button>
-                  </span>
-                  <input
-                    v-model="editTagInput"
-                    class="edit-tag-input"
-                    placeholder="添加标签"
-                    maxlength="20"
-                    @keydown.enter.prevent="addEditTag"
-                    @keydown.,.prevent="addEditTag"
-                  />
-                </div>
-              </div>
-              <div class="edit-row edit-row--meta">
-                <span class="edit-label">分类</span>
-                <span class="edit-meta">{{ getCategoryName(editTx.categoryId) }}</span>
-              </div>
-            </div>
-            <div class="edit-actions">
-              <button class="btn btn-secondary" @click="editTx = null">取消</button>
-              <button class="btn btn-primary" :disabled="!editCanSave" @click="handleEditSave">保存</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Teleport>
+    <TransactionEdit
+      v-if="editTx != null"
+      :transaction="editTx"
+      @save="handleEditSave"
+      @close="editTx = null"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive, watchEffect, nextTick } from 'vue'
+import { ref, computed, watchEffect, nextTick } from 'vue'
 import { db } from '@/db'
 import { useTransactionStore } from '@/stores/transactionStore'
 import { useCategoryStore } from '@/stores/categoryStore'
 import { useLiveQuery } from '@/composables/useLiveQuery'
-import { formatCurrency, formatDate, toDateString } from '@/utils/format'
+import { formatCurrency, toDateString } from '@/utils/format'
 import type { Transaction, Category } from '@/types'
 import TransactionItem from '@/components/transactions/TransactionItem.vue'
+import TransactionDetail from '@/components/transactions/TransactionDetail.vue'
+import TransactionEdit from '@/components/transactions/TransactionEdit.vue'
 import FilterChips from '@/components/transactions/FilterChips.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 
@@ -419,82 +319,37 @@ function getCategoryIcon(categoryId: number | null | undefined): string {
   return categoryMap.value.get(categoryId)?.icon ?? ''
 }
 
-function typeLabel(type: Transaction['type']): string {
-  switch (type) {
-    case 'expense': return '支出'
-    case 'income': return '收入'
-    case 'transfer': return '转账'
-  }
-}
-
 function formatPure(amount: number): string {
   return formatCurrency(amount).replace('¥', '')
 }
 
+// ── Detail bottom sheet ──
 const detailTx = ref<Transaction | null>(null)
 
 function openDetail(tx: Transaction) {
   detailTx.value = tx
 }
 
-async function handleDelete() {
-  const tx = detailTx.value
-  if (!tx || tx.id == null) return
+async function handleDelete(tx: Transaction) {
+  if (tx.id == null) return
   if (!confirm('确定要删除这条记录吗？')) return
   await transactionStore.deleteTransaction(tx.id)
   detailTx.value = null
 }
 
-// ── Edit transaction ──
+// ── Edit bottom sheet ──
 const editTx = ref<Transaction | null>(null)
-const editTagInput = ref('')
-const editForm = reactive({
-  title: '',
-  amountYuan: 0,
-  date: '',
-  time: '',
-  note: '',
-  tags: [] as string[],
-})
-
-const editCanSave = computed(() => editForm.amountYuan > 0)
 
 function openEdit(tx: Transaction) {
-  editForm.title = tx.title || ''
-  editForm.amountYuan = Math.round(tx.amount) / 100
-  editForm.date = tx.date
-  editForm.time = tx.time?.slice(0, 5) || ''
-  editForm.note = tx.note || ''
-  editForm.tags = [...(tx.tags || [])]
-  editTagInput.value = ''
+  detailTx.value = null
   editTx.value = tx
 }
 
-function addEditTag() {
-  const t = editTagInput.value.trim()
-  if (t && !editForm.tags.includes(t)) {
-    editForm.tags.push(t)
-  }
-  editTagInput.value = ''
-}
-
-async function handleEditSave() {
-  const tx = editTx.value
-  if (!tx || tx.id == null) return
-
-  const updates: Partial<Transaction> = {
-    title: editForm.title,
-    amount: Math.round(editForm.amountYuan * 100),
-    date: editForm.date,
-    time: editForm.time,
-    note: editForm.note,
-    tags: [...editForm.tags],
-  }
-
+async function handleEditSave(id: number, updates: Partial<Transaction>) {
   try {
-    await transactionStore.updateTransaction(tx.id, updates)
-    // apply updates to detail sheet so it reflects changes immediately
-    if (detailTx.value?.id === tx.id) {
+    await transactionStore.updateTransaction(id, updates)
+    // Sync detail sheet if still open for the same transaction
+    if (detailTx.value?.id === id) {
       Object.assign(detailTx.value, updates)
     }
     editTx.value = null
@@ -665,295 +520,5 @@ async function handleEditSave() {
 
 .total-expense {
   color: #34c759;
-}
-
-/* Bottom sheet overlay */
-.sheet-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 1000;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  animation: fadeIn 0.2s ease;
-}
-
-.sheet {
-  width: 100%;
-  max-width: 480px;
-  background: rgba(255,255,255,0.8);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 16px 16px 0 0;
-  animation: slideUp 0.3s ease;
-  max-height: 85vh;
-  overflow-y: auto;
-}
-
-.sheet-handle {
-  width: 36px;
-  height: 4px;
-  border-radius: 2px;
-  background: #d1d1d6;
-  margin: 8px auto 0;
-}
-
-.sheet-body {
-  padding: 16px 24px 32px;
-}
-
-.sheet-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.sheet-icon-wrap {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: #f2f2f6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 8px;
-}
-
-.sheet-icon {
-  font-size: 28px;
-  line-height: 1;
-}
-
-.sheet-title {
-  font-size: 17px;
-  font-weight: 600;
-  color: var(--color-text);
-}
-
-.sheet-type-badge {
-  font-size: 12px;
-  padding: 2px 10px;
-  border-radius: 10px;
-  margin-top: 6px;
-  color: #fff;
-}
-
-.badge-expense { background: #34c759; }
-.badge-income { background: #ff3b30; }
-.badge-transfer { background: #007aff; }
-
-.sheet-amount {
-  text-align: center;
-  font-size: 32px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  margin-bottom: 24px;
-}
-
-.sheet-amount.amount-expense { color: #34c759; }
-.sheet-amount.amount-income { color: #ff3b30; }
-.sheet-amount.amount-transfer { color: #007aff; }
-
-.sheet-details {
-  border-top: 1px solid var(--color-separator);
-  padding-top: 16px;
-  margin-bottom: 24px;
-}
-
-.detail-row {
-  display: flex;
-  align-items: flex-start;
-  padding: 8px 0;
-  font-size: 15px;
-}
-
-.detail-label {
-  width: 56px;
-  flex-shrink: 0;
-  color: var(--color-secondary-text);
-}
-
-.detail-value {
-  flex: 1;
-  color: var(--color-text);
-  word-break: break-all;
-}
-
-.detail-tag {
-  display: inline-block;
-  font-size: 12px;
-  padding: 2px 8px;
-  border-radius: 4px;
-  background: #f2f2f6;
-  color: var(--color-secondary-text);
-  margin-right: 4px;
-  margin-bottom: 2px;
-}
-
-.sheet-actions {
-  display: flex;
-  gap: 12px;
-}
-
-.btn {
-  flex: 1;
-  height: 44px;
-  border-radius: 10px;
-  border: none;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: opacity 0.15s;
-}
-
-.btn:active { opacity: 0.7; }
-.btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.btn-secondary { background: #f2f2f6; color: var(--color-text); }
-.btn-danger { background: #ff3b30; color: #fff; }
-.btn-primary { background: #007aff; color: #fff; }
-
-/* ── Edit Sheet ── */
-.edit-sheet-title {
-  font-size: 18px;
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: 20px;
-  color: #1c1c1e;
-}
-
-.edit-form {
-  margin-bottom: 24px;
-}
-
-.edit-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.edit-label {
-  width: 48px;
-  flex-shrink: 0;
-  font-size: 14px;
-  color: #8e8e93;
-}
-
-.edit-input {
-  flex: 1;
-  height: 36px;
-  padding: 0 12px;
-  border: none;
-  border-radius: 8px;
-  background: #f2f2f6;
-  font-size: 15px;
-  color: #1c1c1e;
-  outline: none;
-  font-family: inherit;
-}
-
-.edit-amount-wrap {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: #f2f2f6;
-  border-radius: 8px;
-  padding: 0 12px;
-}
-
-.edit-amount-sign {
-  font-size: 16px;
-  font-weight: 600;
-  color: #8e8e93;
-}
-
-.edit-amount-input {
-  flex: 1;
-  background: none;
-  padding: 0;
-}
-
-.edit-amount-input::-webkit-outer-spin-button,
-.edit-amount-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-}
-
-.edit-tags-area {
-  flex: 1;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 8px;
-  background: #f2f2f6;
-  border-radius: 8px;
-  min-height: 36px;
-}
-
-.edit-tag-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  padding: 2px 8px;
-  border-radius: 4px;
-  background: #fff;
-  color: #007aff;
-}
-
-.edit-tag-remove {
-  border: none;
-  background: none;
-  color: #8e8e93;
-  font-size: 14px;
-  cursor: pointer;
-  padding: 0;
-  line-height: 1;
-}
-
-.edit-tag-input {
-  flex: 1;
-  min-width: 80px;
-  border: none;
-  background: none;
-  font-size: 13px;
-  color: #1c1c1e;
-  outline: none;
-  font-family: inherit;
-  padding: 2px 0;
-}
-
-.edit-tag-input::placeholder {
-  color: #c7c7cc;
-}
-
-.edit-row--meta {
-  padding: 4px 0;
-  border-top: 1px solid #f2f2f2;
-  margin-top: 4px;
-  padding-top: 12px;
-}
-
-.edit-meta {
-  font-size: 14px;
-  color: #1c1c1e;
-}
-
-.edit-actions {
-  display: flex;
-  gap: 12px;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
 }
 </style>
