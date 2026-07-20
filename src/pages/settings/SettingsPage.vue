@@ -129,7 +129,7 @@
       <div v-if="showMockConfirm" class="modal-overlay" @click.self="showMockConfirm = false">
         <div class="modal-content">
           <p class="modal-title">导入测试数据</p>
-          <p class="modal-desc">将生成约 350 条模拟交易记录（含近 12 个月的工资/消费数据），是否继续？</p>
+          <p class="modal-desc">将生成约 580 条模拟交易记录（含近 12 个月的工资/消费数据），是否继续？</p>
           <div class="modal-actions">
             <button class="btn-cancel" @click="showMockConfirm = false">取消</button>
             <button class="btn-primary" @click="handleMockImport">确定</button>

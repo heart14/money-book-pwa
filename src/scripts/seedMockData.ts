@@ -284,7 +284,7 @@ function passiveCats(): CategoryRef[] {
 export async function seedMockData(
   options: { expenseCount?: number; incomeCount?: number } = {},
 ): Promise<{ transactions: number; tags: number }> {
-  const { expenseCount = 300, incomeCount = 50 } = options
+  const { expenseCount = 500, incomeCount = 80 } = options
 
   // Check if mock data already exists
   const existingCount = await db.transactions.count()
