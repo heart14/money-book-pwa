@@ -178,17 +178,11 @@ const filterYear = ref(now.getFullYear())
 const filterMonth = ref(now.getMonth() + 1)
 const dateFilterActive = ref(false)
 
-// ── Initialize search + date filter from route query params ──
+// ── Initialize search from route query tag param ──
 const route = useRoute()
 if (route.query.tag && typeof route.query.tag === 'string') {
   searchQuery.value = route.query.tag
   searchOpen.value = true
-}
-if (route.query.year && route.query.month) {
-  filterYear.value = parseInt(route.query.year as string)
-  filterMonth.value = parseInt(route.query.month as string)
-  dateFilterActive.value = true
-  showDatePicker.value = true
 }
 
 // ── Cursor pagination ──
@@ -330,22 +324,13 @@ watch(() => transactionStore.version, () => {
 
 // ── 路由 query 变更（如从统计页点击标签跳转） ──
 watch(
-  () => route.query,
-  (query) => {
-    if (typeof query.tag === 'string') {
-      searchQuery.value = query.tag
+  () => route.query.tag,
+  (tag) => {
+    if (typeof tag === 'string') {
+      searchQuery.value = tag
       searchOpen.value = true
-    } else if (!query.tag) {
-      // 当从统计页点"汇总"等不带 tag 的跳转时，不清除已有搜索
-    }
-    if (query.year && query.month) {
-      filterYear.value = parseInt(query.year as string)
-      filterMonth.value = parseInt(query.month as string)
-      dateFilterActive.value = true
-      showDatePicker.value = true
     }
   },
-  { deep: false },
 )
 
 // ── IntersectionObserver 无限滚动 ──

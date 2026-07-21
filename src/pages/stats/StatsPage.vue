@@ -337,26 +337,11 @@ const tagTotalAmount = computed(() =>
 const router = useRouter()
 
 function navigateToTag(tagName: string) {
-  // 从当前时间上下文中提取年月，传递给明细页做日期筛选
-  let y: number, m: number
-  if (timeMode.value === 'month') {
-    y = currentDate.value.getFullYear()
-    m = currentDate.value.getMonth() + 1
-  } else if (timeMode.value === 'year') {
-    y = currentDate.value.getFullYear()
-    m = 12
-  } else { // custom
-    y = customEndYear.value
-    m = customEndMonth.value
+  if (tagName) {
+    router.push({ name: 'transactions', query: { tag: tagName } })
+  } else {
+    router.push({ name: 'transactions' })
   }
-
-  const query: Record<string, string> = {
-    year: String(y),
-    month: String(m),
-  }
-  if (tagName) query.tag = tagName
-
-  router.push({ name: 'transactions', query })
 }
 
 const rankColors = ['#ff3b30', '#ff9500', '#ffcc00']
