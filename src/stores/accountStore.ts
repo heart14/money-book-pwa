@@ -1,23 +1,14 @@
 import { defineStore } from 'pinia'
-import { ref, computed, watchEffect } from 'vue'
+import { computed } from 'vue'
 import { db } from '@/db'
-import { liveQuery } from 'dexie'
+import { useLiveQuery } from '@/composables/useLiveQuery'
 import type { Account } from '@/types'
 
 export const useAccountStore = defineStore('accounts', () => {
-  const accounts = ref<Account[]>([])
-
-  watchEffect((onCleanup) => {
-    const observable = liveQuery(() =>
-      db.accounts.toArray().then(arr => arr.sort((a, b) => a.sort - b.sort))
-    )
-    const sub = observable.subscribe({
-      next: (result) => {
-        accounts.value = result
-      },
-    })
-    onCleanup(() => sub.unsubscribe())
-  })
+  const accounts = useLiveQuery(
+    () => db.accounts.toArray().then(arr => arr.sort((a, b) => a.sort - b.sort)),
+    [] as Account[],
+  )
 
   /** 总资产 = 所有账户余额之和 */
   const totalBalance = computed(() => {

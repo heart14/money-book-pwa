@@ -37,8 +37,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  'update:value': [value: string]
-  close: []
+  (e: 'update:value', value: string): void
+  (e: 'close'): void
 }>()
 
 function handleDigit(d: string) {
@@ -159,8 +159,4 @@ function handleComplete() {
   background: #0056cc;
 }
 
-.confirm-key.disabled {
-  opacity: 0.35;
-  pointer-events: none;
-}
 </style>

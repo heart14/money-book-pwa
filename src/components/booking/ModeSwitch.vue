@@ -26,7 +26,7 @@ defineProps<{
 }>()
 
 defineEmits<{
-  'update:modelValue': [value: BookingMode]
+  (e: 'update:modelValue', value: BookingMode): void
 }>()
 </script>
 

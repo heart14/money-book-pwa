@@ -681,7 +681,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 .page-title {
   font-size: 17px;
   font-weight: 700;
-  color: #1c1c1e;
+  color: var(--color-text);
 }
 
 .header-actions {

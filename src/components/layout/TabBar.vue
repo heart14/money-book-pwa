@@ -124,7 +124,7 @@ function handleBookingSave() {
   display: flex;
   align-items: flex-end;
   justify-content: space-around;
-  background: #f2f2f6;
+  background: var(--color-bg);
   padding: 6px 0 8px;
   padding-bottom: calc(15px + env(safe-area-inset-bottom));
   z-index: 100;

@@ -88,3 +88,18 @@ html {
   font-weight: 700;
   color: #1c1c1e;
 }
+
+/* ── Shared animations ── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

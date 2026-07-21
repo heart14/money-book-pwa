@@ -46,64 +46,56 @@
     </div>
 
     <!-- Add Account Modal -->
-    <Teleport to="body">
-      <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
-        <div class="modal">
-          <div class="modal-handle"></div>
-          <div class="modal-header">新增资产</div>
-          <div class="modal-body">
-            <div class="form-group">
-              <label class="form-label">名称</label>
-              <input v-model="form.name" class="form-input" placeholder="例：银行卡" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">图标</label>
-              <input v-model="form.icon" class="form-input" placeholder="💳" maxlength="4" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">余额 (¥)</label>
-              <input v-model.number="form.initialBalance" class="form-input" type="number" step="0.01" placeholder="0.00" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">排序</label>
-              <input v-model.number="form.sort" class="form-input" type="number" placeholder="0" />
-            </div>
-          </div>
-          <div class="modal-actions">
-            <button class="btn btn-cancel" @click="showAddModal = false">取消</button>
-            <button class="btn btn-confirm" @click="handleAdd">确认</button>
-          </div>
-        </div>
+    <CommonBottomSheet
+      :visible="showAddModal"
+      title="新增资产"
+      @close="showAddModal = false"
+    >
+      <div class="form-group">
+        <label class="form-label">名称</label>
+        <input v-model="form.name" class="form-input" placeholder="例：银行卡" />
       </div>
-    </Teleport>
+      <div class="form-group">
+        <label class="form-label">图标</label>
+        <input v-model="form.icon" class="form-input" placeholder="💳" maxlength="4" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">余额 (¥)</label>
+        <input v-model.number="form.initialBalance" class="form-input" type="number" step="0.01" placeholder="0.00" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">排序</label>
+        <input v-model.number="form.sort" class="form-input" type="number" placeholder="0" />
+      </div>
+      <template #actions>
+        <button class="btn btn-cancel" @click="showAddModal = false">取消</button>
+        <button class="btn btn-confirm" @click="handleAdd">确认</button>
+      </template>
+    </CommonBottomSheet>
 
     <!-- Edit Account Modal -->
-    <Teleport to="body">
-      <div v-if="editTarget" class="modal-overlay" @click.self="editTarget = null">
-        <div class="modal">
-          <div class="modal-handle"></div>
-          <div class="modal-header">编辑资产</div>
-          <div class="modal-body">
-            <div class="form-group">
-              <label class="form-label">名称</label>
-              <input v-model="editForm.name" class="form-input" placeholder="资产名称" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">图标</label>
-              <input v-model="editForm.icon" class="form-input" placeholder="💳" maxlength="4" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">余额 (¥)</label>
-              <input v-model.number="editForm.balanceYuan" class="form-input" type="number" step="0.01" placeholder="0.00" />
-            </div>
-          </div>
-          <div class="modal-actions">
-            <button class="btn btn-cancel" @click="editTarget = null">取消</button>
-            <button class="btn btn-confirm" @click="handleEdit">保存</button>
-          </div>
-        </div>
+    <CommonBottomSheet
+      :visible="editTarget != null"
+      title="编辑资产"
+      @close="editTarget = null"
+    >
+      <div class="form-group">
+        <label class="form-label">名称</label>
+        <input v-model="editForm.name" class="form-input" placeholder="资产名称" />
       </div>
-    </Teleport>
+      <div class="form-group">
+        <label class="form-label">图标</label>
+        <input v-model="editForm.icon" class="form-input" placeholder="💳" maxlength="4" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">余额 (¥)</label>
+        <input v-model.number="editForm.balanceYuan" class="form-input" type="number" step="0.01" placeholder="0.00" />
+      </div>
+      <template #actions>
+        <button class="btn btn-cancel" @click="editTarget = null">取消</button>
+        <button class="btn btn-confirm" @click="handleEdit">保存</button>
+      </template>
+    </CommonBottomSheet>
   </div>
 </template>
 
@@ -111,6 +103,8 @@
 import { ref, reactive } from 'vue'
 import { useAccountStore } from '@/stores/accountStore'
 import { formatCurrency } from '@/utils/format'
+import type { Account } from '@/types'
+import CommonBottomSheet from '@/components/common/CommonBottomSheet.vue'
 
 const accountStore = useAccountStore()
 
@@ -139,15 +133,16 @@ async function handleAdd() {
 }
 
 // ── Edit modal ──
-const editTarget = ref<{ id: number; name: string; icon: string; balance: number } | null>(null)
+const editTarget = ref<Pick<Account, 'id' | 'name' | 'icon' | 'balance'> | null>(null)
 const editForm = reactive({
   name: '',
   icon: '',
   balanceYuan: 0,
 })
 
-function openEdit(acc: any) {
-  editTarget.value = { id: acc.id!, name: acc.name, icon: acc.icon, balance: acc.balance }
+function openEdit(acc: Account) {
+  if (acc.id == null) return
+  editTarget.value = { id: acc.id, name: acc.name, icon: acc.icon, balance: acc.balance }
   editForm.name = acc.name
   editForm.icon = acc.icon
   editForm.balanceYuan = Math.round(acc.balance) / 100
@@ -155,7 +150,9 @@ function openEdit(acc: any) {
 
 async function handleEdit() {
   if (!editTarget.value || !editForm.name.trim()) return
-  await accountStore.updateAccount(editTarget.value.id, {
+  const id = editTarget.value.id
+  if (id == null) return
+  await accountStore.updateAccount(id, {
     name: editForm.name.trim(),
     icon: editForm.icon || '💳',
     balance: Math.round(parseFloat(String(editForm.balanceYuan || '0')) * 100),
@@ -164,8 +161,8 @@ async function handleEdit() {
 }
 
 // ── Delete ──
-async function handleDelete(acc: any) {
-  if (!acc.id) return
+async function handleDelete(acc: Account) {
+  if (acc.id == null) return
   if (!confirm(`确定删除「${acc.name}」？`)) return
   await accountStore.deleteAccount(acc.id)
 }
@@ -319,47 +316,6 @@ async function handleDelete(acc: any) {
   color: #8e8e93;
 }
 
-/* ── Modal ── */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 1000;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  animation: fadeIn 0.2s ease;
-}
-
-.modal {
-  width: 100%;
-  max-width: 480px;
-  background: #fff;
-  border-radius: 16px 16px 0 0;
-  animation: slideUp 0.3s ease;
-  padding: 8px 24px 32px;
-}
-
-.modal-handle {
-  width: 36px;
-  height: 4px;
-  border-radius: 2px;
-  background: #d1d1d6;
-  margin: 0 auto 12px;
-}
-
-.modal-header {
-  font-size: 18px;
-  font-weight: 600;
-  text-align: center;
-  margin-bottom: 20px;
-  color: var(--color-text);
-}
-
-.modal-body {
-  margin-bottom: 20px;
-}
-
 .form-group {
   margin-bottom: 16px;
 }
@@ -389,11 +345,6 @@ async function handleDelete(acc: any) {
   border-color: var(--color-primary);
 }
 
-.modal-actions {
-  display: flex;
-  gap: 12px;
-}
-
 .btn {
   flex: 1;
   height: 44px;
@@ -418,15 +369,5 @@ async function handleDelete(acc: any) {
 .btn-confirm {
   background: #007aff;
   color: #fff;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
 }
 </style>

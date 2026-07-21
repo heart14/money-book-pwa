@@ -145,30 +145,30 @@ async function seedCategories() {
     },
   ]
 
-  // Insert parents first, then children with correct parentId
-  for (const group of expenseCategories) {
-    const parentId = await db.categories.add(group.parent)
-    for (const child of group.children) {
-      child.parentId = parentId
-      await db.categories.add(child)
+  // 批量插入优化：先 bulkAdd 所有父分类，再映射 parentId，再 bulkAdd 子分类
+  async function insertCategoryGroups(groups: { parent: Omit<Category, 'id'>; children: Omit<Category, 'id'>[] }[]) {
+    // 第 1 步：批量写入所有父分类
+    const parentRecords = groups.map(g => g.parent)
+    const parentIds = await db.categories.bulkAdd(parentRecords, { allKeys: true })
+
+    // 第 2 步：为子分类设置 parentId
+    const allChildren: Omit<Category, 'id'>[] = []
+    for (let i = 0; i < groups.length; i++) {
+      for (const child of groups[i].children) {
+        child.parentId = parentIds[i] as number
+        allChildren.push(child)
+      }
+    }
+
+    // 第 3 步：批量写入所有子分类
+    if (allChildren.length > 0) {
+      await db.categories.bulkAdd(allChildren)
     }
   }
 
-  for (const group of incomeCategories) {
-    const parentId = await db.categories.add(group.parent)
-    for (const child of group.children) {
-      child.parentId = parentId
-      await db.categories.add(child)
-    }
-  }
-
-  for (const group of transferCategories) {
-    const parentId = await db.categories.add(group.parent)
-    for (const child of group.children) {
-      child.parentId = parentId
-      await db.categories.add(child)
-    }
-  }
+  await insertCategoryGroups(expenseCategories)
+  await insertCategoryGroups(incomeCategories)
+  await insertCategoryGroups(transferCategories)
 }
 
 export async function seedData() {

@@ -1,23 +1,13 @@
 import { defineStore } from 'pinia'
-import { ref, watchEffect } from 'vue'
 import { db } from '@/db'
-import { liveQuery } from 'dexie'
+import { useLiveQuery } from '@/composables/useLiveQuery'
 import type { Category } from '@/types'
 
 export const useCategoryStore = defineStore('categories', () => {
-  const categories = ref<Category[]>([])
-
-  watchEffect((onCleanup) => {
-    const observable = liveQuery(() =>
-      db.categories.toArray().then(arr => arr.sort((a, b) => a.sort - b.sort))
-    )
-    const sub = observable.subscribe({
-      next: (result) => {
-        categories.value = result
-      },
-    })
-    onCleanup(() => sub.unsubscribe())
-  })
+  const categories = useLiveQuery(
+    () => db.categories.toArray().then(arr => arr.sort((a, b) => a.sort - b.sort)),
+    [] as Category[],
+  )
 
   function getByType(type: 'expense' | 'income' | 'transfer'): Category[] {
     return categories.value.filter((c: Category) => c.type === type)

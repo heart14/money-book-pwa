@@ -29,39 +29,35 @@
     </div>
 
     <!-- Rule Modal (Add / Edit) -->
-    <Teleport to="body">
-      <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
-        <div class="modal-bottom tall">
-          <div class="modal-handle"></div>
-          <h3 class="modal-title">{{ editingRule ? '编辑规则' : '新增规则' }}</h3>
-          <div class="modal-body">
-            <div class="form-group">
-              <label class="form-label">类型</label>
-              <select v-model="form.type" class="form-input">
-                <option value="expense">支出</option>
-                <option value="income">收入</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">金额（元）</label>
-              <input v-model.number="form.amountYuan" class="form-input" type="number" step="0.01" min="0.01" placeholder="0.00" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">每月第几日</label>
-              <input v-model.number="form.dayOfMonth" class="form-input" type="number" min="1" max="31" placeholder="1" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">备注</label>
-              <input v-model="form.note" class="form-input" placeholder="备注（可选）" maxlength="200" />
-            </div>
-          </div>
-          <div class="modal-bottom-actions">
-            <button class="btn-primary" :disabled="!canSave" @click="handleSave">保存</button>
-            <button class="btn-cancel" @click="showModal = false">取消</button>
-          </div>
-        </div>
+    <CommonBottomSheet
+      :visible="showModal"
+      :title="editingRule ? '编辑规则' : '新增规则'"
+      @close="showModal = false"
+    >
+      <div class="form-group">
+        <label class="form-label">类型</label>
+        <select v-model="form.type" class="form-input">
+          <option value="expense">支出</option>
+          <option value="income">收入</option>
+        </select>
       </div>
-    </Teleport>
+      <div class="form-group">
+        <label class="form-label">金额（元）</label>
+        <input v-model.number="form.amountYuan" class="form-input" type="number" step="0.01" min="0.01" placeholder="0.00" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">每月第几日</label>
+        <input v-model.number="form.dayOfMonth" class="form-input" type="number" min="1" max="31" placeholder="1" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">备注</label>
+        <input v-model="form.note" class="form-input" placeholder="备注（可选）" maxlength="200" />
+      </div>
+      <template #actions>
+        <button class="btn-cancel" @click="showModal = false">取消</button>
+        <button class="btn-primary" :disabled="!canSave" @click="handleSave">保存</button>
+      </template>
+    </CommonBottomSheet>
 
     <!-- Delete confirm -->
     <Teleport to="body">
@@ -83,6 +79,7 @@ import { ref, reactive, computed, watchEffect } from 'vue'
 import { db } from '@/db'
 import { formatCurrency } from '@/utils/format'
 import type { RecurringRule } from '@/types'
+import CommonBottomSheet from '@/components/common/CommonBottomSheet.vue'
 
 const expanded = ref(false)
 
@@ -215,24 +212,18 @@ async function handleDelete() {
   background: none; font-size: 14px; color: #007aff; cursor: pointer; margin-top: 8px;
 }
 
-/* Modal overlays */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; display: flex; align-items: flex-end; justify-content: center; }
-.modal-bottom { width: 100%; max-width: 480px; background: #fff; border-radius: 16px 16px 0 0; padding: 8px 24px 32px; max-height: 85vh; overflow-y: auto; }
-.modal-bottom.tall { max-height: 90vh; }
-.modal-handle { width: 36px; height: 4px; border-radius: 2px; background: #d1d1d6; margin: 0 auto 12px; }
-.modal-title { font-size: 18px; font-weight: 600; text-align: center; margin-bottom: 20px; color: #1c1c1e; }
+/* Delete confirm overlay */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; display: flex; align-items: center; justify-content: center; }
 .modal-content { width: 280px; background: #fff; border-radius: 16px; padding: 24px; margin: auto; }
 .modal-desc { font-size: 14px; color: #1c1c1e; text-align: center; margin-bottom: 16px; }
 .modal-actions { display: flex; gap: 12px; justify-content: center; }
-.modal-body { margin-bottom: 20px; }
 .form-group { margin-bottom: 16px; }
 .form-label { display: block; font-size: 14px; font-weight: 500; color: #8e8e93; margin-bottom: 6px; }
 .form-input { width: 100%; height: 40px; border-radius: 10px; border: 1px solid rgba(60,60,67,0.12); background: #f2f2f6; padding: 0 12px; font-size: 15px; color: #1c1c1e; outline: none; box-sizing: border-box; font-family: inherit; }
 .form-input:focus { border-color: #007aff; }
-.modal-bottom-actions { display: flex; gap: 12px; }
+.btn-cancel { flex: 1; height: 44px; border-radius: 10px; border: none; background: #f2f2f6; color: #1c1c1e; font-size: 16px; font-weight: 500; cursor: pointer; font-family: inherit; }
 .btn-primary { flex: 1; height: 44px; border-radius: 10px; border: none; background: #007aff; color: #fff; font-size: 16px; font-weight: 500; cursor: pointer; font-family: inherit; }
 .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
 .btn-primary:active { opacity: 0.7; }
-.btn-cancel { flex: 1; height: 44px; border-radius: 10px; border: none; background: #f2f2f6; color: #1c1c1e; font-size: 16px; font-weight: 500; cursor: pointer; font-family: inherit; }
 .btn-danger { height: 44px; padding: 0 24px; border-radius: 10px; border: none; background: #ff3b30; color: #fff; font-size: 16px; font-weight: 500; cursor: pointer; font-family: inherit; }
 </style>

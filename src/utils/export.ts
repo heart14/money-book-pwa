@@ -30,8 +30,19 @@ export async function exportData(): Promise<void> {
  * Clears all 4 tables first, then bulk-adds the imported data.
  */
 export async function importData(file: File): Promise<void> {
-  const text = await file.text()
-  const data = JSON.parse(text)
+  let text: string
+  try {
+    text = await file.text()
+  } catch {
+    throw new Error('无法读取文件，请重试')
+  }
+
+  let data: any
+  try {
+    data = JSON.parse(text)
+  } catch {
+    throw new Error('文件格式无效，请选择有效的 JSON 备份文件')
+  }
 
   const accounts = data.accounts ?? []
   const categories = data.categories ?? []

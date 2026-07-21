@@ -23,10 +23,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed } from 'vue'
+import { useEventListener } from '@vueuse/core'
 
 const emit = defineEmits<{
-  refresh: []
+  (e: 'refresh'): void
 }>()
 
 const THRESHOLD = 60
@@ -83,23 +84,11 @@ function doneRefreshing() {
 
 defineExpose({ doneRefreshing })
 
-onMounted(() => {
-  const el = containerEl.value
-  if (!el) return
-  el.addEventListener('touchstart', onTouchStart as EventListener, { passive: true })
-  el.addEventListener('touchmove', onTouchMove as EventListener)
-  el.addEventListener('touchend', onTouchEnd)
-  el.addEventListener('touchcancel', onTouchEnd)
-})
-
-onUnmounted(() => {
-  const el = containerEl.value
-  if (!el) return
-  el.removeEventListener('touchstart', onTouchStart as EventListener)
-  el.removeEventListener('touchmove', onTouchMove as EventListener)
-  el.removeEventListener('touchend', onTouchEnd)
-  el.removeEventListener('touchcancel', onTouchEnd)
-})
+// 使用 @vueuse/core 自动管理事件绑定和清理
+useEventListener(containerEl, 'touchstart', onTouchStart as EventListener, { passive: true })
+useEventListener(containerEl, 'touchmove', onTouchMove as EventListener)
+useEventListener(containerEl, 'touchend', onTouchEnd)
+useEventListener(containerEl, 'touchcancel', onTouchEnd)
 
 const indicatorStyle = computed(() => ({
   height: refreshing.value ? `${THRESHOLD}px` : `${pullDist.value}px`,
@@ -137,7 +126,7 @@ const contentStyle = computed(() => {
 
 .ptr-text {
   font-size: 13px;
-  color: #8e8e93;
+  color: var(--color-secondary-text);
   white-space: nowrap;
 }
 
