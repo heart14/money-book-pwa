@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
 import { db } from '@/db'
 import { liveQuery } from 'dexie'
 import type { Transaction } from '@/types'
@@ -24,12 +25,21 @@ async function ensureTagsExist(names: string[]) {
 }
 
 export const useTransactionStore = defineStore('transactions', () => {
+  // ── 全局数据版本号，每次增删改时递增 ──
+  const _version = ref(0)
+  const version = computed(() => _version.value)
+
+  function bumpVersion() {
+    _version.value++
+  }
+
   async function addTransaction(tx: Omit<Transaction, 'id'>): Promise<number> {
     const id = await db.transactions.add(tx as Transaction)
     // Sync tags to the tags table (fire-and-forget for perf, but ensure it runs)
     if (tx.tags && tx.tags.length > 0) {
       ensureTagsExist(tx.tags)
     }
+    bumpVersion()
     return id
   }
 
@@ -39,10 +49,12 @@ export const useTransactionStore = defineStore('transactions', () => {
     if (updates.tags && updates.tags.length > 0) {
       ensureTagsExist(updates.tags)
     }
+    bumpVersion()
   }
 
   async function deleteTransaction(id: number): Promise<void> {
     await db.transactions.delete(id)
+    bumpVersion()
   }
 
   function getByDateRange(start: string, end: string) {
@@ -56,6 +68,7 @@ export const useTransactionStore = defineStore('transactions', () => {
   }
 
   return {
+    version,
     addTransaction,
     updateTransaction,
     deleteTransaction,

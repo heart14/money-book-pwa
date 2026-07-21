@@ -38,6 +38,15 @@ export class MoneyBookDB extends Dexie {
         await tx.table('tags').bulkAdd(tagEntries)
       }
     })
+
+    // v4: 为游标分页添加 [date+id] 复合索引
+    this.version(4).stores({
+      accounts: '++id, name',
+      categories: '++id, type, parentId',
+      transactions: '++id, type, date, categoryId, [date+id]',
+      recurringRules: '++id, enabled, dayOfMonth',
+      tags: '++id, &name',
+    })
   }
 }
 

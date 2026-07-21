@@ -69,7 +69,7 @@
     <div class="content-area">
       <!-- Empty state -->
       <EmptyState
-        v-if="displayTransactions.length === 0"
+        v-if="isEmpty && !isLoading"
         icon="📋"
         message="暂无流水记录"
       />
@@ -96,14 +96,17 @@
             />
           </div>
         </div>
-        <!-- Load more button -->
-        <button
-          v-if="hasMore"
-          class="load-more-btn"
-          @click="loadMore"
-        >
-          加载更多
-        </button>
+
+        <!-- Scroll sentinel + loading indicator for infinite scroll -->
+        <div ref="sentinelEl" class="scroll-sentinel">
+          <div v-if="isLoading" class="scroll-loading">
+            <div class="scroll-spinner" />
+            <span>加载中…</span>
+          </div>
+          <div v-else-if="allLoaded && transactions.length > 0" class="scroll-finished">
+            — 没有更多账单了 —
+          </div>
+        </div>
       </div>
     </div>
 
@@ -128,12 +131,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { db } from '@/db'
 import { useTransactionStore } from '@/stores/transactionStore'
 import { useCategoryStore } from '@/stores/categoryStore'
-import { useLiveQuery } from '@/composables/useLiveQuery'
 import { formatCurrency, toDateString } from '@/utils/format'
 import type { Transaction, Category } from '@/types'
 import TransactionItem from '@/components/transactions/TransactionItem.vue'
@@ -146,13 +148,12 @@ import PullToRefresh from '@/components/common/PullToRefresh.vue'
 const transactionStore = useTransactionStore()
 const categoryStore = useCategoryStore()
 
-// ── Core reactive state (must be declared before any usage) ──
+// ── Core reactive state ──
 const selectedCategoryId = ref<number | null>(null)
 const searchQuery = ref('')
 const searchOpen = ref(false)
 const showDatePicker = ref(false)
 const searchInputRef = ref<HTMLInputElement | null>(null)
-const refreshKey = ref(0)
 const ptrRef = ref<InstanceType<typeof PullToRefresh> | null>(null)
 
 // ── Initialize search from route query tag param ──
@@ -162,90 +163,199 @@ if (route.query.tag && typeof route.query.tag === 'string') {
   searchOpen.value = true
 }
 
-// ── Date filter state (must be declared before queryDateRange) ──
+// ── Date filter state ──
 const now = new Date()
 const filterYear = ref(now.getFullYear())
 const filterMonth = ref(now.getMonth() + 1)
 const dateFilterActive = ref(false)
 
-// ── Count-based pagination ──
-// Always load from DB with a count limit. If results exceed PAGE_SIZE,
-// show a "加载更多" button to increase the limit.
-const PAGE_SIZE = 100
-const loadLimit = ref(PAGE_SIZE + 1) // +1 to detect if more records exist
+// ── Cursor pagination ──
+const PAGE_SIZE = 20
+const transactions = ref<Transaction[]>([])
+let cursorDate: string | null = null
+let cursorId: number | null = null
+const isLoading = ref(false)
+const allLoaded = ref(false)
 
-const transactions = useLiveQuery<Transaction[]>(() => {
-  void refreshKey.value // track as reactive dep for pull-to-refresh re-query
-  let query
-  if (dateFilterActive.value) {
-    const start = new Date(filterYear.value, filterMonth.value - 1, 1)
-    const end = new Date(filterYear.value, filterMonth.value, 0)
-    query = db.transactions
-      .where('date')
-      .between(toDateString(start), toDateString(end), true, true)
-  } else {
-    query = db.transactions
-      .where('date')
-      .above('') // all records, ordered by date index
-  }
-  return query
-    .reverse()
-    .limit(loadLimit.value)
-    .toArray()
-}, [])
-
-/** Whether there are more DB records beyond the current limit */
-const hasMore = computed(() => transactions.value.length === loadLimit.value)
-
-function loadMore() {
-  loadLimit.value += PAGE_SIZE
-}
-
-// Reset pagination whenever the query scope changes
-watch([dateFilterActive, filterYear, filterMonth, () => route.query.tag], () => {
-  loadLimit.value = PAGE_SIZE + 1
+const isEmpty = computed(() => {
+  if (isLoading.value) return false
+  if (transactions.value.length === 0) return true
+  // 数据已加载但筛选无匹配，且没有更多数据可加载
+  if (allLoaded.value && filteredTransactions.value.length === 0) return true
+  return false
 })
 
-// ── Pull-to-refresh ──
-const REFRESH_MIN_MS = 800
+// ── 核心分页加载逻辑 ──
+async function loadPage() {
+  if (isLoading.value || allLoaded.value) return
+  isLoading.value = true
 
-async function handleRefresh() {
-  // 1. Reset filters
-  searchQuery.value = ''
-  searchOpen.value = false
-  selectedCategoryId.value = null
-  showDatePicker.value = false
-  clearDateFilter()
+  try {
+    let items: Transaction[]
 
-  // 2. Reset pagination to initial state
-  loadLimit.value = PAGE_SIZE + 1
+    if (dateFilterActive.value) {
+      const start = toDateString(new Date(filterYear.value, filterMonth.value - 1, 1))
+      const end = toDateString(new Date(filterYear.value, filterMonth.value, 0))
 
-  // 3. Trigger re-query
-  refreshKey.value++
-
-  // 4. Keep spinner visible for at least REFRESH_MIN_MS
-  const start = Date.now()
-
-  const unwatch = watch(transactions, () => {
-    const elapsed = Date.now() - start
-    const remaining = REFRESH_MIN_MS - elapsed
-    if (remaining <= 0) {
-      ptrRef.value?.doneRefreshing()
-      unwatch()
+      if (cursorDate !== null && cursorId !== null) {
+        // 月份内带游标翻页
+        items = await db.transactions
+          .where('[date+id]')
+          .between([start, 0], [cursorDate, cursorId], true, false)
+          .reverse()
+          .limit(PAGE_SIZE + 1)
+          .toArray()
+      } else {
+        // 月份内首次加载
+        items = await db.transactions
+          .where('[date+id]')
+          .between([start, 0], [end, Number.MAX_SAFE_INTEGER])
+          .reverse()
+          .limit(PAGE_SIZE + 1)
+          .toArray()
+      }
     } else {
-      setTimeout(() => {
-        ptrRef.value?.doneRefreshing()
-        unwatch()
-      }, remaining)
+      // 全部流水（游标分页核心场景）
+      if (cursorDate !== null && cursorId !== null) {
+        items = await db.transactions
+          .where('[date+id]')
+          .below([cursorDate, cursorId])
+          .reverse()
+          .limit(PAGE_SIZE + 1)
+          .toArray()
+      } else {
+        items = await db.transactions
+          .orderBy('[date+id]')
+          .reverse()
+          .limit(PAGE_SIZE + 1)
+          .toArray()
+      }
     }
-  })
 
-  // Safety timeout (3s) in case watcher doesn't fire
-  setTimeout(() => {
-    ptrRef.value?.doneRefreshing()
-  }, 3000)
+    if (items.length > PAGE_SIZE) {
+      items = items.slice(0, PAGE_SIZE)
+    } else {
+      allLoaded.value = true
+    }
+
+    if (items.length > 0) {
+      const last = items[items.length - 1]
+      cursorDate = last.date!
+      cursorId = last.id!
+    }
+
+    transactions.value.push(...items)
+  } catch (e) {
+    console.error('[钱书] 加载明细失败', e)
+    allLoaded.value = true
+  } finally {
+    isLoading.value = false
+  }
 }
 
+/** 当前是否有客户端侧筛选条件激活 */
+function hasActiveFilter(): boolean {
+  return selectedCategoryId.value != null || searchQuery.value.trim() !== ''
+}
+
+/**
+ * 在筛选激活时，持续加载后续页面直到有足够匹配数据填满屏幕（PAGE_SIZE 条），
+ * 或耗尽全部数据。避免下拉刷新后只显示零星几条的糟糕体验。
+ */
+async function loadUntilMatchFound() {
+  while (!allLoaded.value && filteredTransactions.value.length < PAGE_SIZE) {
+    await loadPage()
+  }
+}
+
+// ── 重置分页（筛选变更或下拉刷新时调用） ──
+async function resetPagination() {
+  cursorDate = null
+  cursorId = null
+  allLoaded.value = false
+  transactions.value = []
+  await loadPage()
+  // 若有激活的筛选条件，持续加载直到看到匹配数据或耗尽
+  if (hasActiveFilter()) {
+    await loadUntilMatchFound()
+  }
+}
+
+// ── 下拉刷新 ──
+async function handleRefresh() {
+  await resetPagination()
+  ptrRef.value?.doneRefreshing()
+}
+
+// ── 日期筛选变更 → 重置分页 ──
+watch([dateFilterActive, filterYear, filterMonth], () => {
+  resetPagination()
+})
+
+// ── 关闭日期选择器时清除筛选 ──
+watch(showDatePicker, (open, prev) => {
+  if (prev !== undefined && !open && dateFilterActive.value) {
+    clearDateFilter()
+  }
+})
+
+// ── 全局版本号变更 → 静默刷新（来自记账页/编辑窗的增删改） ──
+watch(() => transactionStore.version, () => {
+  if (!isLoading.value) {
+    resetPagination()
+  }
+})
+
+// ── 路由 query 变更（如从统计页点击标签跳转） ──
+watch(
+  () => route.query.tag,
+  (tag) => {
+    if (typeof tag === 'string') {
+      searchQuery.value = tag
+      searchOpen.value = true
+    }
+  },
+)
+
+// ── IntersectionObserver 无限滚动 ──
+const sentinelEl = ref<HTMLElement | null>(null)
+let observer: IntersectionObserver | null = null
+
+onMounted(() => {
+  // 首次加载
+  loadPage()
+
+  observer = new IntersectionObserver(
+    ([entry]) => {
+      if (entry.isIntersecting && !allLoaded.value && !isLoading.value) {
+        loadPage()
+      }
+    },
+    { rootMargin: '200px' },
+  )
+})
+
+watch(sentinelEl, (el) => {
+  if (el && observer) {
+    observer.observe(el)
+  }
+})
+
+onUnmounted(() => {
+  observer?.disconnect()
+  observer = null
+})
+
+// ── 搜索栏焦点管理 ──
+watch(searchOpen, (open, prev) => {
+  if (open) {
+    nextTick(() => searchInputRef.value?.focus())
+  } else if (prev !== undefined && !open) {
+    searchQuery.value = ''
+  }
+})
+
+// ── Category mapping ──
 const categoryMap = computed(() => {
   const map = new Map<number, Category>()
   for (const c of categoryStore.categories) {
@@ -273,59 +383,7 @@ const childIdsByParent = computed(() => {
   return map
 })
 
-// React to route query changes (e.g. navigating from stats page while already on transactions page)
-watch(
-  () => route.query.tag,
-  (tag) => {
-    if (typeof tag === 'string') {
-      searchQuery.value = tag
-      searchOpen.value = true
-    }
-  },
-)
-
-function prevMonth() {
-  dateFilterActive.value = true
-  if (filterMonth.value === 1) {
-    filterMonth.value = 12
-    filterYear.value--
-  } else {
-    filterMonth.value--
-  }
-}
-
-function nextMonth() {
-  dateFilterActive.value = true
-  if (filterMonth.value === 12) {
-    filterMonth.value = 1
-    filterYear.value++
-  } else {
-    filterMonth.value++
-  }
-}
-
-function clearDateFilter() {
-  dateFilterActive.value = false
-  filterYear.value = now.getFullYear()
-  filterMonth.value = now.getMonth() + 1
-}
-
-watch(searchOpen, (open, prev) => {
-  if (open) {
-    nextTick(() => searchInputRef.value?.focus())
-  } else if (prev !== undefined && !open) {
-    // Closing search bar — clear search query
-    searchQuery.value = ''
-  }
-})
-
-// Closing the calendar picker → reset date filter
-watch(showDatePicker, (open, prev) => {
-  if (prev !== undefined && !open && dateFilterActive.value) {
-    clearDateFilter()
-  }
-})
-
+// ── 客户端侧筛选（分类 + 搜索，仅对当前已加载页操作） ──
 const filteredTransactions = computed(() => {
   let list = transactions.value
 
@@ -350,15 +408,7 @@ const filteredTransactions = computed(() => {
   return list
 })
 
-function getWeekStart(d: Date): Date {
-  const day = d.getDay()
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1)
-  const monday = new Date(d)
-  monday.setDate(diff)
-  monday.setHours(0, 0, 0, 0)
-  return monday
-}
-
+// ── 日期分组 ──
 const weekDayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
 
 interface DayGroup {
@@ -367,6 +417,15 @@ interface DayGroup {
   transactions: Transaction[]
   dayIncome: number
   dayExpense: number
+}
+
+function getWeekStart(d: Date): Date {
+  const day = d.getDay()
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1)
+  const monday = new Date(d)
+  monday.setDate(diff)
+  monday.setHours(0, 0, 0, 0)
+  return monday
 }
 
 const groupedTransactions = computed(() => {
@@ -423,15 +482,7 @@ const groupedTransactions = computed(() => {
   return result
 })
 
-const displayTransactions = computed(() => {
-  // When hasMore is true, only render the first PAGE_SIZE items in DOM
-  const all = filteredTransactions.value
-  if (hasMore.value && all.length > PAGE_SIZE) {
-    return all.slice(0, PAGE_SIZE)
-  }
-  return all
-})
-
+// ── 辅助函数 ──
 function getCategoryName(categoryId: number | null | undefined): string {
   if (categoryId == null) return ''
   return categoryMap.value.get(categoryId)?.name ?? ''
@@ -444,6 +495,33 @@ function getCategoryIcon(categoryId: number | null | undefined): string {
 
 function formatPure(amount: number): string {
   return formatCurrency(amount).replace('¥', '')
+}
+
+// ── 日期导航 ──
+function prevMonth() {
+  dateFilterActive.value = true
+  if (filterMonth.value === 1) {
+    filterMonth.value = 12
+    filterYear.value--
+  } else {
+    filterMonth.value--
+  }
+}
+
+function nextMonth() {
+  dateFilterActive.value = true
+  if (filterMonth.value === 12) {
+    filterMonth.value = 1
+    filterYear.value++
+  } else {
+    filterMonth.value++
+  }
+}
+
+function clearDateFilter() {
+  dateFilterActive.value = false
+  filterYear.value = now.getFullYear()
+  filterMonth.value = now.getMonth() + 1
 }
 
 // ── Detail bottom sheet ──
@@ -471,7 +549,6 @@ function openEdit(tx: Transaction) {
 async function handleEditSave(id: number, updates: Partial<Transaction>) {
   try {
     await transactionStore.updateTransaction(id, updates)
-    // Sync detail sheet if still open for the same transaction
     if (detailTx.value?.id === id) {
       Object.assign(detailTx.value, updates)
     }
@@ -675,25 +752,38 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
   color: #34c759;
 }
 
-/* Load more button */
-.load-more-btn {
-  display: block;
-  width: calc(100% - 24px);
-  margin: 12px;
-  padding: 12px;
-  border: 1px dashed #c7c7cc;
-  border-radius: 10px;
-  background: rgba(255,255,255,0.5);
-  font-size: 14px;
-  color: #007aff;
-  cursor: pointer;
-  font-family: inherit;
-  text-align: center;
-  transition: background 0.15s;
-  -webkit-tap-highlight-color: transparent;
+/* Scroll sentinel for infinite scroll */
+.scroll-sentinel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  min-height: 48px;
 }
 
-.load-more-btn:active {
-  background: rgba(0, 122, 255, 0.08);
+.scroll-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #8e8e93;
+}
+
+.scroll-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #c7c7cc;
+  border-top-color: #007aff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.scroll-finished {
+  font-size: 13px;
+  color: #c7c7cc;
 }
 </style>
