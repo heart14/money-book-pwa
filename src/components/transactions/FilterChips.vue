@@ -11,7 +11,10 @@
       v-for="cat in categories"
       :key="cat.id"
       class="chip"
-      :class="{ active: selectedId === cat.id }"
+      :class="{
+        active: selectedId === cat.id,
+        contextual: contextId === cat.id && selectedId !== cat.id,
+      }"
       @click="$emit('select', cat.id)"
     >
       <span class="chip-icon">{{ cat.icon }}</span>
@@ -24,6 +27,8 @@
 defineProps<{
   categories: Array<{ id: number; name: string; icon: string }>
   selectedId: number | null
+  /** 当子分类选中时，传父分类 ID → 父 chip 仅变蓝字 */
+  contextId?: number | null
 }>()
 
 defineEmits<{
@@ -69,6 +74,12 @@ defineEmits<{
   background: #007aff;
   color: #fff;
   font-weight: 500;
+}
+
+.chip.contextual {
+  background: rgba(255, 255, 255, 0.8);
+  color: #007aff;
+  font-weight: 600;
 }
 
 .chip-icon {

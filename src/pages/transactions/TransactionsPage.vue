@@ -61,9 +61,25 @@
     <!-- Filter chips -->
     <FilterChips
       :categories="parentCategories"
-      :selected-id="selectedCategoryId"
-      @select="selectedCategoryId = $event"
+      :selected-id="chipSelectedId"
+      :context-id="isFilteringByChild ? effectiveSelectedParentId : null"
+      @select="onParentCategorySelect"
     />
+
+    <!-- Child category chips (shown when a parent or its child is selected) -->
+    <div v-if="childCategories.length > 0" class="children-bar">
+      <div class="children-scroll">
+        <button
+          class="child-chip"
+          :class="{ active: isChildActive(child) }"
+          v-for="child in childCategories"
+          :key="child.id!"
+          @click="onChildCategorySelect(child)"
+        >
+          {{ child.name }}
+        </button>
+      </div>
+    </div>
 
     <!-- Content -->
     <div class="content-area">
@@ -397,6 +413,77 @@ const childIdsByParent = computed(() => {
   }
   return map
 })
+
+// ── 子分类 chips 展示 ──
+/** 判断给定 ID 是否为子分类 */
+function isChildCategory(id: number): boolean {
+  const cat = categoryStore.categories.find((c) => c.id === id)
+  return cat != null && cat.parentId != null
+}
+
+/** 当前选中的父分类 ID（用于展示其子分类列表） */
+const selectedParentForChildren = computed<number | null>(() => {
+  const id = selectedCategoryId.value
+  if (id == null) return null
+  const cat = categoryStore.categories.find((c) => c.id === id)
+  if (!cat) return null
+  // 若选中的是父分类，直接返回；若是子分类，返回其父
+  return cat.parentId ?? cat.id!
+})
+
+/** 传给 FilterChips 的高亮 ID：选中子分类时高亮其父分类 */
+const effectiveSelectedParentId = computed<number | null>(() => {
+  const id = selectedCategoryId.value
+  if (id == null) return null
+  const cat = categoryStore.categories.find((c) => c.id === id)
+  if (!cat) return null
+  return cat.parentId ?? cat.id!
+})
+
+/** 当前筛选的是子分类 */
+const isFilteringByChild = computed(() => {
+  return selectedCategoryId.value != null && isChildCategory(selectedCategoryId.value)
+})
+
+/**
+ * 传给 FilterChips 的 selectedId：
+ * - null       → "全部"高亮（无筛选）
+ * - 父分类 ID   → 该父分类蓝色填充（选中了父分类）
+ * - -1         → 都不高亮（选中了子分类，防止"全部"误高亮）
+ */
+const chipSelectedId = computed<number | null>(() => {
+  const id = selectedCategoryId.value
+  if (id == null) return null
+  // 选中子分类 → 传 -1 占位，"全部"和父分类都不高亮
+  if (isChildCategory(id)) return -1
+  // 选中父分类 → 蓝色填充
+  return id
+})
+
+/** 当前应展示的子分类列表 */
+const childCategories = computed(() => {
+  const parentId = selectedParentForChildren.value
+  if (parentId == null) return []
+  return categoryStore.getChildren(parentId)
+})
+
+/** 子分类 chip 是否激活（用户已点选该子分类） */
+function isChildActive(child: Category): boolean {
+  return selectedCategoryId.value === child.id
+}
+
+function onParentCategorySelect(id: number | null) {
+  selectedCategoryId.value = id
+}
+
+function onChildCategorySelect(child: Category) {
+  // 点击已激活的子分类 → 回退到父分类筛选
+  if (selectedCategoryId.value === child.id) {
+    selectedCategoryId.value = child.parentId
+  } else {
+    selectedCategoryId.value = child.id!
+  }
+}
 
 // ── 客户端侧筛选（分类 + 搜索，仅对当前已加载页操作） ──
 const filteredTransactions = computed(() => {
@@ -800,5 +887,47 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 .scroll-finished {
   font-size: 13px;
   color: #c7c7cc;
+}
+
+/* Child category chips — matches CategoryPicker style */
+.children-bar {
+  display: flex;
+  align-items: center;
+  padding: 0 16px 4px;
+}
+
+.children-scroll {
+  overflow-x: auto;
+  white-space: nowrap;
+  display: flex;
+  gap: 6px;
+  flex: 1;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.children-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.child-chip {
+  display: inline-flex;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 16px;
+  background: #f2f2f7;
+  color: #1c1c1e;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.child-chip.active {
+  background: #007aff;
+  color: #fff;
 }
 </style>
