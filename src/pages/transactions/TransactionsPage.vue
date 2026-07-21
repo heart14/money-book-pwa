@@ -1,5 +1,4 @@
 <template>
-  <PullToRefresh ref="ptrRef" @refresh="handleRefresh">
   <div class="transactions-page">
     <!-- Header: 明细 + icons -->
     <div class="page-header">
@@ -153,7 +152,6 @@
       @close="editTx = null"
     />
   </div>
-  </PullToRefresh>
 </template>
 
 <script setup lang="ts">
@@ -169,7 +167,6 @@ import TransactionDetail from '@/components/transactions/TransactionDetail.vue'
 import TransactionEdit from '@/components/transactions/TransactionEdit.vue'
 import FilterChips from '@/components/transactions/FilterChips.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
-import PullToRefresh from '@/components/common/PullToRefresh.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 
 const transactionStore = useTransactionStore()
@@ -181,7 +178,6 @@ const searchQuery = ref('')
 const searchOpen = ref(false)
 const showDatePicker = ref(false)
 const searchInputRef = ref<HTMLInputElement | null>(null)
-const ptrRef = ref<InstanceType<typeof PullToRefresh> | null>(null)
 
 // ── Date filter state (declared before route init) ──
 const now = new Date()
@@ -204,63 +200,92 @@ let cursorId: number | null = null
 const isLoading = ref(false)
 const allLoaded = ref(false)
 
+/** 单调递增 generation，resetPagination 时递增，废弃过时的 loadPage 结果 */
+let resetGen = 0
+
+/**
+ * 根据当前 selectedCategoryId 返回 Dexie filter 回调。
+ * - null → 返回 null（不过滤分类）
+ * - 父分类 → 匹配父分类 ID 或任何子分类 ID
+ * - 子分类 → 只匹配该子分类 ID
+ */
+function getCategoryFilter(): ((tx: Transaction) => boolean) | null {
+  const sel = selectedCategoryId.value
+  if (sel == null) return null
+  const childIds = childIdsByParent.value.get(sel)
+  if (!childIds || childIds.size === 0) {
+    // 选中子分类或没有子分类的父分类
+    return (tx: Transaction) => tx.categoryId === sel
+  }
+  // 选中父分类 → 匹配父分类 ID 或任何子分类 ID
+  return (tx: Transaction) => tx.categoryId === sel || childIds.has(tx.categoryId!)
+}
+
 const isEmpty = computed(() => {
   if (isLoading.value) return false
-  if (transactions.value.length === 0) return true
-  // 数据已加载但筛选无匹配，且没有更多数据可加载
-  if (allLoaded.value && filteredTransactions.value.length === 0) return true
-  return false
+  // 有搜索词时，用 filteredTransactions 判断（搜索在客户端侧）
+  if (searchQuery.value.trim()) {
+    return allLoaded.value && filteredTransactions.value.length === 0
+  }
+  // 无搜索词，DB 侧已按分类过滤，直接看 transactions
+  return transactions.value.length === 0
 })
 
 // ── 核心分页加载逻辑 ──
 async function loadPage() {
-  if (isLoading.value || allLoaded.value) return
+  if (allLoaded.value) return
+  // 如果 isLoading 为 true 说明有过时请求 stuck，重置状态再试
+  if (isLoading.value) {
+    isLoading.value = false
+    cursorDate = null
+    cursorId = null
+  }
   isLoading.value = true
+  const gen = resetGen
 
   try {
-    let items: Transaction[]
+    // 构建基础查询（按 [date+id] 倒序，带游标或首次加载）
+    let query: ReturnType<typeof db.transactions.orderBy>
 
     if (dateFilterActive.value) {
       const start = toDateString(new Date(filterYear.value, filterMonth.value - 1, 1))
       const end = toDateString(new Date(filterYear.value, filterMonth.value, 0))
 
       if (cursorDate !== null && cursorId !== null) {
-        // 月份内带游标翻页
-        items = await db.transactions
+        query = db.transactions
           .where('[date+id]')
           .between([start, 0], [cursorDate, cursorId], true, false)
-          .reverse()
-          .limit(PAGE_SIZE + 1)
-          .toArray()
+          .reverse() as any
       } else {
-        // 月份内首次加载
-        items = await db.transactions
+        query = db.transactions
           .where('[date+id]')
           .between([start, 0], [end, Number.MAX_SAFE_INTEGER])
-          .reverse()
-          .limit(PAGE_SIZE + 1)
-          .toArray()
+          .reverse() as any
       }
     } else {
-      // 全部流水（游标分页核心场景）
       if (cursorDate !== null && cursorId !== null) {
-        items = await db.transactions
+        query = db.transactions
           .where('[date+id]')
           .below([cursorDate, cursorId])
-          .reverse()
-          .limit(PAGE_SIZE + 1)
-          .toArray()
+          .reverse() as any
       } else {
-        items = await db.transactions
+        query = db.transactions
           .orderBy('[date+id]')
-          .reverse()
-          .limit(PAGE_SIZE + 1)
-          .toArray()
+          .reverse() as any
       }
     }
 
+    // 如果有分类筛选，在 DB 层 filter（惰性求值，遍历游标时按需过滤）
+    const catFilter = getCategoryFilter()
+    const items = catFilter
+      ? await query.filter(catFilter).limit(PAGE_SIZE + 1).toArray()
+      : await query.limit(PAGE_SIZE + 1).toArray()
+
+    // 如果在此期间发生了新的 reset（resetGen 变了），丢弃这批数据
+    if (gen !== resetGen) return
+
     if (items.length > PAGE_SIZE) {
-      items = items.slice(0, PAGE_SIZE)
+      items.length = PAGE_SIZE
     } else {
       allLoaded.value = true
     }
@@ -273,55 +298,44 @@ async function loadPage() {
 
     transactions.value.push(...items)
   } catch (e) {
+    if (gen !== resetGen) return
     console.error('[钱书] 加载明细失败', e)
     allLoaded.value = true
   } finally {
-    isLoading.value = false
+    if (gen === resetGen) {
+      isLoading.value = false
+    }
   }
 }
 
-/** 当前是否有客户端侧筛选条件激活 */
-function hasActiveFilter(): boolean {
-  return selectedCategoryId.value != null || searchQuery.value.trim() !== ''
-}
-
-/**
- * 在筛选激活时，持续加载后续页面直到有足够匹配数据填满屏幕（PAGE_SIZE 条），
- * 或耗尽全部数据。避免下拉刷新后只显示零星几条的糟糕体验。
- */
-async function loadUntilMatchFound() {
-  while (!allLoaded.value && filteredTransactions.value.length < PAGE_SIZE) {
-    await loadPage()
-  }
-}
-
-// ── 重置分页（筛选变更或下拉刷新时调用） ──
+// ── 重置分页（筛选变更时调用） ──
 async function resetPagination() {
+  resetGen++
+  // 强制释放 isLoading，避免过时请求 stuck 导致后续加载永久阻塞
+  isLoading.value = false
   cursorDate = null
   cursorId = null
   allLoaded.value = false
   transactions.value = []
   await loadPage()
-  // 若有激活的筛选条件，持续加载直到看到匹配数据或耗尽
-  if (hasActiveFilter()) {
-    await loadUntilMatchFound()
-  }
 }
 
-// ── 下拉刷新 ──
-async function handleRefresh() {
-  await resetPagination()
-  ptrRef.value?.doneRefreshing()
-}
-
-// ── 日期筛选变更 → 重置分页（防抖 + 并发保护）──
+// ── 日期筛选变更 → 重置分页（防抖）──
 let filterWatchTimer: ReturnType<typeof setTimeout> | null = null
 watch([dateFilterActive, filterYear, filterMonth], () => {
   if (filterWatchTimer) clearTimeout(filterWatchTimer)
-  filterWatchTimer = setTimeout(async () => {
-    if (isLoading.value) return
-    await resetPagination()
+  filterWatchTimer = setTimeout(() => {
+    resetPagination()
   }, 150)
+})
+
+// ── 分类筛选 / 搜索变更 → 重置分页（防抖）──
+let categoryWatchTimer: ReturnType<typeof setTimeout> | null = null
+watch([selectedCategoryId, searchQuery], () => {
+  if (categoryWatchTimer) clearTimeout(categoryWatchTimer)
+  categoryWatchTimer = setTimeout(() => {
+    resetPagination()
+  }, 100)
 })
 
 // ── 关闭日期选择器时清除筛选 ──
@@ -333,9 +347,7 @@ watch(showDatePicker, (open, prev) => {
 
 // ── 全局版本号变更 → 静默刷新（来自记账页/编辑窗的增删改） ──
 watch(() => transactionStore.version, () => {
-  if (!isLoading.value) {
-    resetPagination()
-  }
+  resetPagination()
 })
 
 // ── 路由 query 变更（如从统计页点击标签跳转） ──
@@ -502,29 +514,15 @@ function onChildCategorySelect(child: Category) {
   }
 }
 
-// ── 客户端侧筛选（分类 + 搜索，仅对当前已加载页操作） ──
+// ── 客户端侧筛选（仅搜索关键词，分类已在 DB 侧 filter） ──
 const filteredTransactions = computed(() => {
-  let list = transactions.value
-
-  if (selectedCategoryId.value != null) {
-    const sel = selectedCategoryId.value
-    const childIds = childIdsByParent.value.get(sel) ?? new Set<number>()
-    list = list.filter((tx) => {
-      if (tx.categoryId == null) return false
-      return tx.categoryId === sel || childIds.has(tx.categoryId)
-    })
-  }
-
   const q = searchQuery.value.trim().toLowerCase()
-  if (q) {
-    list = list.filter((tx) => {
-      if ((tx.title || '').toLowerCase().includes(q)) return true
-      if ((tx.note || '').toLowerCase().includes(q)) return true
-      return (tx.tags || []).some((t) => t.toLowerCase().includes(q))
-    })
-  }
-
-  return list
+  if (!q) return transactions.value
+  return transactions.value.filter((tx) => {
+    if ((tx.title || '').toLowerCase().includes(q)) return true
+    if ((tx.note || '').toLowerCase().includes(q)) return true
+    return (tx.tags || []).some((t) => t.toLowerCase().includes(q))
+  })
 })
 
 // ── 日期分组 ──
