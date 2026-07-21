@@ -43,6 +43,11 @@ const emit = defineEmits<{
 
 function handleDigit(d: string) {
   let v = props.value
+  // 限制小数点后最多 2 位
+  if (v.includes('.')) {
+    const [, decPart = ''] = v.split('.')
+    if (decPart.length >= 2) return
+  }
   if (v === '0') {
     v = d
   } else {

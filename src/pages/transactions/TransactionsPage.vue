@@ -303,9 +303,14 @@ async function handleRefresh() {
   ptrRef.value?.doneRefreshing()
 }
 
-// ── 日期筛选变更 → 重置分页 ──
+// ── 日期筛选变更 → 重置分页（防抖 + 并发保护）──
+let filterWatchTimer: ReturnType<typeof setTimeout> | null = null
 watch([dateFilterActive, filterYear, filterMonth], () => {
-  resetPagination()
+  if (filterWatchTimer) clearTimeout(filterWatchTimer)
+  filterWatchTimer = setTimeout(async () => {
+    if (isLoading.value) return
+    await resetPagination()
+  }, 150)
 })
 
 // ── 关闭日期选择器时清除筛选 ──
@@ -337,9 +342,14 @@ watch(
 const sentinelEl = ref<HTMLElement | null>(null)
 let observer: IntersectionObserver | null = null
 
-onMounted(() => {
-  // 首次加载
-  loadPage()
+function initObserver() {
+  if (observer) {
+    observer.disconnect()
+    observer = null
+  }
+
+  const el = sentinelEl.value
+  if (!el) return
 
   observer = new IntersectionObserver(
     ([entry]) => {
@@ -349,12 +359,19 @@ onMounted(() => {
     },
     { rootMargin: '200px' },
   )
+  observer.observe(el)
+}
+
+onMounted(() => {
+  // 首次加载
+  loadPage()
+  // DOM 已就绪，初始化观察器
+  nextTick(() => initObserver())
 })
 
-watch(sentinelEl, (el) => {
-  if (el && observer) {
-    observer.observe(el)
-  }
+watch(sentinelEl, () => {
+  // 哨兵元素重建时（如从空态切换回列表），重新连接 observer
+  nextTick(() => initObserver())
 })
 
 onUnmounted(() => {
@@ -487,8 +504,8 @@ const filteredTransactions = computed(() => {
   if (q) {
     list = list.filter((tx) => {
       if ((tx.title || '').toLowerCase().includes(q)) return true
-      if (tx.note.toLowerCase().includes(q)) return true
-      return tx.tags.some((t) => t.toLowerCase().includes(q))
+      if ((tx.note || '').toLowerCase().includes(q)) return true
+      return (tx.tags || []).some((t) => t.toLowerCase().includes(q))
     })
   }
 

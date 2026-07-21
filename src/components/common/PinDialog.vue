@@ -36,32 +36,45 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
-defineProps<{
+const props = defineProps<{
   visible: boolean
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'close'): void
   (e: 'submit', pin: string): void
 }>()
 
+const pinValue = ref('')
 const pinLength = ref(0)
 
 const keys = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 function onKeyPress(key: number) {
-  if (pinLength.value < 6) {
-    pinLength.value++
+  if (pinLength.value >= 6) return
+  pinValue.value += String(key)
+  pinLength.value = pinValue.value.length
+  if (pinLength.value === 6) {
+    emit('submit', pinValue.value)
   }
 }
 
 function onBackspace() {
-  if (pinLength.value > 0) {
-    pinLength.value--
+  if (pinValue.value.length > 0) {
+    pinValue.value = pinValue.value.slice(0, -1)
+    pinLength.value = pinValue.value.length
   }
 }
+
+// 每次打开弹窗时重置 PIN 输入
+watch(() => props.visible, (visible) => {
+  if (visible) {
+    pinValue.value = ''
+    pinLength.value = 0
+  }
+})
 </script>
 
 <style scoped>
