@@ -409,11 +409,15 @@ const categoryMap = computed(() => {
 })
 
 const parentCategories = computed(() => {
-  return categoryStore.getParents().map((c) => ({
-    id: c.id as number,
-    name: c.name,
-    icon: c.icon,
-  }))
+  const typeOrder = { expense: 0, income: 1, transfer: 2 }
+  return categoryStore.getParents()
+    .slice()
+    .sort((a, b) => typeOrder[a.type] - typeOrder[b.type])
+    .map((c) => ({
+      id: c.id as number,
+      name: c.name,
+      icon: c.icon,
+    }))
 })
 
 const childIdsByParent = computed(() => {
