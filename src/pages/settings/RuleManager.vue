@@ -84,8 +84,17 @@ import CommonBottomSheet from '@/components/common/CommonBottomSheet.vue'
 const expanded = ref(false)
 
 const rules = ref<RecurringRule[]>([])
-async function loadRules() { rules.value = await db.recurringRules.toArray() }
-watchEffect(() => { loadRules() })
+let rulesLoaded = false
+async function loadRules() {
+  rules.value = await db.recurringRules.toArray()
+}
+watchEffect((onCleanup) => {
+  if (!rulesLoaded) {
+    loadRules()
+    rulesLoaded = true
+  }
+  onCleanup(() => { rulesLoaded = false })
+})
 
 function typeLabel(type: string): string {
   return type === 'expense' ? '支出' : '收入'

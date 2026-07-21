@@ -126,12 +126,22 @@
       </div>
     </div>
 
+    <!-- Delete confirm dialog -->
+    <ConfirmDialog
+      :visible="showDeleteConfirm"
+      title="确认删除"
+      :message="`确定要删除${deleteTargetTx?.title ? '「' + deleteTargetTx.title + '」' : '' }这条记录吗？`"
+      confirm-type="danger"
+      @confirm="handleDeleteConfirmed"
+      @update:visible="showDeleteConfirm = $event"
+    />
+
     <!-- Detail bottom sheet -->
     <TransactionDetail
       v-if="detailTx != null"
       :transaction="detailTx"
       @edit="openEdit"
-      @delete="handleDelete"
+      @delete="showDeleteFor"
       @close="detailTx = null"
     />
 
@@ -160,6 +170,7 @@ import TransactionEdit from '@/components/transactions/TransactionEdit.vue'
 import FilterChips from '@/components/transactions/FilterChips.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import PullToRefresh from '@/components/common/PullToRefresh.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 
 const transactionStore = useTransactionStore()
 const categoryStore = useCategoryStore()
@@ -635,11 +646,21 @@ function openDetail(tx: Transaction) {
   detailTx.value = tx
 }
 
-async function handleDelete(tx: Transaction) {
-  if (tx.id == null) return
-  if (!confirm('确定要删除这条记录吗？')) return
+// ── Delete with confirm dialog ──
+const showDeleteConfirm = ref(false)
+const deleteTargetTx = ref<Transaction | null>(null)
+
+function showDeleteFor(tx: Transaction) {
+  deleteTargetTx.value = tx
+  showDeleteConfirm.value = true
+}
+
+async function handleDeleteConfirmed() {
+  const tx = deleteTargetTx.value
+  if (!tx || tx.id == null) return
   await transactionStore.deleteTransaction(tx.id)
   detailTx.value = null
+  deleteTargetTx.value = null
 }
 
 // ── Edit bottom sheet ──
@@ -666,7 +687,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 <style scoped>
 .transactions-page {
   padding: 0;
-  background: #f2f2f6;
+  background: var(--color-bg);
   min-height: 100%;
   padding-bottom: 64px;
 }

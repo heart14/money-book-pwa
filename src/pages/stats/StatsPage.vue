@@ -26,19 +26,19 @@
     <template v-if="timeMode === 'custom'">
       <div class="period-selector custom">
         <span class="period-label">从</span>
-        <button class="period-nav" @click="customStartMonth--; if(customStartMonth<1){customStartMonth=12;customStartYear--}">
+        <button class="period-nav" @click="customRange.startMonth--; if(customRange.startMonth<1){customRange.startMonth=12;customRange.startYear--}">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6" /></svg>
         </button>
-        <span class="period-label small">{{ customStartYear }}年{{ customStartMonth }}月</span>
-        <button class="period-nav" @click="customStartMonth++; if(customStartMonth>12){customStartMonth=1;customStartYear++}">
+        <span class="period-label small">{{ customRange.startYear }}年{{ customRange.startMonth }}月</span>
+        <button class="period-nav" @click="customRange.startMonth++; if(customRange.startMonth>12){customRange.startMonth=1;customRange.startYear++}">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2.5" stroke-linecap="round"><polyline points="9 6 15 12 9 18" /></svg>
         </button>
         <span class="period-label small">至</span>
-        <button class="period-nav" @click="customEndMonth--; if(customEndMonth<1){customEndMonth=12;customEndYear--}">
+        <button class="period-nav" @click="customRange.endMonth--; if(customRange.endMonth<1){customRange.endMonth=12;customRange.endYear--}">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6" /></svg>
         </button>
-        <span class="period-label small">{{ customEndYear }}年{{ customEndMonth }}月</span>
-        <button class="period-nav" @click="customEndMonth++; if(customEndMonth>12){customEndMonth=1;customEndYear++}">
+        <span class="period-label small">{{ customRange.endYear }}年{{ customRange.endMonth }}月</span>
+        <button class="period-nav" @click="customRange.endMonth++; if(customRange.endMonth>12){customRange.endMonth=1;customRange.endYear++}">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2.5" stroke-linecap="round"><polyline points="9 6 15 12 9 18" /></svg>
         </button>
       </div>
@@ -121,7 +121,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { db } from '@/db'
 import { useCategoryStore } from '@/stores/categoryStore'
@@ -135,11 +135,12 @@ const timeMode = ref<'month' | 'year' | 'custom'>('month')
 const currentDate = ref(new Date())
 
 // Custom date range state
-const now2 = new Date()
-const customStartYear = ref(now2.getFullYear())
-const customStartMonth = ref(now2.getMonth() + 1)
-const customEndYear = ref(now2.getFullYear())
-const customEndMonth = ref(now2.getMonth() + 1)
+const customRange = reactive({
+  startYear: new Date().getFullYear(),
+  startMonth: new Date().getMonth() + 1,
+  endYear: new Date().getFullYear(),
+  endMonth: new Date().getMonth() + 1,
+})
 
 const periodLabel = computed(() => {
   const y = currentDate.value.getFullYear()
@@ -172,8 +173,8 @@ const dateRange = computed(() => {
     return { start: toDateStr(startOfYear(currentDate.value)), end: toDateStr(endOfYear(currentDate.value)) }
   }
   if (timeMode.value === 'custom') {
-    const start = new Date(customStartYear.value, customStartMonth.value - 1, 1)
-    const end = new Date(customEndYear.value, customEndMonth.value, 0)
+    const start = new Date(customRange.startYear, customRange.startMonth - 1, 1)
+    const end = new Date(customRange.endYear, customRange.endMonth, 0)
     return { start: toDateStr(start), end: toDateStr(end) }
   }
   return { start: toDateStr(startOfMonth(currentDate.value)), end: toDateStr(endOfMonth(currentDate.value)) }

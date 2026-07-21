@@ -20,7 +20,11 @@
     <Teleport to="body">
       <div v-if="deleteTarget" class="modal-overlay" @click.self="deleteTarget = null">
         <div class="modal-content">
-          <p class="modal-desc">确认删除标签「{{ deleteTarget.name }}」？<br v-if="deleteUsageCount > 0"><span v-if="deleteUsageCount > 0" class="modal-hint">该标签用于 {{ deleteUsageCount }} 条交易记录</span></p>
+          <p class="modal-desc">
+            确认删除标签「{{ deleteTarget.name }}」？
+            <br v-if="deleteUsageCount > 0">
+            <span v-if="deleteUsageCount > 0" class="modal-hint">该标签用于 {{ deleteUsageCount }} 条交易记录</span>
+          </p>
           <div class="modal-actions-col">
             <button class="btn-block btn-danger" v-if="deleteUsageCount > 0" @click="handleDeleteRemovingFromTxs">删除并从交易记录移除</button>
             <button class="btn-block btn-cancel" @click="handleDeleteRegistryOnly">仅从标签列表删除</button>
@@ -150,6 +154,7 @@ async function handleDeleteRegistryOnly() {
 .tag-input { flex: 1; height: 36px; border-radius: 8px; border: 1px solid #e5e5ea; padding: 0 10px; font-size: 14px; outline: none; font-family: inherit; box-sizing: border-box; }
 .tag-add-btn { height: 36px; padding: 0 16px; border: none; border-radius: 8px; background: #007aff; color: #fff; font-size: 13px; cursor: pointer; font-family: inherit; }
 .tag-add-btn:disabled { opacity: 0.4; }
+
 
 /* Modal */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; display: flex; align-items: center; justify-content: center; }

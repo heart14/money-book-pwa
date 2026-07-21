@@ -151,23 +151,23 @@
       <p class="success-text">{{ successMsg }}</p>
     </div>
 
-    <!-- Disable confirmation modal -->
-    <div v-if="showDisableConfirm" class="modal-overlay" @click.self="showDisableConfirm = false">
-      <div class="modal-content">
-        <p class="modal-title">确认关闭 PIN 码？</p>
-        <p class="modal-desc">关闭后，再次开启需要设置新的 PIN 码。</p>
-        <div class="modal-actions">
-          <button class="btn-cancel" @click="showDisableConfirm = false">取消</button>
-          <button class="btn-danger" @click="onDisable">确认关闭</button>
-        </div>
-      </div>
-    </div>
+    <!-- Disable confirmation dialog -->
+    <ConfirmDialog
+      :visible="showDisableConfirm"
+      title="确认关闭 PIN 码？"
+      message="关闭后，再次开启需要设置新的 PIN 码。"
+      confirm-text="确认关闭"
+      confirm-type="danger"
+      @confirm="onDisable"
+      @update:visible="showDisableConfirm = $event"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, nextTick, watch } from 'vue'
 import { hashPIN, getStoredPINHash, setStoredPINHash, clearPIN } from '@/utils/crypto'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 
 defineEmits<{
   (e: 'back'): void
@@ -482,75 +482,4 @@ if (!hasPin.value) {
   color: #2e7d32;
 }
 
-/* ── Modal ── */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: fadeIn 0.2s ease;
-}
-
-.modal-content {
-  width: 280px;
-  background: #fff;
-  border-radius: var(--radius-xl);
-  padding: 24px 20px 20px;
-}
-
-.modal-title {
-  font-size: 17px;
-  font-weight: 600;
-  text-align: center;
-  margin-bottom: 8px;
-}
-
-.modal-desc {
-  font-size: 14px;
-  color: var(--color-secondary-text);
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.modal-actions {
-  display: flex;
-  gap: 12px;
-}
-
-.btn-cancel,
-.btn-danger {
-  flex: 1;
-  height: 44px;
-  border-radius: var(--radius-sm);
-  border: none;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  font-family: inherit;
-  -webkit-tap-highlight-color: transparent;
-  transition: opacity 0.15s;
-}
-
-.btn-cancel {
-  background: #f2f2f6;
-  color: var(--color-text);
-}
-
-.btn-danger {
-  background: var(--color-destructive);
-  color: #fff;
-}
-
-.btn-cancel:active,
-.btn-danger:active {
-  opacity: 0.7;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
 </style>

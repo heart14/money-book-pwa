@@ -277,13 +277,4 @@ function handleSave() {
 .btn-secondary { background: #f2f2f6; color: #1c1c1e; }
 .btn-primary { background: #007aff; color: #fff; }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
 </style>

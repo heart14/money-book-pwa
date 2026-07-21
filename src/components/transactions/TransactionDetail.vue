@@ -224,13 +224,4 @@ const displayAmount = computed(() => {
 .btn-secondary { background: #f2f2f6; color: #1c1c1e; }
 .btn-danger { background: #ff3b30; color: #fff; }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
 </style>

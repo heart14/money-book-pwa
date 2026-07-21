@@ -88,54 +88,42 @@
         </div>
       </div>
 
-      <!-- ── Data Management Modals ── -->
-      <!-- Import confirm -->
-      <div v-if="showImportConfirm" class="modal-overlay" @click.self="showImportConfirm = false">
-        <div class="modal-content">
-          <p class="modal-title">确认导入数据</p>
-          <p class="modal-desc">此操作将覆盖所有现有数据，确定继续？</p>
-          <div class="modal-actions">
-            <button class="btn-cancel" @click="cancelImport">取消</button>
-            <button class="btn-danger" @click="confirmImport">确认导入</button>
-          </div>
-        </div>
-      </div>
+      <!-- ── Data Management Dialogs ── -->
+      <ConfirmDialog
+        :visible="showImportConfirm"
+        title="确认导入数据"
+        message="此操作将覆盖所有现有数据，确定继续？"
+        confirm-text="确认导入"
+        confirm-type="danger"
+        @confirm="confirmImport"
+        @update:visible="showImportConfirm = $event"
+      />
 
-      <!-- Destroy: first confirmation -->
-      <div v-if="showDestroyConfirm1" class="modal-overlay" @click.self="showDestroyConfirm1 = false">
-        <div class="modal-content">
-          <p class="modal-title">确认销毁数据</p>
-          <p class="modal-desc">此操作将清除所有数据，且无法恢复。确定继续？</p>
-          <div class="modal-actions">
-            <button class="btn-cancel" @click="showDestroyConfirm1 = false">取消</button>
-            <button class="btn-danger" @click="showDestroyConfirm2 = true; showDestroyConfirm1 = false">确定</button>
-          </div>
-        </div>
-      </div>
+      <ConfirmDialog
+        :visible="showDestroyConfirm1"
+        title="确认销毁数据"
+        message="此操作将清除所有数据，且无法恢复。确定继续？"
+        confirm-text="确定"
+        confirm-type="danger"
+        @confirm="showDestroyConfirm2 = true; showDestroyConfirm1 = false"
+      />
 
-      <!-- Destroy: second confirmation -->
-      <div v-if="showDestroyConfirm2" class="modal-overlay" @click.self="showDestroyConfirm2 = false">
-        <div class="modal-content">
-          <p class="modal-title">再次确认</p>
-          <p class="modal-desc">请再次确认——此操作无法撤销。</p>
-          <div class="modal-actions">
-            <button class="btn-cancel" @click="showDestroyConfirm2 = false">取消</button>
-            <button class="btn-danger" @click="handleDestroy">确认销毁</button>
-          </div>
-        </div>
-      </div>
+      <ConfirmDialog
+        :visible="showDestroyConfirm2"
+        title="再次确认"
+        message="请再次确认——此操作无法撤销。"
+        confirm-text="确认销毁"
+        confirm-type="danger"
+        @confirm="handleDestroy"
+      />
 
-      <!-- Import mock data confirm -->
-      <div v-if="showMockConfirm" class="modal-overlay" @click.self="showMockConfirm = false">
-        <div class="modal-content">
-          <p class="modal-title">导入测试数据</p>
-          <p class="modal-desc">将生成约 580 条模拟交易记录（含近 12 个月的工资/消费数据），是否继续？</p>
-          <div class="modal-actions">
-            <button class="btn-cancel" @click="showMockConfirm = false">取消</button>
-            <button class="btn-primary" @click="handleMockImport">确定</button>
-          </div>
-        </div>
-      </div>
+      <ConfirmDialog
+        :visible="showMockConfirm"
+        title="导入测试数据"
+        message="将生成约 580 条模拟交易记录（含近 12 个月的工资/消费数据），是否继续？"
+        confirm-text="确定"
+        @confirm="handleMockImport"
+      />
 
       <!-- Toasts -->
       <div v-if="dataSuccessMsg" class="data-msg success" @click="dataSuccessMsg = ''">{{ dataSuccessMsg }}</div>
@@ -155,6 +143,7 @@ import AccountManager from './AccountManager.vue'
 import CategoryManager from './CategoryManager.vue'
 import TagManager from './TagManager.vue'
 import RuleManager from './RuleManager.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 
 const currentView = ref<'main' | 'security'>('main')
 const hasPin = computed(() => !!getStoredPINHash())
@@ -168,15 +157,24 @@ const showMockConfirm = ref(false)
 const pendingImportFile = ref<File | null>(null)
 const dataSuccessMsg = ref('')
 const dataErrorMsg = ref('')
+let toastTimer: ReturnType<typeof setTimeout> | null = null
+
+function showToast(success: string, error: string) {
+  dataSuccessMsg.value = success
+  dataErrorMsg.value = error
+  if (toastTimer) clearTimeout(toastTimer)
+  toastTimer = setTimeout(() => {
+    dataSuccessMsg.value = ''
+    dataErrorMsg.value = ''
+  }, 3000)
+}
 
 async function handleExport() {
   try {
     await exportData()
-    dataSuccessMsg.value = '数据已导出'
-    dataErrorMsg.value = ''
+    showToast('数据已导出', '')
   } catch (e) {
-    dataErrorMsg.value = '导出失败：' + (e instanceof Error ? e.message : '未知错误')
-    dataSuccessMsg.value = ''
+    showToast('', '导出失败：' + (e instanceof Error ? e.message : '未知错误'))
   }
 }
 
@@ -193,21 +191,14 @@ function onFileSelected(e: Event) {
   target.value = ''
 }
 
-function cancelImport() {
-  showImportConfirm.value = false
-  pendingImportFile.value = null
-}
-
 async function confirmImport() {
   if (!pendingImportFile.value) return
   showImportConfirm.value = false
   try {
     await importData(pendingImportFile.value)
-    dataSuccessMsg.value = '数据已导入'
-    dataErrorMsg.value = ''
+    showToast('数据已导入', '')
   } catch (e) {
-    dataErrorMsg.value = '导入失败：' + (e instanceof Error ? e.message : '请检查文件格式是否正确')
-    dataSuccessMsg.value = ''
+    showToast('', '导入失败：' + (e instanceof Error ? e.message : '请检查文件格式是否正确'))
   }
   pendingImportFile.value = null
 }
@@ -216,11 +207,9 @@ async function handleDestroy() {
   showDestroyConfirm2.value = false
   try {
     await destroyAllData()
-    dataSuccessMsg.value = '数据已销毁，建议刷新页面'
-    dataErrorMsg.value = ''
+    showToast('数据已销毁，建议刷新页面', '')
   } catch (e) {
-    dataErrorMsg.value = '销毁失败：' + (e instanceof Error ? e.message : '未知错误')
-    dataSuccessMsg.value = ''
+    showToast('', '销毁失败：' + (e instanceof Error ? e.message : '未知错误'))
   }
 }
 
@@ -229,11 +218,9 @@ async function handleMockImport() {
   try {
     const { seedMockData } = await import('@/scripts/seedMockData')
     const result = await seedMockData()
-    dataSuccessMsg.value = `已导入 ${result.transactions} 条交易记录、${result.tags} 个标签`
-    dataErrorMsg.value = ''
+    showToast(`已导入 ${result.transactions} 条交易记录、${result.tags} 个标签`, '')
   } catch (e) {
-    dataErrorMsg.value = '导入失败：' + (e instanceof Error ? e.message : '未知错误')
-    dataSuccessMsg.value = ''
+    showToast('', '导入失败：' + (e instanceof Error ? e.message : '未知错误'))
   }
 }
 </script>
@@ -301,16 +288,6 @@ async function handleMockImport() {
 .chevron { color: #c7c7cc; flex-shrink: 0; transition: transform 0.2s; }
 
 .separator { height: 1px; background: rgba(60,60,67,0.08); margin: 0 14px; }
-
-/* Modal overlays */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; display: flex; align-items: center; justify-content: center; }
-.modal-content { width: 280px; background: #fff; border-radius: 16px; padding: 24px; }
-.modal-title { font-size: 18px; font-weight: 600; text-align: center; margin-bottom: 20px; color: #1c1c1e; }
-.modal-desc { font-size: 14px; color: #1c1c1e; text-align: center; margin-bottom: 16px; }
-.modal-actions { display: flex; gap: 12px; justify-content: center; }
-.btn-cancel { flex: 1; height: 44px; border-radius: 10px; border: none; background: #f2f2f6; color: #1c1c1e; font-size: 16px; font-weight: 500; cursor: pointer; font-family: inherit; }
-.btn-danger { height: 44px; padding: 0 24px; border-radius: 10px; border: none; background: #ff3b30; color: #fff; font-size: 16px; font-weight: 500; cursor: pointer; font-family: inherit; }
-.btn-primary { height: 44px; padding: 0 24px; border-radius: 10px; border: none; background: #007aff; color: #fff; font-size: 16px; font-weight: 500; cursor: pointer; font-family: inherit; }
 
 /* Toast messages */
 .data-msg {
