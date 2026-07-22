@@ -347,6 +347,7 @@ const lineOption = computed(() => {
           formatter: (params: any) => `均值 ¥${params.value.toFixed(2)}`,
           fontSize: 10,
           color: '#8e8e93',
+          position: 'insideEndTop',
         },
         data: [{ type: 'average' }],
       },
