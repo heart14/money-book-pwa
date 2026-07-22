@@ -237,6 +237,13 @@ if (route.query.tag && typeof route.query.tag === 'string') {
   searchQuery.value = route.query.tag
   searchOpen.value = true
 }
+// ── Initialize category filter from route query categoryId param ──
+if (route.query.categoryId && typeof route.query.categoryId === 'string') {
+  const id = parseInt(route.query.categoryId, 10)
+  if (!isNaN(id)) {
+    selectedCategoryId.value = id
+  }
+}
 
 // ── Cursor pagination ──
 const PAGE_SIZE = 20
@@ -409,6 +416,19 @@ watch(
     if (typeof tag === 'string') {
       searchQuery.value = tag
       searchOpen.value = true
+    }
+  },
+)
+
+// ── 路由 query 变更（如从统计页点击分类跳转） ──
+watch(
+  () => route.query.categoryId,
+  (categoryId) => {
+    if (typeof categoryId === 'string') {
+      const id = parseInt(categoryId, 10)
+      if (!isNaN(id)) {
+        selectedCategoryId.value = id
+      }
     }
   },
 )

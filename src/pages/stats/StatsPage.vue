@@ -82,12 +82,27 @@
     <!-- Expense Ranking + Tags Grid -->
     <div class="bottom-grid">
       <div class="chart-card">
-        <div class="chart-title">支出排行</div>
+        <div class="chart-title-row">
+          <span class="chart-title">支出排行</span>
+          <div class="ranking-toggle">
+            <button
+              class="toggle-btn"
+              :class="{ active: rankingLevel === 'parent' }"
+              @click="rankingLevel = 'parent'"
+            >一级</button>
+            <button
+              class="toggle-btn"
+              :class="{ active: rankingLevel === 'child' }"
+              @click="rankingLevel = 'child'"
+            >二级</button>
+          </div>
+        </div>
         <div v-if="expenseRanking.length === 0" class="empty-text">暂无数据</div>
         <div
           v-for="(item, index) in expenseRanking"
-          :key="item.name"
+          :key="item.categoryId + '-' + rankingLevel"
           class="ranking-row"
+          @click="navigateToCategory(item)"
         >
           <span class="ranking-badge" :style="{ background: rankColor(index) }">{{ rankLabel(index) }}</span>
           <span class="ranking-icon">{{ item.icon }}</span>
@@ -131,6 +146,9 @@ import VChart from 'vue-echarts'
 import type { Transaction } from '@/types'
 const categoryStore = useCategoryStore()
 
+type RankLevel = 'parent' | 'child'
+
+const rankingLevel = ref<RankLevel>('parent')
 const timeMode = ref<'month' | 'year' | 'custom'>('month')
 const currentDate = ref(new Date())
 
@@ -292,16 +310,32 @@ const pieOption = computed(() => {
   }
 })
 
-function aggregateByCategory(txList: Transaction[]): { name: string; icon: string; amount: number }[] {
-  const map = new Map<number, { name: string; icon: string; amount: number }>()
+function aggregateByCategory(txList: Transaction[], level: RankLevel): { name: string; icon: string; amount: number; categoryId: number }[] {
+  const map = new Map<number, { name: string; icon: string; amount: number; categoryId: number }>()
   for (const tx of txList.filter((t) => t.type === 'expense')) {
     if (!tx.categoryId) continue
     const cat = categoryStore.categories.find((c) => c.id === tx.categoryId)
     if (!cat) continue
-    const parent = cat.parentId ? categoryStore.categories.find((c) => c.id === cat.parentId) : cat
-    if (!parent) continue
-    const key = parent.id!
-    if (!map.has(key)) map.set(key, { name: parent.name, icon: parent.icon, amount: 0 })
+
+    let key: number
+    let name: string
+    let icon: string
+
+    if (level === 'child' && cat.parentId !== null) {
+      // 子分类聚合: 使用子分类自身
+      key = cat.id!
+      name = cat.name
+      icon = categoryStore.categories.find((c) => c.id === cat.parentId)?.icon || ''
+    } else {
+      // 父分类聚合: 向上找到父分类
+      const parent = cat.parentId ? categoryStore.categories.find((c) => c.id === cat.parentId) : cat
+      if (!parent) continue
+      key = parent.id!
+      name = parent.name
+      icon = parent.icon
+    }
+
+    if (!map.has(key)) map.set(key, { name, icon, amount: 0, categoryId: key })
     map.get(key)!.amount += tx.amount
   }
   return Array.from(map.values()).sort((a, b) => b.amount - a.amount)
@@ -317,17 +351,20 @@ function aggregateByTag(txList: Transaction[]): { name: string; amount: number }
   return Array.from(map.entries()).map(([name, amount]) => ({ name, amount })).sort((a, b) => b.amount - a.amount)
 }
 
-const categoryAggregation = computed(() => aggregateByCategory(transactions.value))
+const categoryAggregation = computed(() => aggregateByCategory(transactions.value, 'parent'))
 
 const totalExpenseForPercent = computed(() => categoryAggregation.value.reduce((sum, item) => sum + item.amount, 0))
 
-
-const expenseRanking = computed(() =>
-  categoryAggregation.value.slice(0, 5).map((item) => ({
+const expenseRanking = computed(() => {
+  const items = rankingLevel.value === 'child'
+    ? aggregateByCategory(transactions.value, 'child')
+    : categoryAggregation.value
+  const total = items.reduce((sum, item) => sum + item.amount, 0)
+  return items.slice(0, 8).map((item) => ({
     ...item,
-    percent: totalExpenseForPercent.value > 0 ? Math.round((item.amount / totalExpenseForPercent.value) * 100) : 0,
-  })),
-)
+    percent: total > 0 ? Math.round((item.amount / total) * 100) : 0,
+  }))
+})
 
 const tagAggregation = computed(() => aggregateByTag(transactions.value))
 
@@ -343,6 +380,10 @@ function navigateToTag(tagName: string) {
   } else {
     router.push({ name: 'transactions' })
   }
+}
+
+function navigateToCategory(item: { categoryId: number }) {
+  router.push({ name: 'transactions', query: { categoryId: String(item.categoryId) } })
 }
 
 const rankColors = ['#ff3b30', '#ff9500', '#ffcc00']
@@ -511,6 +552,44 @@ function rankLabel(index: number): string {
   margin-bottom: 10px;
 }
 
+.chart-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.chart-title-row .chart-title {
+  margin-bottom: 0;
+}
+
+.ranking-toggle {
+  display: flex;
+  background: #f2f2f7;
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.toggle-btn {
+  padding: 2px 10px;
+  border: none;
+  background: transparent;
+  font-size: 11px;
+  font-weight: 500;
+  color: #8e8e93;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.toggle-btn.active {
+  background: #fff;
+  color: #007aff;
+  font-weight: 600;
+}
+
 .empty-text {
   text-align: center;
   padding: 24px 0;
@@ -549,6 +628,12 @@ function rankLabel(index: number): string {
   gap: 8px;
   padding: 8px 0;
   border-bottom: 1px solid var(--color-separator);
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.ranking-row:active {
+  opacity: 0.5;
 }
 
 .ranking-row:last-child { border-bottom: none; }
