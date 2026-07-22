@@ -4,6 +4,9 @@ import { ref } from 'vue'
 export type BookingMode = 'expense' | 'income' | 'transfer'
 
 export const useUiStore = defineStore('ui', () => {
+  // ── PIN lock state ──
+  const unlocked = ref(true)
+
   // ── Booking mode state ──
   const bookingMode = ref<BookingMode>('expense')
   const bookingAmount = ref<number>(0)
@@ -46,6 +49,7 @@ export const useUiStore = defineStore('ui', () => {
   }
 
   return {
+    unlocked,
     bookingMode,
     bookingAmount,
     lastCategoryId,

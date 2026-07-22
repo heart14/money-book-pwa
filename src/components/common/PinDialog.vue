@@ -11,6 +11,7 @@
             :class="{ filled: i <= pinLength }"
           />
         </div>
+        <p v-if="errorMsg" class="pin-error">{{ errorMsg }}</p>
         <div class="pin-keyboard">
           <button
             v-for="key in keys"
@@ -40,6 +41,7 @@ import { ref, watch } from 'vue'
 
 const props = defineProps<{
   visible: boolean
+  errorMsg?: string
 }>()
 
 const emit = defineEmits<{
@@ -68,7 +70,7 @@ function onBackspace() {
   }
 }
 
-// 每次打开弹窗时重置 PIN 输入
+// 每次打开弹窗时重置 PIN 输入和错误
 watch(() => props.visible, (visible) => {
   if (visible) {
     pinValue.value = ''
@@ -121,6 +123,14 @@ watch(() => props.visible, (visible) => {
 .pin-dot.filled {
   background: #007aff;
   border-color: #007aff;
+}
+
+.pin-error {
+  text-align: center;
+  font-size: 13px;
+  color: #ff3b30;
+  margin-bottom: 12px;
+  min-height: 18px;
 }
 
 .pin-keyboard {
