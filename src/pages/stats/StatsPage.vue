@@ -94,7 +94,6 @@
     </div>
 
     <!-- Expense Ranking + Tags Grid -->
-    <!-- <div class="bottom-grid"> -->
       <div class="chart-card">
         <div class="chart-title-row">
           <span class="chart-title">支出排行</span>
@@ -186,7 +185,6 @@
         </div>
       </div>
     </div>
-  <!-- </div> -->
 </template>
 
 <script setup lang="ts">

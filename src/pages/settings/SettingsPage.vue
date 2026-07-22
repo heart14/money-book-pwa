@@ -250,7 +250,7 @@ async function handleMockImport() {
 }
 
 .page-header { display: flex; align-items: center; margin-bottom: 16px; }
-.page-title { font-size: 17px; font-weight: 700; color: #1c1c1e; }
+.page-title { font-size: 27px; font-weight: 700; color: #1c1c1e; }
 
 .section { margin-bottom: 20px; }
 

@@ -183,10 +183,9 @@ async function handleDelete(acc: Account) {
 }
 
 .page-title {
-  font-size: 17px;
+  font-size: 27px;
   font-weight: 700;
-  color: #1c1c1e;
-  flex: 1;
+  color: var(--color-text);
 }
 
 .header-actions {
