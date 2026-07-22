@@ -57,6 +57,9 @@ function onVisibilityChange() {
     // 回到前台且有 PIN → 重新锁定
     showPinLock.value = true
     pinError.value = ''
+  } else {
+    // 回到前台且无 PIN → 恢复解锁状态
+    uiStore.unlocked = true
   }
 }
 
