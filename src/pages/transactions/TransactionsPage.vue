@@ -237,6 +237,13 @@ if (route.query.tag && typeof route.query.tag === 'string') {
   searchQuery.value = route.query.tag
   searchOpen.value = true
 }
+// ── Initialize search field from route query ──
+if (route.query.searchField && typeof route.query.searchField === 'string') {
+  const validFields: SearchField[] = ['title', 'note', 'tag', 'all']
+  if (validFields.includes(route.query.searchField as SearchField)) {
+    searchField.value = route.query.searchField as SearchField
+  }
+}
 // ── Initialize category filter from route query categoryId param ──
 if (route.query.categoryId && typeof route.query.categoryId === 'string') {
   const id = parseInt(route.query.categoryId, 10)

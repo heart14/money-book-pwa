@@ -396,7 +396,7 @@ const router = useRouter()
 
 function navigateToTag(tagName: string) {
   if (tagName) {
-    router.push({ name: 'transactions', query: { tag: tagName } })
+    router.push({ name: 'transactions', query: { tag: tagName, searchField: 'tag' } })
   } else {
     router.push({ name: 'transactions' })
   }
