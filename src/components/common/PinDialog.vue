@@ -3,7 +3,7 @@
     <div v-if="visible" class="pin-overlay" @click.self="$emit('close')">
       <div class="pin-dialog">
         <h2 class="pin-title">输入PIN码</h2>
-        <div class="pin-dots">
+        <div class="pin-dots" :class="{ shake: shaking }">
           <span
             v-for="i in 6"
             :key="i"
@@ -42,6 +42,7 @@ import { ref, watch } from 'vue'
 const props = defineProps<{
   visible: boolean
   errorMsg?: string
+  resetKey?: number
 }>()
 
 const emit = defineEmits<{
@@ -51,8 +52,19 @@ const emit = defineEmits<{
 
 const pinValue = ref('')
 const pinLength = ref(0)
+const shaking = ref(false)
 
 const keys = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+function clearPin() {
+  pinValue.value = ''
+  pinLength.value = 0
+}
+
+function triggerShake() {
+  shaking.value = true
+  setTimeout(() => { shaking.value = false }, 400)
+}
 
 function onKeyPress(key: number) {
   if (pinLength.value >= 6) return
@@ -73,9 +85,21 @@ function onBackspace() {
 // 每次打开弹窗时重置 PIN 输入和错误
 watch(() => props.visible, (visible) => {
   if (visible) {
-    pinValue.value = ''
-    pinLength.value = 0
+    clearPin()
   }
+})
+
+// 输错 PIN 时自动清空 + shake 动画
+watch(() => props.errorMsg, (msg) => {
+  if (msg) {
+    triggerShake()
+    clearPin()
+  }
+})
+
+// 收到重置信号时清空部分输入的 PIN
+watch(() => props.resetKey, () => {
+  clearPin()
 })
 </script>
 
@@ -131,6 +155,19 @@ watch(() => props.visible, (visible) => {
   color: #ff3b30;
   margin-bottom: 12px;
   min-height: 18px;
+}
+
+/* ── Shake 动画 ── */
+.shake {
+  animation: shake 0.35s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
 }
 
 .pin-keyboard {

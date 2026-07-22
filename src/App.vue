@@ -3,6 +3,7 @@
   <PinDialog
     :visible="showPinLock"
     :error-msg="pinError"
+    :reset-key="pinResetVersion"
     @submit="onPinSubmit"
     @close="onPinClose"
   />
@@ -28,8 +29,10 @@ const hasPin = !!getStoredPINHash()
 uiStore.unlocked = !hasPin
 const showPinLock = ref(hasPin)
 const pinError = ref('')
+const pinResetVersion = ref(0)
 
 async function onPinSubmit(pin: string) {
+  pinError.value = ''  // 清空上次错误，确保下次错误赋值能触发 watch
   const stored = getStoredPINHash()
   if (!stored) { unlockApp(); return }
   const hash = await hashPIN(pin)
@@ -54,9 +57,10 @@ function onVisibilityChange() {
   if (document.hidden) {
     uiStore.unlocked = false
   } else if (getStoredPINHash()) {
-    // 回到前台且有 PIN → 重新锁定
+    // 回到前台且有 PIN → 重新锁定 + 清空部分输入
     showPinLock.value = true
     pinError.value = ''
+    pinResetVersion.value++
   } else {
     // 回到前台且无 PIN → 恢复解锁状态
     uiStore.unlocked = true
