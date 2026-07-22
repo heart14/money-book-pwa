@@ -130,12 +130,12 @@
       <div v-if="dataErrorMsg" class="data-msg error" @click="dataErrorMsg = ''">{{ dataErrorMsg }}</div>
     </template>
 
-    <SecurityLock v-else-if="currentView === 'security'" @back="currentView = 'main'" />
+    <SecurityLock v-else-if="currentView === 'security'" @back="onSecurityBack" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { getStoredPINHash } from '@/utils/crypto'
 import { exportData, importData, destroyAllData } from '@/utils/export'
 import SecurityLock from './SecurityLock.vue'
@@ -146,7 +146,12 @@ import RuleManager from './RuleManager.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 
 const currentView = ref<'main' | 'security'>('main')
-const hasPin = computed(() => !!getStoredPINHash())
+const hasPin = ref(!!getStoredPINHash())
+
+function onSecurityBack() {
+  hasPin.value = !!getStoredPINHash()
+  currentView.value = 'main'
+}
 
 // ── Data Management ──
 const fileInputRef = ref<HTMLInputElement | null>(null)
