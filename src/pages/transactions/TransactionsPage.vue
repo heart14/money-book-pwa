@@ -244,6 +244,20 @@ if (route.query.categoryId && typeof route.query.categoryId === 'string') {
     selectedCategoryId.value = id
   }
 }
+// ── Initialize month filter from route query yearMonth param ──
+if (route.query.yearMonth && typeof route.query.yearMonth === 'string') {
+  const parts = route.query.yearMonth.split('-')
+  if (parts.length === 2) {
+    const y = parseInt(parts[0], 10)
+    const m = parseInt(parts[1], 10)
+    if (!isNaN(y) && !isNaN(m) && m >= 1 && m <= 12) {
+      filterYear.value = y
+      filterMonth.value = m
+      dateFilterActive.value = true
+      showDatePicker.value = true
+    }
+  }
+}
 
 // ── Cursor pagination ──
 const PAGE_SIZE = 20
@@ -428,6 +442,26 @@ watch(
       const id = parseInt(categoryId, 10)
       if (!isNaN(id)) {
         selectedCategoryId.value = id
+      }
+    }
+  },
+)
+
+// ── 路由 query 变更（如从统计页点击分类跳转，附带年月） ──
+watch(
+  () => route.query.yearMonth,
+  (yearMonth) => {
+    if (typeof yearMonth === 'string') {
+      const parts = yearMonth.split('-')
+      if (parts.length === 2) {
+        const y = parseInt(parts[0], 10)
+        const m = parseInt(parts[1], 10)
+        if (!isNaN(y) && !isNaN(m) && m >= 1 && m <= 12) {
+          filterYear.value = y
+          filterMonth.value = m
+          dateFilterActive.value = true
+          showDatePicker.value = true
+        }
       }
     }
   },

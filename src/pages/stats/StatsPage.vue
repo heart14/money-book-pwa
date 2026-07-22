@@ -102,6 +102,7 @@
           v-for="(item, index) in expenseRanking"
           :key="item.categoryId + '-' + rankingLevel"
           class="ranking-row"
+          :class="{ clickable: timeMode === 'month' }"
           @click="navigateToCategory(item)"
         >
           <span class="ranking-badge" :style="{ background: rankColor(index) }">{{ rankLabel(index) }}</span>
@@ -130,6 +131,25 @@
             <span class="tag-amount">{{ formatCurrency(tag.amount) }}</span>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Large Expenses -->
+    <div class="chart-card large-expense-card">
+      <div class="chart-title">大额支出</div>
+      <div v-if="largeExpenses.length === 0" class="empty-text">暂无大额支出</div>
+      <div
+        v-for="(item, index) in largeExpenses"
+        :key="item.id"
+        class="large-row"
+      >
+        <span class="large-rank">{{ index + 1 }}</span>
+        <span class="large-icon">{{ item.icon }}</span>
+        <div class="large-info">
+          <span class="large-title">{{ item.title }}</span>
+          <span class="large-date">{{ item.shortDate }}</span>
+        </div>
+        <span class="large-amount">{{ formatCurrency(item.amount) }}</span>
       </div>
     </div>
   </div>
@@ -383,8 +403,36 @@ function navigateToTag(tagName: string) {
 }
 
 function navigateToCategory(item: { categoryId: number }) {
-  router.push({ name: 'transactions', query: { categoryId: String(item.categoryId) } })
+  // 仅月模式支持跳转
+  if (timeMode.value !== 'month') return
+  const ym = `${currentDate.value.getFullYear()}-${String(currentDate.value.getMonth() + 1).padStart(2, '0')}`
+  router.push({ name: 'transactions', query: { categoryId: String(item.categoryId), yearMonth: ym } })
 }
+
+/** 大额支出: 单笔 > 1000 元 (100000 分), 按金额降序, 最多 10 条 */
+const largeExpenses = computed(() => {
+  const LARGE_THRESHOLD = 100000 // 1000 元 = 100000 分
+  return transactions.value
+    .filter((tx) => tx.type === 'expense' && tx.amount > LARGE_THRESHOLD)
+    .sort((a, b) => b.amount - a.amount)
+    .slice(0, 10)
+    .map((tx) => {
+      const cat = tx.categoryId
+        ? categoryStore.categories.find((c) => c.id === tx.categoryId)
+        : null
+      const parentCat = cat?.parentId
+        ? categoryStore.categories.find((c) => c.id === cat.parentId)
+        : null
+      return {
+        id: tx.id!,
+        title: tx.title || cat?.name || '',
+        amount: tx.amount,
+        date: tx.date,
+        shortDate: tx.date.slice(5), // MM-DD
+        icon: parentCat?.icon || cat?.icon || '💸',
+      }
+    })
+})
 
 const rankColors = ['#ff3b30', '#ff9500', '#ffcc00']
 
@@ -628,11 +676,14 @@ function rankLabel(index: number): string {
   gap: 8px;
   padding: 8px 0;
   border-bottom: 1px solid var(--color-separator);
-  cursor: pointer;
   transition: opacity 0.15s;
 }
 
-.ranking-row:active {
+.ranking-row.clickable {
+  cursor: pointer;
+}
+
+.ranking-row.clickable:active {
   opacity: 0.5;
 }
 
@@ -679,6 +730,89 @@ function rankLabel(index: number): string {
   color: #8e8e93;
   width: 28px;
   text-align: right;
+}
+
+/* Large Expenses */
+.large-expense-card {
+  margin-top: 2px;
+}
+
+.large-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-separator);
+}
+
+.large-row:last-child {
+  border-bottom: none;
+}
+
+.large-rank {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: #f2f2f7;
+  color: #8e8e93;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.large-row:nth-child(1) .large-rank {
+  background: #ff3b30;
+  color: #fff;
+}
+
+.large-row:nth-child(2) .large-rank {
+  background: #ff9500;
+  color: #fff;
+}
+
+.large-row:nth-child(3) .large-rank {
+  background: #ffcc00;
+  color: #fff;
+}
+
+.large-icon {
+  font-size: 16px;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.large-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.large-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1c1c1e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.large-date {
+  font-size: 11px;
+  color: #8e8e93;
+}
+
+.large-amount {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ff3b30;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* Tags */
