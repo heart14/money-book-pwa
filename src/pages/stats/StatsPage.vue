@@ -74,14 +74,14 @@
         <div class="trend-toggle">
           <button
             class="toggle-btn"
-            :class="{ active: trendType === 'expense' }"
-            @click="trendType = 'expense'"
-          >支出</button>
-          <button
-            class="toggle-btn"
             :class="{ active: trendType === 'income' }"
             @click="trendType = 'income'"
           >收入</button>
+          <button
+            class="toggle-btn"
+            :class="{ active: trendType === 'expense' }"
+            @click="trendType = 'expense'"
+          >支出</button>
         </div>
       </div>
       <v-chart class="echart-line" :option="lineOption" autoresize />
