@@ -94,7 +94,7 @@
     </div>
 
     <!-- Expense Ranking + Tags Grid -->
-    <div class="bottom-grid">
+    <!-- <div class="bottom-grid"> -->
       <div class="chart-card">
         <div class="chart-title-row">
           <span class="chart-title">支出排行</span>
@@ -127,6 +127,45 @@
         </div>
       </div>
 
+      <!-- Large Expenses -->
+    <div class="chart-card large-expense-card">
+      <div class="chart-title">大额支出</div>
+      <div v-if="largeExpenses.length === 0" class="empty-text">暂无大额支出</div>
+      <div
+        v-for="(item, index) in largeExpenses"
+        :key="item.id"
+        class="large-row"
+      >
+        <span class="large-rank">{{ index + 1 }}</span>
+        <span class="large-icon">{{ item.icon }}</span>
+        <div class="large-info">
+          <span class="large-title">{{ item.title }}</span>
+          <span class="large-date">{{ item.shortDate }}</span>
+        </div>
+        <span class="large-amount">{{ formatCurrency(item.amount) }}</span>
+      </div>
+    </div>
+
+    <!-- High Frequency Expenses -->
+    <div class="chart-card freq-card">
+      <div class="chart-title">高频支出</div>
+      <div v-if="highFrequencyExpenses.length === 0" class="empty-text">暂无数据</div>
+      <div
+        v-for="(item, index) in highFrequencyExpenses"
+        :key="item.categoryId"
+        class="freq-row"
+      >
+        <span class="freq-rank">{{ index + 1 }}</span>
+        <span class="freq-icon">{{ item.icon }}</span>
+        <span class="freq-name">{{ item.name }}</span>
+        <div class="freq-stats">
+          <span class="freq-count">{{ item.count }}次</span>
+          <span class="freq-amount">{{ formatCurrency(item.amount) }}</span>
+          <span class="freq-avg">均{{ formatCurrency(item.avgAmount) }}</span>
+        </div>
+      </div>
+    </div>
+
       <div class="chart-card">
         <div class="chart-title">标签聚合</div>
         <div v-if="tagAggregation.length === 0" class="empty-text">暂无数据</div>
@@ -147,26 +186,7 @@
         </div>
       </div>
     </div>
-
-    <!-- Large Expenses -->
-    <div class="chart-card large-expense-card">
-      <div class="chart-title">大额支出</div>
-      <div v-if="largeExpenses.length === 0" class="empty-text">暂无大额支出</div>
-      <div
-        v-for="(item, index) in largeExpenses"
-        :key="item.id"
-        class="large-row"
-      >
-        <span class="large-rank">{{ index + 1 }}</span>
-        <span class="large-icon">{{ item.icon }}</span>
-        <div class="large-info">
-          <span class="large-title">{{ item.title }}</span>
-          <span class="large-date">{{ item.shortDate }}</span>
-        </div>
-        <span class="large-amount">{{ formatCurrency(item.amount) }}</span>
-      </div>
-    </div>
-  </div>
+  <!-- </div> -->
 </template>
 
 <script setup lang="ts">
@@ -482,6 +502,40 @@ const largeExpenses = computed(() => {
     })
 })
 
+/** 高频支出: 按二级分类聚合, 按交易次数降序, 取前 8 条 */
+const highFrequencyExpenses = computed(() => {
+  const map = new Map<number, { name: string; icon: string; count: number; amount: number; categoryId: number }>()
+
+  for (const tx of transactions.value) {
+    if (tx.type !== 'expense' || !tx.categoryId) continue
+    const cat = categoryStore.categories.find((c) => c.id === tx.categoryId)
+    if (!cat || cat.parentId === null) continue // 仅统计二级分类
+
+    const parent = categoryStore.categories.find((c) => c.id === cat.parentId)
+    const entry = map.get(tx.categoryId)
+    if (entry) {
+      entry.count++
+      entry.amount += tx.amount
+    } else {
+      map.set(tx.categoryId, {
+        name: cat.name,
+        icon: parent?.icon || cat.icon,
+        count: 1,
+        amount: tx.amount,
+        categoryId: tx.categoryId,
+      })
+    }
+  }
+
+  return Array.from(map.values())
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 8)
+    .map((item) => ({
+      ...item,
+      avgAmount: Math.round(item.amount / item.count),
+    }))
+})
+
 const rankColors = ['#ff3b30', '#ff9500', '#ffcc00']
 
 function rankColor(index: number): string {
@@ -509,9 +563,9 @@ function rankLabel(index: number): string {
 }
 
 .page-title {
-  font-size: 17px;
+  font-size: 27px;
   font-weight: 700;
-  color: #1c1c1e;
+  color: var(--color-text);
 }
 
 .mode-toggle {
@@ -889,6 +943,96 @@ function rankLabel(index: number): string {
   color: #ff3b30;
   white-space: nowrap;
   flex-shrink: 0;
+}
+
+/* High Frequency Expenses */
+.freq-card {
+  margin-top: 2px;
+}
+
+.freq-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--color-separator);
+}
+
+.freq-row:last-child {
+  border-bottom: none;
+}
+
+.freq-rank {
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  background: #f2f2f7;
+  color: #8e8e93;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.freq-row:nth-child(1) .freq-rank {
+  background: #ff3b30;
+  color: #fff;
+}
+
+.freq-row:nth-child(2) .freq-rank {
+  background: #ff9500;
+  color: #fff;
+}
+
+.freq-row:nth-child(3) .freq-rank {
+  background: #ffcc00;
+  color: #fff;
+}
+
+.freq-icon {
+  font-size: 14px;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.freq-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1c1c1e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.freq-stats {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.freq-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: #007aff;
+  white-space: nowrap;
+}
+
+.freq-amount {
+  font-size: 13px;
+  font-weight: 600;
+  color: #34c759;
+  white-space: nowrap;
+}
+
+.freq-avg {
+  font-size: 11px;
+  color: #8e8e93;
+  white-space: nowrap;
 }
 
 /* Tags */
