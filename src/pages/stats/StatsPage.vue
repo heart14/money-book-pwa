@@ -67,10 +67,24 @@
       </div>
     </div>
 
-    <!-- Monthly Trend Bar Chart -->
+    <!-- Trend Line Chart -->
     <div class="chart-card">
-      <div class="chart-title">月度趋势</div>
-      <v-chart class="echart-bar" :option="barOption" autoresize />
+      <div class="chart-title-row">
+        <span class="chart-title">收支趋势</span>
+        <div class="trend-toggle">
+          <button
+            class="toggle-btn"
+            :class="{ active: trendType === 'expense' }"
+            @click="trendType = 'expense'"
+          >支出</button>
+          <button
+            class="toggle-btn"
+            :class="{ active: trendType === 'income' }"
+            @click="trendType = 'income'"
+          >收入</button>
+        </div>
+      </div>
+      <v-chart class="echart-line" :option="lineOption" autoresize />
     </div>
 
     <!-- Expense Composition (Pie) -->
@@ -170,6 +184,7 @@ type RankLevel = 'parent' | 'child'
 
 const rankingLevel = ref<RankLevel>('parent')
 const timeMode = ref<'month' | 'year' | 'custom'>('month')
+const trendType = ref<'expense' | 'income'>('expense')
 const currentDate = ref(new Date())
 
 // Custom date range state
@@ -248,65 +263,94 @@ const totalExpense = computed(() =>
   transactions.value.filter((tx) => tx.type === 'expense').reduce((sum, tx) => sum + tx.amount, 0),
 )
 
-const barOption = computed(() => {
+const lineOption = computed(() => {
+  const txType = trendType.value
+  const lineColor = txType === 'expense' ? '#34c759' : '#ff3b30'
+  const areaColor = txType === 'expense' ? 'rgba(52,199,89,0.12)' : 'rgba(255,59,48,0.12)'
+
   let categories: string[] = []
-  const incomes: number[] = []
-  const expenses: number[] = []
+  let values: number[] = []
 
   if (timeMode.value === 'year') {
+    // Year: monthly data (12 months)
     categories = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
-    for (let i = 0; i < 12; i++) { incomes[i] = 0; expenses[i] = 0 }
+    const monthly = new Array(12).fill(0)
     for (const tx of transactions.value) {
+      if (tx.type !== txType) continue
       const idx = parseInt(tx.date.split('-')[1], 10) - 1
-      if (tx.type === 'income') incomes[idx] += tx.amount
-      else if (tx.type === 'expense') expenses[idx] += tx.amount
+      monthly[idx] += tx.amount
     }
+    values = monthly.map(v => +(v / 100).toFixed(2))
+  } else if (timeMode.value === 'custom') {
+    // Custom: daily data within the custom range
+    const start = new Date(customRange.startYear, customRange.startMonth - 1, 1)
+    const end = new Date(customRange.endYear, customRange.endMonth, 0)
+    const allDates: string[] = []
+    const cur = new Date(start)
+    while (cur <= end) {
+      allDates.push(toDateStr(cur))
+      cur.setDate(cur.getDate() + 1)
+    }
+
+    const dailyMap = new Map<string, number>()
+    for (const tx of transactions.value) {
+      if (tx.type !== txType) continue
+      dailyMap.set(tx.date, (dailyMap.get(tx.date) || 0) + tx.amount)
+    }
+
+    categories = allDates.map(d => {
+      const p = d.split('-')
+      return `${parseInt(p[1])}月${parseInt(p[2])}日`
+    })
+    values = allDates.map(d => +((dailyMap.get(d) || 0) / 100).toFixed(2))
   } else {
+    // Month: daily data
     const daysInMonth = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1, 0).getDate()
     categories = Array.from({ length: daysInMonth }, (_, i) => `${i + 1}日`)
-    for (let i = 0; i < daysInMonth; i++) { incomes[i] = 0; expenses[i] = 0 }
+    const daily = new Array(daysInMonth).fill(0)
     for (const tx of transactions.value) {
+      if (tx.type !== txType) continue
       const idx = parseInt(tx.date.split('-')[2], 10) - 1
-      if (tx.type === 'income') incomes[idx] += tx.amount
-      else if (tx.type === 'expense') expenses[idx] += tx.amount
+      daily[idx] += tx.amount
     }
+    values = daily.map(v => +(v / 100).toFixed(2))
   }
-
-  // Convert from 分 to 元 (保留小数，不四舍五入)
-  const incomeYuan = incomes.map(v => v / 100)
-  const expenseYuan = expenses.map(v => v / 100)
 
   return {
     tooltip: {
       trigger: 'axis',
       valueFormatter: (v: number) => `¥${v.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
     },
-    legend: { data: ['收入', '支出'], bottom: 0, icon: 'roundRect', itemWidth: 8, itemHeight: 8, itemGap: 12 },
-    grid: { left: 8, right: 8, top: 8, bottom: 32, containLabel: true },
+    grid: { left: 8, right: 8, top: 8, bottom: 20, containLabel: true },
     xAxis: {
       type: 'category',
       data: categories,
-      axisLabel: { fontSize: 10, color: '#8e8e93' },
-      axisLine: { show: false },
+      axisLabel: { fontSize: 10, color: '#8e8e93', interval: 'auto' },
+      axisLine: { show: true, lineStyle: { color: '#e5e5ea' } },
       axisTick: { show: false },
     },
-    yAxis: { type: 'value', show: false },
-    series: [
-      {
-        name: '收入',
-        type: 'bar',
-        data: incomeYuan,
-        itemStyle: { color: '#ff3b30', borderRadius: [4, 4, 0, 0] },
-        barMaxWidth: 16,
+    yAxis: { type: 'value', show: true, min: 0 },
+    series: [{
+      type: 'line',
+      data: values,
+      smooth: false,
+      lineStyle: { color: lineColor, width: 2 },
+      itemStyle: { color: lineColor },
+      areaStyle: { color: areaColor },
+      symbol: 'circle',
+      symbolSize: 6,
+      markLine: {
+        silent: true,
+        symbol: 'none',
+        lineStyle: { color: '#8e8e93', type: 'dashed', width: 1 },
+        label: {
+          formatter: (params: any) => `均值 ¥${params.value.toFixed(2)}`,
+          fontSize: 10,
+          color: '#8e8e93',
+        },
+        data: [{ type: 'average' }],
       },
-      {
-        name: '支出',
-        type: 'bar',
-        data: expenseYuan,
-        itemStyle: { color: '#34c759', opacity: 0.3, borderRadius: [4, 4, 0, 0] },
-        barMaxWidth: 16,
-      },
-    ],
+    }],
   }
 })
 
@@ -649,14 +693,42 @@ function rankLabel(index: number): string {
 }
 
 /* ECharts containers */
-.echart-bar {
+.echart-line {
   width: 100%;
-  height: 140px;
+  height: 160px;
 }
 
 .echart-pie {
   width: 100%;
   height: 200px;
+}
+
+/* Trend toggle */
+.trend-toggle {
+  display: flex;
+  background: #f2f2f7;
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.trend-toggle .toggle-btn {
+  padding: 3px 12px;
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 500;
+  color: #8e8e93;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.trend-toggle .toggle-btn.active {
+  background: #fff;
+  color: #007aff;
+  font-weight: 600;
 }
 
 /* Bottom Grid */
