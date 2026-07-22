@@ -40,15 +40,37 @@
     <!-- Search bar (expandable) -->
     <div v-if="searchOpen" class="search-bar">
       <div class="search-inner">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
-          <circle cx="10.5" cy="10.5" r="7"></circle>
-          <line x1="15.5" y1="15.5" x2="21" y2="21"></line>
-        </svg>
+        <!-- Field selector: 选中字段按钮 + 箭头 -->
+        <div class="search-field-selector" @click.stop="fieldSelectorOpen = !fieldSelectorOpen">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+            <circle cx="10.5" cy="10.5" r="7"></circle>
+            <line x1="15.5" y1="15.5" x2="21" y2="21"></line>
+          </svg>
+          <span class="search-field-label">{{ currentSearchFieldLabel }}</span>
+          <svg width="8" height="5" viewBox="0 0 8 5" fill="none" stroke="#007aff" stroke-width="1.5" stroke-linecap="round" style="flex-shrink:0;">
+            <path d="M1 1l3 3 3-3" />
+          </svg>
+        </div>
+        <!-- 下拉菜单 -->
+        <div v-if="fieldSelectorOpen" class="search-field-dropdown">
+          <button
+            v-for="opt in searchFieldOptions"
+            :key="opt.value"
+            class="search-field-option"
+            :class="{ active: opt.value === searchField }"
+            @click="searchField = opt.value; fieldSelectorOpen = false"
+          >
+            <svg v-if="opt.value === searchField" class="search-field-check" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#007aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6l2.5 2.5 4.5-5" /></svg>
+            <span class="search-field-check-placeholder" v-else></span>
+            {{ opt.label }}
+          </button>
+        </div>
+        <span class="search-field-divider"></span>
         <input
           ref="searchInputRef"
           v-model="searchQuery"
           class="search-input"
-          placeholder="搜索标题、备注或标签..."
+          :placeholder="searchPlaceholder"
         />
         <button v-if="searchQuery" class="search-clear-btn" @click="searchQuery = ''">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="#007aff"><circle cx="12" cy="12" r="12"/></svg>
@@ -179,6 +201,30 @@ const searchOpen = ref(false)
 const showDatePicker = ref(false)
 const searchInputRef = ref<HTMLInputElement | null>(null)
 
+// ── Search field selector ──
+type SearchField = 'title' | 'note' | 'tag' | 'all'
+const searchField = ref<SearchField>('all')
+const fieldSelectorOpen = ref(false)
+const searchFieldOptions: { value: SearchField; label: string }[] = [
+  { value: 'all', label: '全部' },
+  { value: 'title', label: '标题' },
+  { value: 'note', label: '备注' },
+  { value: 'tag', label: '标签' },
+]
+
+const currentSearchFieldLabel = computed(
+  () => searchFieldOptions.find((o) => o.value === searchField.value)!.label,
+)
+const searchPlaceholder = computed(() => {
+  const labels: Record<SearchField, string> = {
+    title: '搜索标题…',
+    note: '搜索备注…',
+    tag: '搜索标签…',
+    all: '搜索…',
+  }
+  return labels[searchField.value]
+})
+
 // ── Date filter state (declared before route init) ──
 const now = new Date()
 const filterYear = ref(now.getFullYear())
@@ -304,6 +350,12 @@ async function loadPage() {
   } finally {
     if (gen === resetGen) {
       isLoading.value = false
+      // 当有搜索词激活且已加载可见数据不足 PAGE_SIZE 时，自动补充加载
+      if (searchQuery.value.trim() && !allLoaded.value && gen === resetGen) {
+        if (filteredTransactions.value.length < PAGE_SIZE) {
+          loadPage()
+        }
+      }
     }
   }
 }
@@ -402,12 +454,20 @@ onUnmounted(() => {
   observer = null
 })
 
+// ── 点击空白关闭字段选择下拉框 ──
+function onDocumentClick() {
+  fieldSelectorOpen.value = false
+}
+onMounted(() => document.addEventListener('click', onDocumentClick))
+onUnmounted(() => document.removeEventListener('click', onDocumentClick))
+
 // ── 搜索栏焦点管理 ──
 watch(searchOpen, (open, prev) => {
   if (open) {
     nextTick(() => searchInputRef.value?.focus())
   } else if (prev !== undefined && !open) {
     searchQuery.value = ''
+    fieldSelectorOpen.value = false
   }
 })
 
@@ -514,11 +574,22 @@ function onChildCategorySelect(child: Category) {
   }
 }
 
-// ── 客户端侧筛选（仅搜索关键词，分类已在 DB 侧 filter） ──
+// ── 客户端侧筛选（搜索关键词按选中字段过滤，分类已在 DB 侧 filter） ──
 const filteredTransactions = computed(() => {
   const q = searchQuery.value.trim().toLowerCase()
   if (!q) return transactions.value
+  const field = searchField.value
   return transactions.value.filter((tx) => {
+    if (field === 'title') {
+      return (tx.title || '').toLowerCase().includes(q)
+    }
+    if (field === 'note') {
+      return (tx.note || '').toLowerCase().includes(q)
+    }
+    if (field === 'tag') {
+      return (tx.tags || []).some((t) => t.toLowerCase().includes(q))
+    }
+    // field === 'all'：标题、备注、标签任一匹配
     if ((tx.title || '').toLowerCase().includes(q)) return true
     if ((tx.note || '').toLowerCase().includes(q)) return true
     return (tx.tags || []).some((t) => t.toLowerCase().includes(q))
@@ -732,6 +803,8 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 /* Search bar */
 .search-bar {
   padding: 8px 16px 0;
+  position: relative;
+  z-index: 100;
 }
 
 /* Date filter bar */
@@ -793,16 +866,20 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 .search-inner {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   height: 36px;
-  background: rgba(255,255,255,0.8);
+  background: rgba(255,255,255,0.85);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: 10px;
-  padding: 0 12px;
+  padding: 0 8px 0 4px;
+  position: relative;
+  border: 1px solid rgba(0, 122, 255, 0.12);
 }
 
 .search-input {
   flex: 1;
+  min-width: 0;
   border: none;
   background: none;
   font-size: 15px;
@@ -812,7 +889,8 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 }
 
 .search-input::placeholder {
-  color: var(--color-secondary-text);
+  color: #c7c7cc;
+  font-weight: 400;
 }
 
 .search-clear-btn {
@@ -835,6 +913,102 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
   color: #fff;
   line-height: 1;
   pointer-events: none;
+}
+
+/* Search field selector */
+.search-field-selector {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px 4px 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.search-field-selector:active {
+  background: rgba(0, 122, 255, 0.08);
+}
+
+/* 竖线分隔符 */
+.search-field-divider {
+  display: inline-block;
+  width: 1px;
+  height: 18px;
+  background: #d1d1d6;
+  flex-shrink: 0;
+}
+
+.search-field-label {
+  font-size: 13px;
+  color: #007aff;
+  font-weight: 500;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+/* 下拉菜单：相对 field selector 定位，宽度自动 */
+.search-field-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 16px;
+  min-width: 120px;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  padding: 4px;
+  z-index: 1000;
+  animation: dropdownFadeIn 0.15s ease;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.search-field-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  font-size: 14px;
+  color: #1c1c1e;
+  cursor: pointer;
+  border-radius: 8px;
+  text-align: left;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: background 0.1s;
+}
+
+.search-field-option:active {
+  background: #f2f2f7;
+}
+
+.search-field-option.active {
+  color: #007aff;
+  font-weight: 600;
+  background: rgba(0, 122, 255, 0.06);
+}
+
+.search-field-check,
+.search-field-check-placeholder {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
 }
 
 /* Content area */
