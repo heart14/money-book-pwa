@@ -272,12 +272,15 @@ const barOption = computed(() => {
     }
   }
 
-  // Convert from 分 to 元
-  const incomeYuan = incomes.map(v => Math.round(v / 100))
-  const expenseYuan = expenses.map(v => Math.round(v / 100))
+  // Convert from 分 to 元 (保留小数，不四舍五入)
+  const incomeYuan = incomes.map(v => v / 100)
+  const expenseYuan = expenses.map(v => v / 100)
 
   return {
-    tooltip: { trigger: 'axis' },
+    tooltip: {
+      trigger: 'axis',
+      valueFormatter: (v: number) => `¥${v.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    },
     legend: { data: ['收入', '支出'], bottom: 0, icon: 'roundRect', itemWidth: 8, itemHeight: 8, itemGap: 12 },
     grid: { left: 8, right: 8, top: 8, bottom: 32, containLabel: true },
     xAxis: {
