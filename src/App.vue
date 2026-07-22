@@ -17,6 +17,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useBreakpoints } from '@vueuse/core'
 import { useUiStore } from '@/stores/uiStore'
 import { hashPIN, getStoredPINHash } from '@/utils/crypto'
+import { isBiometricEnabled, authenticateBiometric } from '@/utils/biometric'
 import MobileLayout from '@/components/layout/MobileLayout.vue'
 import DesktopLayout from '@/components/layout/DesktopLayout.vue'
 import PinDialog from '@/components/common/PinDialog.vue'
@@ -24,12 +25,36 @@ import PinDialog from '@/components/common/PinDialog.vue'
 const uiStore = useUiStore()
 const isMobile = useBreakpoints({ mobile: 768 }).smaller('mobile')
 
-// ── PIN lock state (同步初始化, 无闪烁) ──
+// ── PIN / Biometric lock state ──
 const hasPin = !!getStoredPINHash()
-uiStore.unlocked = !hasPin
-const showPinLock = ref(hasPin)
+const hasBiometric = hasPin && isBiometricEnabled()
+
+if (!hasPin) {
+  // 无 PIN → 直接解锁
+  uiStore.unlocked = true
+} else if (hasBiometric) {
+  // 有 PIN + Biometric → 先不弹 PIN 弹窗，等待生物识别
+  uiStore.unlocked = false
+} else {
+  // 只有 PIN → 立即弹出 PIN 弹窗
+  uiStore.unlocked = false
+}
+
+const showPinLock = ref(!hasPin ? false : hasBiometric ? false : true)
 const pinError = ref('')
 const pinResetVersion = ref(0)
+
+// ── 生物识别首次尝试 (仅在 hasBiometric 时执行) ──
+async function tryBiometricUnlock() {
+  const ok = await authenticateBiometric()
+  if (ok) {
+    unlockApp()
+  } else {
+    // 用户取消或凭证不可用 → 显示 PIN 弹窗
+    showPinLock.value = true
+    pinResetVersion.value++
+  }
+}
 
 async function onPinSubmit(pin: string) {
   pinError.value = ''  // 清空上次错误，确保下次错误赋值能触发 watch
@@ -57,10 +82,15 @@ function onVisibilityChange() {
   if (document.hidden) {
     uiStore.unlocked = false
   } else if (getStoredPINHash()) {
-    // 回到前台且有 PIN → 重新锁定 + 清空部分输入
+    // 回到前台且有 PIN → 重新锁定
     showPinLock.value = true
     pinError.value = ''
     pinResetVersion.value++
+
+    // 如果启用了 Biometric，尝试生物识别解锁
+    if (hasBiometric) {
+      tryBiometricUnlock()
+    }
   } else {
     // 回到前台且无 PIN → 恢复解锁状态
     uiStore.unlocked = true
@@ -69,6 +99,11 @@ function onVisibilityChange() {
 
 onMounted(() => {
   document.addEventListener('visibilitychange', onVisibilityChange)
+
+  // 首次加载时尝试生物识别
+  if (hasBiometric) {
+    tryBiometricUnlock()
+  }
 })
 
 onUnmounted(() => {

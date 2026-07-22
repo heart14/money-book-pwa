@@ -21,6 +21,14 @@
               <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c7c7cc" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6" /></svg>
             </div>
           </button>
+          <div v-if="hasBiometric" class="separator"></div>
+          <div v-if="hasBiometric" class="section-row no-hover">
+            <div class="row-left">
+              <span class="row-icon">🔐</span>
+              <span class="row-label">Face ID / Touch ID</span>
+            </div>
+            <span class="row-status">已开启</span>
+          </div>
         </div>
       </div>
 
@@ -137,6 +145,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { getStoredPINHash } from '@/utils/crypto'
+import { isBiometricEnabled } from '@/utils/biometric'
 import { exportData, importData, destroyAllData } from '@/utils/export'
 import SecurityLock from './SecurityLock.vue'
 import AccountManager from './AccountManager.vue'
@@ -147,9 +156,11 @@ import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 
 const currentView = ref<'main' | 'security'>('main')
 const hasPin = ref(!!getStoredPINHash())
+const hasBiometric = ref(hasPin.value && isBiometricEnabled())
 
 function onSecurityBack() {
   hasPin.value = !!getStoredPINHash()
+  hasBiometric.value = hasPin.value && isBiometricEnabled()
   currentView.value = 'main'
 }
 
