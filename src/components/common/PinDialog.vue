@@ -189,6 +189,7 @@ watch(() => props.resetKey, () => {
   align-items: center;
   justify-content: center;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .pin-key:active {
