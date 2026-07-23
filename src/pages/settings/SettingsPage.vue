@@ -114,6 +114,7 @@
         confirm-text="确定"
         confirm-type="danger"
         @confirm="showDestroyConfirm2 = true; showDestroyConfirm1 = false"
+        @update:visible="showDestroyConfirm1 = $event"
       />
 
       <ConfirmDialog
@@ -123,6 +124,7 @@
         confirm-text="确认销毁"
         confirm-type="danger"
         @confirm="handleDestroy"
+        @update:visible="showDestroyConfirm2 = $event"
       />
 
       <ConfirmDialog

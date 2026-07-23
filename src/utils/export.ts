@@ -79,11 +79,19 @@ export async function destroyAllData(): Promise<void> {
     ])
   })
 
-  // Clear all caches
-  const cacheKeys = await caches.keys()
-  await Promise.all(cacheKeys.map(key => caches.delete(key)))
+  // Clear all caches (may fail in non-secure context)
+  try {
+    const cacheKeys = await caches.keys()
+    await Promise.all(cacheKeys.map(key => caches.delete(key)))
+  } catch {
+    // Silently skip — caches API unavailable in non-secure context (e.g., LAN HTTP on iOS)
+  }
 
-  // Unregister all service workers
-  const registrations = await navigator.serviceWorker.getRegistrations()
-  await Promise.all(registrations.map(reg => reg.unregister()))
+  // Unregister all service workers (may fail in non-secure context)
+  try {
+    const registrations = await navigator.serviceWorker.getRegistrations()
+    await Promise.all(registrations.map(reg => reg.unregister()))
+  } catch {
+    // Silently skip — serviceWorker unavailable in non-secure context
+  }
 }

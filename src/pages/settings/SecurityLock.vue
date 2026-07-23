@@ -28,6 +28,7 @@
               maxlength="6"
               autocomplete="off"
               class="pin-hidden-input"
+              @input="onSetupFirst"
             />
           </div>
           <button class="btn-primary" :disabled="pinInput.length !== 6" @click="onSetupFirst">确认</button>
@@ -47,6 +48,7 @@
               maxlength="6"
               autocomplete="off"
               class="pin-hidden-input"
+              @input="onSetupSecond"
             />
           </div>
           <p v-if="pinError" class="pin-error">{{ pinError }}</p>
@@ -101,6 +103,7 @@
                   maxlength="6"
                   autocomplete="off"
                   class="pin-hidden-input"
+                  @input="onChangeFirst"
                 />
               </div>
               <button class="btn-primary" :disabled="newPin.length !== 6" @click="onChangeFirst">下一步</button>
@@ -121,6 +124,7 @@
                   maxlength="6"
                   autocomplete="off"
                   class="pin-hidden-input"
+                  @input="onChangeSecond"
                 />
               </div>
               <p v-if="pinError" class="pin-error">{{ pinError }}</p>
