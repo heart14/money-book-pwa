@@ -1,5 +1,6 @@
 <template>
-  <div v-if="visible" class="keyboard-mask" @click.self="emit('close')">
+  <Teleport to="body">
+    <div v-if="visible" class="keyboard-mask" @click.self="emit('close')">
     <div class="keyboard-wrapper" @click.stop>
       <div class="keyboard-grid">
         <button
@@ -28,6 +29,7 @@
       </div>
     </div>
   </div>
+</Teleport>
 </template>
 
 <script setup lang="ts">
@@ -123,6 +125,7 @@ function handleComplete() {
   align-items: center;
   justify-content: center;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
   transition: background 0.1s;
   font-family: inherit;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
