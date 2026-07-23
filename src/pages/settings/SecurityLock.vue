@@ -261,6 +261,7 @@ async function onSetupSecond() {
   const hash = await hashPIN(pinConfirm.value)
   setStoredPINHash(hash)
   hasPin.value = true
+  verified.value = true
   successMsg.value = 'PIN 码设置成功'
   resetSetup()
 }
