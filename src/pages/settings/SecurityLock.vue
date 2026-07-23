@@ -30,7 +30,7 @@
               class="pin-hidden-input"
             />
           </div>
-          <button class="btn-primary" :disabled="pinInput.length !== 6" @pointerdown.prevent="onSetupFirst">确认</button>
+          <button class="btn-primary" :disabled="pinInput.length !== 6" @click="onSetupFirst" @touchend.prevent="onSetupFirst">确认</button>
         </template>
         <template v-if="setupStep === 2">
           <p class="pin-prompt">再次输入 PIN 码确认</p>
@@ -50,8 +50,8 @@
             />
           </div>
           <p v-if="pinError" class="pin-error">{{ pinError }}</p>
-          <button class="btn-primary" :disabled="pinConfirm.length !== 6" @pointerdown.prevent="onSetupSecond">确认</button>
-          <button class="btn-link" @pointerdown.prevent="resetSetup">重新输入</button>
+          <button class="btn-primary" :disabled="pinConfirm.length !== 6" @click="onSetupSecond" @touchend.prevent="onSetupSecond">确认</button>
+          <button class="btn-link" @click="resetSetup" @touchend.prevent="resetSetup">重新输入</button>
         </template>
       </div>
     </template>
@@ -77,7 +77,7 @@
           />
         </div>
         <p v-if="pinError" class="pin-error">{{ pinError }}</p>
-        <button class="btn-primary" :disabled="verifyInput.length !== 6" @pointerdown.prevent="onVerify">验证</button>
+        <button class="btn-primary" :disabled="verifyInput.length !== 6" @click="onVerify" @touchend.prevent="onVerify">验证</button>
       </div>
 
       <!-- Verified: options -->
@@ -102,8 +102,8 @@
                   class="pin-hidden-input"
                 />
               </div>
-              <button class="btn-primary" :disabled="newPin.length !== 6" @pointerdown.prevent="onChangeFirst">下一步</button>
-              <button class="btn-link" @pointerdown.prevent="cancelChange">取消</button>
+              <button class="btn-primary" :disabled="newPin.length !== 6" @click="onChangeFirst" @touchend.prevent="onChangeFirst">下一步</button>
+              <button class="btn-link" @click="cancelChange" @touchend.prevent="cancelChange">取消</button>
             </template>
             <template v-if="changeStep === 2">
               <p class="pin-prompt">再次输入新 PIN 码确认</p>
@@ -123,8 +123,8 @@
                 />
               </div>
               <p v-if="pinError" class="pin-error">{{ pinError }}</p>
-              <button class="btn-primary" :disabled="newPinConfirm.length !== 6" @pointerdown.prevent="onChangeSecond">确认</button>
-              <button class="btn-link" @pointerdown.prevent="cancelChange">取消</button>
+              <button class="btn-primary" :disabled="newPinConfirm.length !== 6" @click="onChangeSecond" @touchend.prevent="onChangeSecond">确认</button>
+              <button class="btn-link" @click="cancelChange" @touchend.prevent="cancelChange">取消</button>
             </template>
           </div>
         </template>
@@ -266,10 +266,11 @@ async function onSetupSecond() {
 }
 
 function resetSetup() {
-  setupStep.value = 0
+  setupStep.value = 1
   pinInput.value = ''
   pinConfirm.value = ''
   pinError.value = ''
+  nextTick(() => pinInputRef.value?.focus())
 }
 
 // ── Has PIN: Verify ──
@@ -324,6 +325,7 @@ async function onDisable() {
   biometricEnabled.value = false
   showDisableConfirm.value = false
   successMsg.value = 'PIN 码已关闭'
+  nextTick(() => startSetup())
 }
 
 // ── Biometric ──
