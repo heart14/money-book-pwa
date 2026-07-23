@@ -8,22 +8,18 @@
     @close="onPinClose"
   />
   <!-- 正常 App 内容, 仅解锁后可见 -->
-  <MobileLayout v-if="isMobile && uiStore.unlocked" />
-  <DesktopLayout v-else-if="!isMobile && uiStore.unlocked" />
+  <MobileLayout v-if="uiStore.unlocked" />
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useBreakpoints } from '@vueuse/core'
 import { useUiStore } from '@/stores/uiStore'
 import { hashPIN, getStoredPINHash } from '@/utils/crypto'
 import { isBiometricEnabled, authenticateBiometric } from '@/utils/biometric'
 import MobileLayout from '@/components/layout/MobileLayout.vue'
-import DesktopLayout from '@/components/layout/DesktopLayout.vue'
 import PinDialog from '@/components/common/PinDialog.vue'
 
 const uiStore = useUiStore()
-const isMobile = useBreakpoints({ mobile: 768 }).smaller('mobile')
 
 // ── PIN / Biometric lock state ──
 const hasPin = !!getStoredPINHash()
