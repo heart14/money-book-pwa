@@ -51,11 +51,6 @@
             <div class="row-left"><span class="row-icon">🗑️</span><span class="row-label row-label--danger">彻底销毁数据</span></div>
             <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c7c7cc" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6" /></svg>
           </button>
-          <div class="separator"></div>
-          <button class="section-row section-row--dev" @click="showMockConfirm = true">
-            <div class="row-left"><span class="row-icon">🧪</span><span class="row-label row-label--dev">导入测试数据</span></div>
-            <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c7c7cc" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6" /></svg>
-          </button>
         </div>
       </div>
 
@@ -127,14 +122,6 @@
         @update:visible="showDestroyConfirm2 = $event"
       />
 
-      <ConfirmDialog
-        :visible="showMockConfirm"
-        title="导入测试数据"
-        message="将生成约 580 条模拟交易记录（含近 12 个月的工资/消费数据），是否继续？"
-        confirm-text="确定"
-        @confirm="handleMockImport"
-      />
-
       <!-- Toasts -->
       <div v-if="dataSuccessMsg" class="data-msg success" @click="dataSuccessMsg = ''">{{ dataSuccessMsg }}</div>
       <div v-if="dataErrorMsg" class="data-msg error" @click="dataErrorMsg = ''">{{ dataErrorMsg }}</div>
@@ -171,7 +158,6 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
 const showImportConfirm = ref(false)
 const showDestroyConfirm1 = ref(false)
 const showDestroyConfirm2 = ref(false)
-const showMockConfirm = ref(false)
 const pendingImportFile = ref<File | null>(null)
 const dataSuccessMsg = ref('')
 const dataErrorMsg = ref('')
@@ -228,17 +214,6 @@ async function handleDestroy() {
     showToast('数据已销毁，建议刷新页面', '')
   } catch (e) {
     showToast('', '销毁失败：' + (e instanceof Error ? e.message : '未知错误'))
-  }
-}
-
-async function handleMockImport() {
-  showMockConfirm.value = false
-  try {
-    const { seedMockData } = await import('@/scripts/seedMockData')
-    const result = await seedMockData()
-    showToast(`已导入 ${result.transactions} 条交易记录、${result.tags} 个标签`, '')
-  } catch (e) {
-    showToast('', '导入失败：' + (e instanceof Error ? e.message : '未知错误'))
   }
 }
 </script>
