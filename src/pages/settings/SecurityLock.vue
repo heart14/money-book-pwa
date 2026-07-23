@@ -28,10 +28,9 @@
               maxlength="6"
               autocomplete="off"
               class="pin-hidden-input"
-              @input="onSetupFirst"
             />
           </div>
-          <button class="btn-primary" :disabled="pinInput.length !== 6" @click="onSetupFirst">确认</button>
+          <button class="btn-primary" :disabled="pinInput.length !== 6" @pointerdown.prevent="onSetupFirst">确认</button>
         </template>
         <template v-if="setupStep === 2">
           <p class="pin-prompt">再次输入 PIN 码确认</p>
@@ -48,12 +47,11 @@
               maxlength="6"
               autocomplete="off"
               class="pin-hidden-input"
-              @input="onSetupSecond"
             />
           </div>
           <p v-if="pinError" class="pin-error">{{ pinError }}</p>
-          <button class="btn-primary" :disabled="pinConfirm.length !== 6" @click="onSetupSecond">确认</button>
-          <button class="btn-link" @click="resetSetup">重新输入</button>
+          <button class="btn-primary" :disabled="pinConfirm.length !== 6" @pointerdown.prevent="onSetupSecond">确认</button>
+          <button class="btn-link" @pointerdown.prevent="resetSetup">重新输入</button>
         </template>
       </div>
     </template>
@@ -76,11 +74,10 @@
             maxlength="6"
             autocomplete="off"
             class="pin-hidden-input"
-            @input="onVerifyAuto"
           />
         </div>
         <p v-if="pinError" class="pin-error">{{ pinError }}</p>
-        <button class="btn-primary" :disabled="verifyInput.length !== 6" @click="onVerify">验证</button>
+        <button class="btn-primary" :disabled="verifyInput.length !== 6" @pointerdown.prevent="onVerify">验证</button>
       </div>
 
       <!-- Verified: options -->
@@ -103,11 +100,10 @@
                   maxlength="6"
                   autocomplete="off"
                   class="pin-hidden-input"
-                  @input="onChangeFirst"
                 />
               </div>
-              <button class="btn-primary" :disabled="newPin.length !== 6" @click="onChangeFirst">下一步</button>
-              <button class="btn-link" @click="cancelChange">取消</button>
+              <button class="btn-primary" :disabled="newPin.length !== 6" @pointerdown.prevent="onChangeFirst">下一步</button>
+              <button class="btn-link" @pointerdown.prevent="cancelChange">取消</button>
             </template>
             <template v-if="changeStep === 2">
               <p class="pin-prompt">再次输入新 PIN 码确认</p>
@@ -124,12 +120,11 @@
                   maxlength="6"
                   autocomplete="off"
                   class="pin-hidden-input"
-                  @input="onChangeSecond"
                 />
               </div>
               <p v-if="pinError" class="pin-error">{{ pinError }}</p>
-              <button class="btn-primary" :disabled="newPinConfirm.length !== 6" @click="onChangeSecond">确认</button>
-              <button class="btn-link" @click="cancelChange">取消</button>
+              <button class="btn-primary" :disabled="newPinConfirm.length !== 6" @pointerdown.prevent="onChangeSecond">确认</button>
+              <button class="btn-link" @pointerdown.prevent="cancelChange">取消</button>
             </template>
           </div>
         </template>
@@ -288,12 +283,6 @@ async function onVerify() {
     pinError.value = 'PIN 码错误'
     verifyInput.value = ''
     nextTick(() => verifyInputRef.value?.focus())
-  }
-}
-
-function onVerifyAuto() {
-  if (verifyInput.value.length === 6) {
-    onVerify()
   }
 }
 
