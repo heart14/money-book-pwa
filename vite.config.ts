@@ -4,10 +4,7 @@ import UnoCSS from 'unocss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import { fileURLToPath, URL } from 'node:url'
 
-const repoName = "money-book-pwa"
-
 export default defineConfig({
-  base: '/money-book-pwa/',
   plugins: [
     vue(),
     UnoCSS(),
