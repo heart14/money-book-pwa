@@ -1,41 +1,57 @@
-name: Deploy to GitHub Pages
+name: Deploy PWA to GitHub Pages
 
 on:
+  # 在推送到 main 分支时触发部署
   push:
     branches: [master]
+  # 允许在 Actions 面板手动触发部署，方便紧急回滚或测试
+  workflow_dispatch:
 
+# 设置 GITHUB_TOKEN 的权限，以允许部署到 GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
+# 只允许同时进行一次部署，跳过排在中间的运行，但不要取消正在进行的运行
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  deploy:
+  # 构建任务
+  build:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20 # 推荐 Node 18+，Vite5 需要
+          cache: 'npm' # 加速依赖安装
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build
+        run: npm run build
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # 上传 Vite 打包输出的目录
+          path: ./dist
+
+  # 部署任务
+  deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build # 必须等 build 完成后才能部署
     steps:
-      - uses: actions/checkout@v5
-
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 20
-
-      - run: npm ci
-
-      - run: npm exec vite build
-      - run: cp dist/index.html dist/404.html
-
-      - uses: actions/configure-pages@v5
-
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-
-      - id: deployment
+      - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4
