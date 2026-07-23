@@ -101,15 +101,13 @@ money-book-pwa/
 │   │   └── settings/       #   设置页（账号/分类/标签/PIN/生物识别/规则/管理）
 │   │
 │   ├── components/         # 可复用组件（按功能模块组织）
-│   │   ├── common/         #   通用组件（PinDialog, ConfirmDialog, EmptyState, PullToRefresh, CommonBottomSheet）
-│   │   ├── layout/         #   布局组件（MobileLayout, TabBar）
-│   │   ├── booking/        #   记账组件（CategoryPicker, ModeSwitch, NumberKeyboard）
-│   │   ├── transactions/   #   明细组件（TransactionItem, TransactionDetail, TransactionEdit, FilterChips）
-│   │   ├── accounts/       #   账户组件（AccountGroup, NetWorthCard）
-│   │   └── stats/          #   统计组件（ExpenseChart）
-│   │
-│   └── scripts/            # CLI 脚本
-│       └── seedMockData.ts #  mock 数据填充
+│       ├── common/         #   通用组件（PinDialog, ConfirmDialog, EmptyState, PullToRefresh, CommonBottomSheet）
+│       ├── layout/         #   布局组件（MobileLayout, TabBar）
+│       ├── booking/        #   记账组件（CategoryPicker, ModeSwitch, NumberKeyboard）
+│       ├── transactions/   #   明细组件（TransactionItem, TransactionDetail, TransactionEdit, FilterChips）
+│       ├── accounts/       #   账户组件（AccountGroup, NetWorthCard）
+│       └── stats/          #   统计组件（ExpenseChart）
+│    
 │
 ├── docs/                   # 设计文档
 │   ├── security_design.md  # PIN + WebAuthn 安全验证方案设计
