@@ -93,6 +93,8 @@
         </div>
       </div>
       <div v-else class="quick-tpl-section quick-tpl-empty">
+        <div class="quick-tpl-empty-text">暂无快记模板</div>
+        <div class="quick-tpl-empty-hint">在交易详情中提取或去设置页添加</div>
         <button class="quick-tpl-bubble quick-tpl-add" @click="saveAsTemplate" title="保存当前为模板">
           <span class="tpl-add-icon">+</span>
         </button>
@@ -673,6 +675,20 @@ watch(
 .quick-tpl-empty {
   padding: 8px 0;
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.quick-tpl-empty-text {
+  font-size: 13px;
+  color: var(--color-secondary-text, #8e8e93);
+  font-weight: 500;
+}
+
+.quick-tpl-empty-hint {
+  font-size: 11px;
+  color: var(--color-tertiary-text, #aeaeb2);
+  margin-bottom: 6px;
 }
 </style>

@@ -153,22 +153,31 @@ function isLast(tpl: QuickTemplate) {
 }
 
 async function moveUp(tpl: QuickTemplate) {
-  const list = store.templates
-  const idx = list.findIndex(t => t.id === tpl.id)
-  if (idx <= 0) return
-  // Swap sort values
-  const prev = list[idx - 1]
-  await store.update(tpl.id!, { sort: prev.sort })
-  await store.update(prev.id!, { sort: tpl.sort })
+  try {
+    const list = store.templates
+    const idx = list.findIndex(t => t.id === tpl.id)
+    if (idx <= 0) return
+    const prev = list[idx - 1]
+    await store.update(tpl.id!, { sort: prev.sort })
+    await store.update(prev.id!, { sort: tpl.sort })
+  } catch (e) {
+    console.error('move up failed', e)
+    showToast('排序失败')
+  }
 }
 
 async function moveDown(tpl: QuickTemplate) {
-  const list = store.templates
-  const idx = list.findIndex(t => t.id === tpl.id)
-  if (idx < 0 || idx >= list.length - 1) return
-  const next = list[idx + 1]
-  await store.update(tpl.id!, { sort: next.sort })
-  await store.update(next.id!, { sort: tpl.sort })
+  try {
+    const list = store.templates
+    const idx = list.findIndex(t => t.id === tpl.id)
+    if (idx < 0 || idx >= list.length - 1) return
+    const next = list[idx + 1]
+    await store.update(tpl.id!, { sort: next.sort })
+    await store.update(next.id!, { sort: tpl.sort })
+  } catch (e) {
+    console.error('move down failed', e)
+    showToast('排序失败')
+  }
 }
 
 // ── Icon helper ──
@@ -210,25 +219,40 @@ function cancelDialog() {
 
 async function confirmDialog() {
   if (!dialogValid.value) return
+  try {
+    const name = editForm.name.trim()
+    const type = editForm.type
+    const amount = Math.round(editForm.amountYuan * 100)
+    const categoryId = editForm.categoryId
+    const title = editForm.title
+    const tags = editForm.tagsText.split(',').map(s => s.trim()).filter(Boolean)
+    const note = editForm.note
 
-  const name = editForm.name.trim()
-  const type = editForm.type
-  const amount = Math.round(editForm.amountYuan * 100)
-  const categoryId = editForm.categoryId
-  const title = editForm.title
-  const tags = editForm.tagsText.split(',').map(s => s.trim()).filter(Boolean)
-  const note = editForm.note
-
-  if (isEditing.value && editingId.value) {
-    await store.update(editingId.value, { name, type, amount, categoryId, title, tags, note })
-    showToast('已更新')
-  } else {
-    const result = await store.add({ name, type, amount, categoryId, title, tags, note, sort: 0 })
-    if (result.success) {
-      showToast('已添加')
-    } else if (result.duplicateMsg) {
-      showToast(result.duplicateMsg)
+    if (isEditing.value && editingId.value) {
+      // Check duplicate for edited fields (skip current template's own values)
+      const dup = store.templates.find(t =>
+        t.id !== editingId.value &&
+        t.type === type &&
+        t.amount === amount &&
+        t.categoryId === categoryId
+      )
+      if (dup) {
+        showToast('该模板已存在')
+        return
+      }
+      await store.update(editingId.value, { name, type, amount, categoryId, title, tags, note })
+      showToast('已更新')
+    } else {
+      const result = await store.add({ name, type, amount, categoryId, title, tags, note, sort: 0 })
+      if (result.success) {
+        showToast('已添加')
+      } else if (result.duplicateMsg) {
+        showToast(result.duplicateMsg)
+      }
     }
+  } catch (e) {
+    console.error('save quick template failed', e)
+    showToast('保存失败')
   }
   dialogVisible.value = false
 }
@@ -244,9 +268,14 @@ function confirmDelete() {
 }
 
 async function doDelete() {
-  if (deleteTargetId.value) {
-    await store.remove(deleteTargetId.value)
-    showToast('已删除')
+  try {
+    if (deleteTargetId.value) {
+      await store.remove(deleteTargetId.value)
+      showToast('已删除')
+    }
+  } catch (e) {
+    console.error('delete failed', e)
+    showToast('删除失败')
   }
   deleteConfirmVisible.value = false
   deleteTargetId.value = null

@@ -162,6 +162,9 @@ async function onExtractConfirm(name: string) {
     if (result.success) {
       extractMsg.value = '已添加快记模板'
       setTimeout(() => { extractMsg.value = '' }, 2000)
+    } else if (result.duplicateMsg) {
+      extractMsg.value = result.duplicateMsg
+      setTimeout(() => { extractMsg.value = '' }, 2000)
     }
   } catch (e) {
     console.error('extract template failed', e)
