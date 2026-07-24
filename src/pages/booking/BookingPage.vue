@@ -575,12 +575,12 @@ watch(
 
 .toast-enter-from {
   opacity: 0;
-  transform: translateX(-50%) translateY(12px);
+  transform: translateX(-50%) translateY(20px);
 }
 
 .toast-leave-to {
   opacity: 0;
-  transform: translateX(-50%) translateY(-8px);
+  transform: translateX(-50%) translateY(0px);
 }
 
 /* ── Quick Template Bubbles ── */

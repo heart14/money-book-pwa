@@ -166,7 +166,7 @@ function handleBookingSave() {
 .tab-item--booking {
   position: relative;
   width: 24%;
-  top: -8px;
+  top: 0px;
 }
 
 .booking-btn-wrap {
