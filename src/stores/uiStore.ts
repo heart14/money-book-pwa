@@ -10,8 +10,7 @@ export const useUiStore = defineStore('ui', () => {
   // ── Booking mode state ──
   const bookingMode = ref<BookingMode>('expense')
   const bookingAmount = ref<number>(0)
-  const lastCategoryId = ref<number | null>(null)
-
+  
   // ── TabBar booking save bridge ──
   const bookingSaveTrigger = ref(0)
   const bookingCanSave = ref(false)
@@ -25,10 +24,6 @@ export const useUiStore = defineStore('ui', () => {
 
   function setAmount(amount: number) {
     bookingAmount.value = amount
-  }
-
-  function setLastCategory(id: number | null) {
-    lastCategoryId.value = id
   }
 
   function triggerBookingSave() {
@@ -52,13 +47,11 @@ export const useUiStore = defineStore('ui', () => {
     unlocked,
     bookingMode,
     bookingAmount,
-    lastCategoryId,
     bookingSaveTrigger,
     bookingCanSave,
     bookingHintVisible,
     setMode,
     setAmount,
-    setLastCategory,
     triggerBookingSave,
     showBookingHint,
     hideBookingHint,

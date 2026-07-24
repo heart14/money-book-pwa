@@ -76,6 +76,28 @@ function selectChild(child: Category) {
   emit('select', child.id!)
 }
 
+// Sync internal selection state from external prop
+watch(
+  () => props.selectedCategoryId,
+  (newId) => {
+    if (newId === null) {
+      selectedParentId.value = null
+      selectedChildId.value = null
+      return
+    }
+    const cat = categoryStore.categories.find((c: Category) => c.id === newId)
+    if (!cat) return
+    if (cat.parentId === null) {
+      selectedParentId.value = cat.id!
+      selectedChildId.value = null
+    } else {
+      selectedParentId.value = cat.parentId
+      selectedChildId.value = cat.id!
+    }
+  },
+  { immediate: true },
+)
+
 watch(
   () => props.type,
   () => {

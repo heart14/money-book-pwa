@@ -218,7 +218,6 @@ async function handleConfirm() {
 
   try {
     await transactionStore.addTransaction(tx)
-    uiStore.setLastCategory(selectedCategoryId.value)
     uiStore.hideBookingHint()
     const typeLabel = bookingMode.value === 'expense' ? '支出' : bookingMode.value === 'income' ? '收入' : '转账'
     showToast(`${typeLabel}已记录 · ${displayAmount.value}`)
