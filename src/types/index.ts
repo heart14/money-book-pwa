@@ -44,3 +44,23 @@ export interface RecurringRule {
   enabled: boolean
   lastExecuted: string | null
 }
+
+export interface QuickTemplate {
+  id?: number
+  /** 用户自定义名称，如"每日咖啡" */
+  name: string
+  /** 记账模式 */
+  type: 'expense' | 'income' | 'transfer'
+  /** 金额（分） */
+  amount: number
+  /** 分类 ID */
+  categoryId: number
+  /** 标题（可选） */
+  title: string
+  /** 标签列表（可选） */
+  tags: string[]
+  /** 备注（可选） */
+  note: string
+  /** 排序序号，用于拖动排序 */
+  sort: number
+}

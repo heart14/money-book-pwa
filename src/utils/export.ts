@@ -5,14 +5,15 @@ import { db } from '@/db'
  * as a JSON file download.
  */
 export async function exportData(): Promise<void> {
-  const [accounts, categories, transactions, recurringRules] = await Promise.all([
+  const [accounts, categories, transactions, recurringRules, quickTemplates] = await Promise.all([
     db.accounts.toArray(),
     db.categories.toArray(),
     db.transactions.toArray(),
     db.recurringRules.toArray(),
+    db.quickTemplates.toArray(),
   ])
 
-  const data = { accounts, categories, transactions, recurringRules }
+  const data = { accounts, categories, transactions, recurringRules, quickTemplates }
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
 
@@ -48,13 +49,15 @@ export async function importData(file: File): Promise<void> {
   const categories = data.categories ?? []
   const transactions = data.transactions ?? []
   const recurringRules = data.recurringRules ?? []
+  const quickTemplates = data.quickTemplates ?? []
 
-  await db.transaction('rw', db.accounts, db.categories, db.transactions, db.recurringRules, async () => {
+  await db.transaction('rw', db.accounts, db.categories, db.transactions, db.recurringRules, db.quickTemplates, async () => {
     await Promise.all([
       db.accounts.clear(),
       db.categories.clear(),
       db.transactions.clear(),
       db.recurringRules.clear(),
+      db.quickTemplates.clear(),
     ])
 
     await Promise.all([
@@ -62,6 +65,7 @@ export async function importData(file: File): Promise<void> {
       db.categories.bulkAdd(categories),
       db.transactions.bulkAdd(transactions),
       db.recurringRules.bulkAdd(recurringRules),
+      db.quickTemplates.bulkAdd(quickTemplates),
     ])
   })
 }
@@ -70,12 +74,13 @@ export async function importData(file: File): Promise<void> {
  * Destroy all data: clear all tables, delete all caches, and unregister service workers.
  */
 export async function destroyAllData(): Promise<void> {
-  await db.transaction('rw', db.accounts, db.categories, db.transactions, db.recurringRules, async () => {
+  await db.transaction('rw', db.accounts, db.categories, db.transactions, db.recurringRules, db.quickTemplates, async () => {
     await Promise.all([
       db.accounts.clear(),
       db.categories.clear(),
       db.transactions.clear(),
       db.recurringRules.clear(),
+      db.quickTemplates.clear(),
     ])
   })
 

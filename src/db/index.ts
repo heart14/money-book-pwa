@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie'
-import type { Account, Category, Transaction, RecurringRule, Tag } from '@/types'
+import type { Account, Category, Transaction, RecurringRule, Tag, QuickTemplate } from '@/types'
 
 export class MoneyBookDB extends Dexie {
   accounts!: Table<Account, number>
@@ -7,6 +7,7 @@ export class MoneyBookDB extends Dexie {
   transactions!: Table<Transaction, number>
   recurringRules!: Table<RecurringRule, number>
   tags!: Table<Tag, number>
+  quickTemplates!: Table<QuickTemplate, number>
 
   constructor() {
     super('moneybook')
@@ -46,6 +47,16 @@ export class MoneyBookDB extends Dexie {
       transactions: '++id, type, date, categoryId, [date+id]',
       recurringRules: '++id, enabled, dayOfMonth',
       tags: '++id, &name',
+    })
+
+    // v5: 快捷记账气泡模板
+    this.version(5).stores({
+      accounts: '++id, name',
+      categories: '++id, type, parentId',
+      transactions: '++id, type, date, categoryId, [date+id]',
+      recurringRules: '++id, enabled, dayOfMonth',
+      tags: '++id, &name',
+      quickTemplates: '++id, type, sort',
     })
   }
 }
