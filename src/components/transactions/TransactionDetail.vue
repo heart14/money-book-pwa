@@ -8,7 +8,14 @@
             <div class="sheet-icon-wrap">
               <span class="sheet-icon">{{ displayIcon }}</span>
             </div>
-            <div class="sheet-title">{{ transaction.title || categoryName }}</div>
+            <div class="sheet-title-row">
+              <div class="sheet-title">{{ transaction.title || categoryName }}</div>
+              <button class="sheet-extract-btn" @click="onExtractClick" title="保存为快记模板">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+              </button>
+            </div>
             <div class="sheet-type-badge" :class="`badge-${transaction.type}`">
               {{ typeLabel }}
             </div>
@@ -50,6 +57,18 @@
             <button class="btn btn-secondary" @click="$emit('edit', transaction)">编辑</button>
             <button class="btn btn-danger" @click="$emit('delete', transaction)">删除</button>
           </div>
+          <div v-if="extractMsg" class="sheet-toast">{{ extractMsg }}</div>
+
+          <PromptDialog
+            :visible="extractDialogVisible"
+            title="命名快记模板"
+            :initial-value="extractValue"
+            placeholder="输入模板名称"
+            confirm-text="保存"
+            @confirm="onExtractConfirm"
+            @cancel="extractDialogVisible = false"
+            @update:visible="extractDialogVisible = $event"
+          />
         </div>
       </div>
     </div>
@@ -57,8 +76,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useCategoryStore } from '@/stores/categoryStore'
+import { useQuickTemplateStore } from '@/stores/quickTemplateStore'
+import PromptDialog from '@/components/common/PromptDialog.vue'
 import { formatCurrency } from '@/utils/format'
 import type { Transaction } from '@/types'
 
@@ -103,6 +124,49 @@ const displayAmount = computed(() => {
   const yuan = props.transaction.amount / 100
   return yuan.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 })
+
+const quickTemplateStore = useQuickTemplateStore()
+
+const extractDialogVisible = ref(false)
+const extractMsg = ref('')
+const extractValue = ref('')
+
+async function onExtractClick() {
+  const dup = await quickTemplateStore.isDuplicate({
+    type: props.transaction.type,
+    amount: props.transaction.amount,
+    categoryId: props.transaction.categoryId ?? 0,
+  })
+  if (dup) {
+    extractMsg.value = '该模板已存在'
+    setTimeout(() => { extractMsg.value = '' }, 2000)
+    return
+  }
+  const suggested = props.transaction.title || ''
+  extractValue.value = suggested
+  extractDialogVisible.value = true
+}
+
+async function onExtractConfirm(name: string) {
+  try {
+    const result = await quickTemplateStore.add({
+      name,
+      type: props.transaction.type,
+      amount: props.transaction.amount,
+      categoryId: props.transaction.categoryId ?? 0,
+      title: props.transaction.title || '',
+      tags: [...(props.transaction.tags || [])],
+      note: props.transaction.note || '',
+      sort: 0,
+    })
+    if (result.success) {
+      extractMsg.value = '已添加快记模板'
+      setTimeout(() => { extractMsg.value = '' }, 2000)
+    }
+  } catch (e) {
+    console.error('extract template failed', e)
+  }
+}
 </script>
 
 <style scoped>
@@ -223,5 +287,49 @@ const displayAmount = computed(() => {
 .btn:active { opacity: 0.7; }
 .btn-secondary { background: #f2f2f6; color: #1c1c1e; }
 .btn-danger { background: #ff3b30; color: #fff; }
+
+.sheet-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.sheet-extract-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: #f2f2f6;
+  color: #ff9500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+
+.sheet-extract-btn:active {
+  background: #e5e5ea;
+}
+
+.sheet-toast {
+  position: fixed;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 24px;
+  border-radius: 20px;
+  white-space: nowrap;
+  z-index: 2000;
+  pointer-events: none;
+  backdrop-filter: blur(4px);
+}
 
 </style>
