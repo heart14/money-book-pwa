@@ -87,8 +87,7 @@ money-book-pwa/
 │   │   ├── biometric.ts    # WebAuthn 生物识别注册/认证/发现
 │   │   ├── format.ts       # 金额/日期/数字格式化
 │   │   ├── export.ts       # 全量数据 JSON 导入/导出
-│   │   ├── echarts-setup.ts# ECharts 全局注册
-│   │   └── ...             # 更多工具函数
+│   │   └── echarts-setup.ts# ECharts 全局注册
 │   │
 │   ├── styles/             # 全局样式
 │   │   └── main.css        # iOS 风格设计令牌（CSS 变量）+ 全局重置
@@ -100,18 +99,17 @@ money-book-pwa/
 │   │   ├── stats/          #   统计页
 │   │   └── settings/       #   设置页（账号/分类/标签/PIN/生物识别/规则/管理）
 │   │
-│   ├── components/         # 可复用组件（按功能模块组织）
+│   └── components/         # 可复用组件（按功能模块组织）
 │       ├── common/         #   通用组件（PinDialog, ConfirmDialog, EmptyState, PullToRefresh, CommonBottomSheet）
 │       ├── layout/         #   布局组件（MobileLayout, TabBar）
 │       ├── booking/        #   记账组件（CategoryPicker, ModeSwitch, NumberKeyboard）
 │       ├── transactions/   #   明细组件（TransactionItem, TransactionDetail, TransactionEdit, FilterChips）
 │       ├── accounts/       #   账户组件（AccountGroup, NetWorthCard）
 │       └── stats/          #   统计组件（ExpenseChart）
-│    
 │
 ├── docs/                   # 设计文档
-│   ├── security_design.md  # PIN + WebAuthn 安全验证方案设计
-│   ├── trans_design.md     # 明细页游标分页 + 懒加载方案设计
+│   ├── security_design.md  # PIN + WebAuthn 安全验证方案设计（467 行）
+│   ├── trans_design.md     # 明细页游标分页 + 懒加载方案设计（496 行）
 │   ├── preview/            # UI 预览资源
 │   └── superpowers/        # AI 辅助设计记录
 │

@@ -320,44 +320,54 @@ const promptTitle = ref('')
 const promptInitialValue = ref('')
 
 async function saveAsTemplate() {
-  const amount = Math.round(parseFloat(inputValue.value) * 100)
-  if (isNaN(amount) || amount <= 0 || !selectedCategoryId.value) {
-    showToast('请先输入有效金额并选择分类')
-    return
-  }
+  try {
+    const amount = Math.round(parseFloat(inputValue.value) * 100)
+    if (isNaN(amount) || amount <= 0 || !selectedCategoryId.value) {
+      showToast('请先输入有效金额并选择分类')
+      return
+    }
 
-  // 检查内容重复
-  const dup = await quickTemplateStore.isDuplicate({
-    type: bookingMode.value,
-    amount,
-    categoryId: selectedCategoryId.value,
-  })
-  if (dup) {
-    showToast('该模板已存在')
-    return
-  }
+    // 检查内容重复
+    const dup = await quickTemplateStore.isDuplicate({
+      type: bookingMode.value,
+      amount,
+      categoryId: selectedCategoryId.value,
+    })
+    if (dup) {
+      showToast('该模板已存在')
+      return
+    }
 
-  promptTitle.value = '命名快记模板'
-  promptInitialValue.value = title.value || ''
-  promptVisible.value = true
+    promptTitle.value = '命名快记模板'
+    promptInitialValue.value = title.value || ''
+    promptVisible.value = true
+  } catch (e) {
+    console.error('save template failed', e)
+    showToast('保存模板失败')
+  }
 }
 
 async function onPromptConfirm(name: string) {
-  const amount = Math.round(parseFloat(inputValue.value) * 100)
-  const result = await quickTemplateStore.add({
-    name: name,
-    type: bookingMode.value,
-    amount,
-    categoryId: selectedCategoryId.value!,
-    title: title.value,
-    tags: [...tags.value],
-    note: note.value,
-    sort: 0, // add() 会自动分配
-  })
-  if (result.success) {
-    showToast('已添加快记模板')
-  } else if (result.duplicateMsg) {
-    showToast(result.duplicateMsg)
+  try {
+    const amount = Math.round(parseFloat(inputValue.value) * 100)
+    const result = await quickTemplateStore.add({
+      name: name,
+      type: bookingMode.value,
+      amount,
+      categoryId: selectedCategoryId.value!,
+      title: title.value,
+      tags: [...tags.value],
+      note: note.value,
+      sort: 0, // add() 会自动分配
+    })
+    if (result.success) {
+      showToast('已添加快记模板')
+    } else if (result.duplicateMsg) {
+      showToast(result.duplicateMsg)
+    }
+  } catch (e) {
+    console.error('onPromptConfirm failed', e)
+    showToast('保存模板失败')
   }
 }
 
