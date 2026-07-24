@@ -63,11 +63,9 @@
               maxlength="200"
             />
           </div>
-        </div>
-      </Transition>
 
-      <!-- Quick Template Bubbles -->
-      <div v-if="displayBubbles.length > 0" class="quick-tpl-section">
+          <!-- Quick Template Bubbles -->
+          <div v-if="displayBubbles.length > 0" class="quick-tpl-section">
         <div class="quick-tpl-label">快记</div>
         <div class="quick-tpl-bubbles">
           <button
@@ -99,6 +97,8 @@
           <span class="tpl-add-icon">+</span>
         </button>
       </div>
+        </div>
+      </Transition>
     </div>
 
     <!-- Number Keyboard -->
@@ -227,6 +227,11 @@ function onModeChange(mode: BookingMode) {
   bookingMode.value = mode
   uiStore.setMode(mode)
   selectedCategoryId.value = null
+  inputValue.value = '0'
+  title.value = ''
+  tags.value = []
+  tagInput.value = ''
+  note.value = ''
 }
 
 // ── Category selection ──
