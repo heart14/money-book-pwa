@@ -72,23 +72,17 @@
         </div>
       </div>
 
-      <!-- ── 5. Recurring Rules ── -->
+      <!-- ── 5. Template Management ── -->
       <div class="section">
-        <div class="section-header">周期记账</div>
+        <div class="section-header">模板管理</div>
         <div class="section-card">
           <RuleManager />
-        </div>
-      </div>
-
-      <!-- ── 6. Quick Templates ── -->
-      <div class="section">
-        <div class="section-header">快捷记账</div>
-        <div class="section-card">
+          <div class="separator"></div>
           <QuickTemplateManager />
         </div>
       </div>
 
-      <!-- ── 7. About ── -->
+      <!-- ── 6. About ── -->
       <div class="section">
         <div class="section-header">关于</div>
         <div class="section-card">

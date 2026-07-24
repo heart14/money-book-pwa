@@ -1,39 +1,48 @@
 <template>
-  <div class="qt-manager">
-    <template v-if="store.templates.length === 0">
-      <div class="qt-empty">
-        <p class="qt-empty-text">暂无快记模板</p>
-        <p class="qt-empty-hint">在交易详情中提取或在此添加</p>
+  <div>
+    <button class="section-row" @click="expanded = !expanded">
+      <div class="row-left">
+        <span class="row-icon">⚡</span>
+        <span class="row-label">管理快记模板</span>
       </div>
-    </template>
-
-    <div v-else class="qt-list">
-      <div
-        v-for="tpl in store.templates"
-        :key="tpl.id"
-        class="qt-row"
-      >
-        <button class="qt-move-btn" @click="moveUp(tpl)" :disabled="isFirst(tpl)">
-          <span class="qt-move-arrow">↑</span>
-        </button>
-        <button class="qt-move-btn" @click="moveDown(tpl)" :disabled="isLast(tpl)">
-          <span class="qt-move-arrow">↓</span>
-        </button>
-        <div class="qt-row-content" @click="startEdit(tpl)">
-          <span class="qt-row-icon">{{ getCategoryIcon(tpl) }}</span>
-          <span class="qt-row-name">{{ tpl.name }}</span>
-          <span class="qt-row-amount">{{ formatShortCurrency(tpl.amount) }}</span>
-        </div>
-        <button class="qt-edit-btn" @click="startEdit(tpl)">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <button class="qt-add-btn" @click="startAdd">
-      <span class="qt-add-icon">+</span>
-      <span>添加新模板</span>
+      <svg class="chevron" :class="{ rotated: expanded }" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c7c7cc" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9" /></svg>
     </button>
+    <div v-if="expanded" class="expanded-content">
+      <template v-if="store.templates.length === 0">
+        <div class="qt-empty">
+          <p class="qt-empty-text">暂无快记模板</p>
+          <p class="qt-empty-hint">在交易详情中提取或在此添加</p>
+        </div>
+      </template>
+
+      <div v-else class="qt-list">
+        <div
+          v-for="tpl in store.templates"
+          :key="tpl.id"
+          class="qt-row"
+        >
+          <button class="qt-move-btn" @click="moveUp(tpl)" :disabled="isFirst(tpl)">
+            <span class="qt-move-arrow">↑</span>
+          </button>
+          <button class="qt-move-btn" @click="moveDown(tpl)" :disabled="isLast(tpl)">
+            <span class="qt-move-arrow">↓</span>
+          </button>
+          <div class="qt-row-content" @click="startEdit(tpl)">
+            <span class="qt-row-icon">{{ getCategoryIcon(tpl) }}</span>
+            <span class="qt-row-name">{{ tpl.name }}</span>
+            <span class="qt-row-amount">{{ formatShortCurrency(tpl.amount) }}</span>
+          </div>
+          <button class="qt-edit-btn" @click="startEdit(tpl)">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <button class="qt-add-btn" @click="startAdd">
+        <span class="qt-add-icon">+</span>
+        <span>添加新模板</span>
+      </button>
+    </div>
 
     <!-- Edit / Add Dialog (CommonBottomSheet style) -->
     <Teleport to="body">
@@ -109,6 +118,8 @@ import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 
 const store = useQuickTemplateStore()
 const categoryStore = useCategoryStore()
+
+const expanded = ref(false)
 
 const modeOptions = [
   { label: '收入', value: 'income' as const },
@@ -293,6 +304,34 @@ function showToast(msg: string) {
 </script>
 
 <style scoped>
+/* ── Collapsible header (matches RuleManager pattern) ── */
+.section-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 15px;
+  color: #1c1c1e;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  text-align: left;
+  transition: background 0.1s;
+}
+.section-row:active { background: rgba(0,0,0,0.03); }
+
+.row-left { display: flex; align-items: center; gap: 10px; }
+.row-icon { font-size: 18px; line-height: 1; }
+.row-label { font-size: 15px; color: #1c1c1e; }
+
+.chevron { color: #c7c7cc; flex-shrink: 0; transition: transform 0.2s; }
+.chevron.rotated { transform: rotate(180deg); }
+
+.expanded-content { padding: 4px 14px 12px; }
+
 .qt-empty {
   padding: 12px 0;
   text-align: center;
