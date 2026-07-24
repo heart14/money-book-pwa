@@ -65,6 +65,38 @@
           </div>
         </div>
       </Transition>
+
+      <!-- Quick Template Bubbles -->
+      <div v-if="displayBubbles.length > 0" class="quick-tpl-section">
+        <div class="quick-tpl-label">快记</div>
+        <div class="quick-tpl-bubbles">
+          <button
+            v-for="tpl in visibleBubbles"
+            :key="tpl.id"
+            class="quick-tpl-bubble"
+            @click="applyTemplate(tpl)"
+          >
+            <span class="tpl-icon">{{ tpl.categoryIcon }}</span>
+            <span class="tpl-name">{{ tpl.name }}</span>
+            <span class="tpl-amount">{{ formatShortCurrency(tpl.amount) }}</span>
+          </button>
+          <button
+            v-if="hasMoreBubbles"
+            class="quick-tpl-bubble quick-tpl-more"
+            @click="onBubbleExpandToggle"
+          >
+            <span class="tpl-more-text">{{ bubbleExpanded ? '收起' : `+${displayBubbles.length - 4}` }}</span>
+          </button>
+          <button class="quick-tpl-bubble quick-tpl-add" @click="saveAsTemplate" title="保存当前为模板">
+            <span class="tpl-add-icon">+</span>
+          </button>
+        </div>
+      </div>
+      <div v-else class="quick-tpl-section quick-tpl-empty">
+        <button class="quick-tpl-bubble quick-tpl-add" @click="saveAsTemplate" title="保存当前为模板">
+          <span class="tpl-add-icon">+</span>
+        </button>
+      </div>
     </div>
 
     <!-- Number Keyboard -->
@@ -79,6 +111,18 @@
     <Transition name="toast">
       <div v-if="toastVisible" class="save-toast">{{ toastMessage }}</div>
     </Transition>
+
+    <!-- Quick Template Prompt -->
+    <PromptDialog
+      :visible="promptVisible"
+      :title="promptTitle"
+      :initial-value="promptInitialValue"
+      placeholder="请输入模板名称"
+      confirm-text="保存"
+      @confirm="onPromptConfirm"
+      @cancel="promptVisible = false"
+      @update:visible="promptVisible = $event"
+    />
   </div>
 </template>
 
@@ -91,10 +135,15 @@ import type { Transaction } from '@/types'
 import ModeSwitch from '@/components/booking/ModeSwitch.vue'
 import NumberKeyboard from '@/components/booking/NumberKeyboard.vue'
 import CategoryPicker from '@/components/booking/CategoryPicker.vue'
+import { useQuickTemplateStore } from '@/stores/quickTemplateStore'
+import PromptDialog from '@/components/common/PromptDialog.vue'
+import { formatShortCurrency } from '@/utils/format'
+import type { QuickTemplate } from '@/types'
 
 const categoryStore = useCategoryStore()
 const transactionStore = useTransactionStore()
 const uiStore = useUiStore()
+const quickTemplateStore = useQuickTemplateStore()
 
 // Swipe mode order
 const modeOrder: BookingMode[] = ['income', 'expense', 'transfer']
@@ -135,6 +184,22 @@ const canSave = computed(() => {
   if (isNaN(amount) || amount <= 0) return false
   return selectedCategoryId.value != null
 })
+
+// ── Quick Template Bubbles ──
+const displayBubbles = computed(() => {
+  return quickTemplateStore.templates
+    .filter(t => t.type === bookingMode.value)
+    .map(t => {
+      const cat = categoryStore.categories.find(c => c.id === t.categoryId)
+      return { ...t, categoryIcon: cat?.icon || '📋' }
+    })
+    .slice(0, 6) // 最多 6 个
+})
+
+const bubbleExpanded = ref(false)
+const showBubbleLimit = computed(() => bubbleExpanded.value ? displayBubbles.value.length : 4)
+const visibleBubbles = computed(() => displayBubbles.value.slice(0, showBubbleLimit.value))
+const hasMoreBubbles = computed(() => displayBubbles.value.length > 4)
 
 // ── Swipe handlers ──
 function onTouchStart(e: TouchEvent) {
@@ -225,6 +290,79 @@ async function handleConfirm() {
   } catch (e) {
     console.error('记账失败', e)
   }
+}
+
+// ── Quick Template Functions ──
+function applyTemplate(tpl: QuickTemplate) {
+  // 校验分类是否存在
+  const cat = categoryStore.categories.find(c => c.id === tpl.categoryId)
+  if (!cat) {
+    showToast('该分类已不存在')
+    return
+  }
+
+  bookingMode.value = tpl.type
+  uiStore.setMode(tpl.type)
+
+  // 金额：从分反算回元显示
+  const yuan = tpl.amount / 100
+  inputValue.value = yuan.toFixed(2).replace(/\.?0+$/, '') || '0'
+
+  selectedCategoryId.value = tpl.categoryId
+  title.value = tpl.title
+  tags.value = [...tpl.tags]
+  note.value = tpl.note
+  keyboardVisible.value = false
+}
+
+const promptVisible = ref(false)
+const promptTitle = ref('')
+const promptInitialValue = ref('')
+
+async function saveAsTemplate() {
+  const amount = Math.round(parseFloat(inputValue.value) * 100)
+  if (isNaN(amount) || amount <= 0 || !selectedCategoryId.value) {
+    showToast('请先输入有效金额并选择分类')
+    return
+  }
+
+  // 检查内容重复
+  const dup = await quickTemplateStore.isDuplicate({
+    type: bookingMode.value,
+    amount,
+    categoryId: selectedCategoryId.value,
+  })
+  if (dup) {
+    showToast('该模板已存在')
+    return
+  }
+
+  promptTitle.value = '命名快记模板'
+  promptInitialValue.value = title.value || ''
+  promptVisible.value = true
+}
+
+async function onPromptConfirm(name: string) {
+  const amount = Math.round(parseFloat(inputValue.value) * 100)
+  const result = await quickTemplateStore.add({
+    name: name,
+    type: bookingMode.value,
+    amount,
+    categoryId: selectedCategoryId.value!,
+    title: title.value,
+    tags: [...tags.value],
+    note: note.value,
+    sort: 0, // add() 会自动分配
+  })
+  if (result.success) {
+    showToast('已添加快记模板')
+  } else if (result.duplicateMsg) {
+    showToast(result.duplicateMsg)
+  }
+}
+
+function onBubbleExpandToggle() {
+  bubbleExpanded.value = !bubbleExpanded.value
 }
 
 function resetState() {
@@ -433,5 +571,98 @@ watch(
 .toast-leave-to {
   opacity: 0;
   transform: translateX(-50%) translateY(-8px);
+}
+
+/* ── Quick Template Bubbles ── */
+.quick-tpl-section {
+  padding: 12px 0 4px;
+}
+
+.quick-tpl-label {
+  font-size: 12px;
+  color: var(--color-secondary-text, #8e8e93);
+  margin-bottom: 8px;
+}
+
+.quick-tpl-bubbles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.quick-tpl-bubble {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-size: 13px;
+  color: var(--color-text, #1c1c1e);
+  cursor: pointer;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  font-family: inherit;
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.08));
+}
+
+.quick-tpl-bubble:active {
+  background: #e5e5ea;
+}
+
+.tpl-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.tpl-name {
+  font-weight: 500;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tpl-amount {
+  font-weight: 600;
+  color: var(--color-primary, #007aff);
+  font-variant-numeric: tabular-nums;
+}
+
+.quick-tpl-more {
+  background: transparent;
+  box-shadow: none;
+  font-weight: 500;
+  color: var(--color-secondary-text, #8e8e93);
+}
+
+.quick-tpl-add {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.08));
+}
+
+.tpl-add-icon {
+  font-size: 18px;
+  font-weight: 300;
+  color: var(--color-secondary-text, #8e8e93);
+  line-height: 1;
+}
+
+.quick-tpl-empty {
+  padding: 8px 0;
+  display: flex;
+  justify-content: flex-end;
 }
 </style>
