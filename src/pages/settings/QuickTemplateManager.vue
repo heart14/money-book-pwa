@@ -333,19 +333,19 @@ function showToast(msg: string) {
 .expanded-content { padding: 4px 14px 12px; }
 
 .qt-empty {
-  padding: 12px 0;
   text-align: center;
+  padding: 12px;
 }
 
 .qt-empty-text {
   font-size: 14px;
-  color: var(--color-text, #1c1c1e);
-  margin-bottom: 4px;
+  color: #8e8e93;
 }
 
 .qt-empty-hint {
-  font-size: 12px;
-  color: var(--color-secondary-text, #8e8e93);
+  font-size: 14px;
+  color: #8e8e93;
+  margin-top: 2px;
 }
 
 .qt-list {
@@ -444,12 +444,12 @@ function showToast(msg: string) {
   justify-content: center;
   gap: 6px;
   width: 100%;
-  padding: 12px 0;
-  border: 1px dashed var(--color-separator, rgba(60,60,67,0.16));
-  border-radius: var(--radius-sm, 8px);
-  background: transparent;
+  padding: 10px;
+  border: 1px dashed #c7c7cc;
+  border-radius: 8px;
+  background: none;
   font-size: 14px;
-  color: var(--color-secondary-text, #8e8e93);
+  color: #007aff;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   font-family: inherit;
