@@ -79,13 +79,16 @@ function onVisibilityChange() {
     uiStore.unlocked = false
   } else if (getStoredPINHash()) {
     // 回到前台且有 PIN → 重新锁定
-    showPinLock.value = true
     pinError.value = ''
     pinResetVersion.value++
 
-    // 如果启用了 Biometric，尝试生物识别解锁
     if (hasBiometric) {
+      // 先不弹 PIN 弹窗，优先尝试生物识别
+      showPinLock.value = false
       tryBiometricUnlock()
+    } else {
+      // 只有 PIN → 立即弹出 PIN 弹窗
+      showPinLock.value = true
     }
   } else {
     // 回到前台且无 PIN → 恢复解锁状态
