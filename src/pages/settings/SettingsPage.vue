@@ -80,7 +80,15 @@
         </div>
       </div>
 
-      <!-- ── 6. About ── -->
+      <!-- ── 6. Quick Templates ── -->
+      <div class="section">
+        <div class="section-header">快捷记账</div>
+        <div class="section-card">
+          <QuickTemplateManager />
+        </div>
+      </div>
+
+      <!-- ── 7. About ── -->
       <div class="section">
         <div class="section-header">关于</div>
         <div class="section-card">
@@ -141,6 +149,7 @@ import AccountManager from './AccountManager.vue'
 import CategoryManager from './CategoryManager.vue'
 import TagManager from './TagManager.vue'
 import RuleManager from './RuleManager.vue'
+import QuickTemplateManager from './QuickTemplateManager.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 
 const currentView = ref<'main' | 'security'>('main')
