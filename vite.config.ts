@@ -10,6 +10,14 @@ export default defineConfig({
     UnoCSS(),
     VitePWA({
       registerType: 'autoUpdate',
+      includeAssets: [
+        'favicon.svg',
+        'favicon.ico',
+        'favicon-96x96.png',
+        'favicon-180x180.png',
+        'favicon-192x192.png',
+        'favicon-512x512.png'
+      ],
       manifest: {
         name: '钱书',
         short_name: '钱书',
