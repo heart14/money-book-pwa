@@ -1,9 +1,9 @@
 <template>
   <div class="transaction-item" @click="$emit('click')">
     <div class="item-col">
-      <div class="item-icon">
+      <!-- <div class="item-icon">
         {{ categoryIcon || '📋' }}
-      </div>
+      </div> -->
       <div class="item-info">
         <div class="item-title">{{ title || categoryName }}</div>
         <div class="item-sub">
