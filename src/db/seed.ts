@@ -125,8 +125,8 @@ async function seedCategories() {
     {
       parent: { type: 'transfer', parentId: null, name: '借入借出', icon: '🤝', sort: 1 },
       children: [
-        { type: 'transfer', parentId: null, name: '借出', icon: '', sort: 1 },
-        { type: 'transfer', parentId: null, name: '收回', icon: '', sort: 2 },
+        { type: 'transfer', parentId: null, name: '借出/还款', icon: '', sort: 1 },
+        { type: 'transfer', parentId: null, name: '借入/收回', icon: '', sort: 2 },
       ],
     },
     {
@@ -141,6 +141,13 @@ async function seedCategories() {
       children: [
         { type: 'transfer', parentId: null, name: '买入', icon: '', sort: 1 },
         { type: 'transfer', parentId: null, name: '赎回', icon: '', sort: 2 },
+      ],
+    },
+    {
+      parent: { type: 'transfer', parentId: null, name: '家庭账户', icon: '🏡', sort: 4 },
+      children: [
+        { type: 'transfer', parentId: null, name: '转入', icon: '', sort: 1 },
+        { type: 'transfer', parentId: null, name: '转出', icon: '', sort: 2 },
       ],
     },
   ]
