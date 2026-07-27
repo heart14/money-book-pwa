@@ -9,7 +9,7 @@ async function seedAccounts() {
     { name: '银行卡', balance: 0, icon: '💳', sort: 1 },
     { name: '支付宝', balance: 0, icon: '💳', sort: 2 },
     { name: '微信', balance: 0, icon: '💳', sort: 3 },
-    { name: '现金', balance: 0, icon: '💵', sort: 4 },
+    { name: '现金', balance: 0, icon: '💳', sort: 4 },
   ]
 
   await db.accounts.bulkAdd(accounts)
