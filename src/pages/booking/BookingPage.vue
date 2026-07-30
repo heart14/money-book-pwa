@@ -74,7 +74,7 @@
             class="quick-tpl-bubble"
             @click="applyTemplate(tpl)"
           >
-            <span class="tpl-icon">{{ tpl.categoryIcon }}</span>
+            <span class="tpl-icon"><TwemojiIcon :emoji="tpl.categoryIcon" /></span>
             <span class="tpl-name">{{ tpl.name }}</span>
             <span class="tpl-amount">{{ formatShortCurrency(tpl.amount) }}</span>
           </button>
@@ -141,6 +141,7 @@ import { useQuickTemplateStore } from '@/stores/quickTemplateStore'
 import PromptDialog from '@/components/common/PromptDialog.vue'
 import { formatShortCurrency } from '@/utils/format'
 import type { QuickTemplate } from '@/types'
+import TwemojiIcon from '@/components/common/TwemojiIcon.vue'
 
 const categoryStore = useCategoryStore()
 const transactionStore = useTransactionStore()

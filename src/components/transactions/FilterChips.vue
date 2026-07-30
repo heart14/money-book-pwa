@@ -17,13 +17,15 @@
       }"
       @click="$emit('select', cat.id)"
     >
-      <span class="chip-icon">{{ cat.icon }}</span>
+      <span class="chip-icon"><TwemojiIcon :emoji="cat.icon" /></span>
       {{ cat.name }}
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
+import TwemojiIcon from '@/components/common/TwemojiIcon.vue'
+
 defineProps<{
   categories: Array<{ id: number; name: string; icon: string }>
   selectedId: number | null

@@ -6,7 +6,7 @@
         <div class="sheet-body">
           <div class="sheet-header">
             <div class="sheet-icon-wrap">
-              <span class="sheet-icon">{{ displayIcon }}</span>
+              <span class="sheet-icon"><TwemojiIcon :emoji="displayIcon" /></span>
             </div>
             <div class="sheet-title-row">
               <div class="sheet-title">{{ transaction.title || categoryName }}</div>
@@ -80,6 +80,7 @@ import { computed, ref } from 'vue'
 import { useCategoryStore } from '@/stores/categoryStore'
 import { useQuickTemplateStore } from '@/stores/quickTemplateStore'
 import PromptDialog from '@/components/common/PromptDialog.vue'
+import TwemojiIcon from '@/components/common/TwemojiIcon.vue'
 import { formatCurrency } from '@/utils/format'
 import type { Transaction } from '@/types'
 

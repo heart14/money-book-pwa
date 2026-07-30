@@ -28,7 +28,7 @@
         class="account-row"
         @click="openEdit(acc)"
       >
-        <span class="account-icon">{{ acc.icon }}</span>
+        <span class="account-icon"><TwemojiIcon :emoji="acc.icon" /></span>
         <div class="account-info">
           <span class="account-name">{{ acc.name }}</span>
           <span class="account-balance">{{ formatCurrency(acc.balance) }}</span>
@@ -105,6 +105,7 @@ import { useAccountStore } from '@/stores/accountStore'
 import { formatCurrency } from '@/utils/format'
 import type { Account } from '@/types'
 import CommonBottomSheet from '@/components/common/CommonBottomSheet.vue'
+import TwemojiIcon from '@/components/common/TwemojiIcon.vue'
 
 const accountStore = useAccountStore()
 

@@ -12,7 +12,7 @@
         :class="{ selected: selectedParentId === parent.id }"
         @click="selectParent(parent)"
       >
-        <span class="parent-icon">{{ parent.icon || '📁' }}</span>
+        <span class="parent-icon"><TwemojiIcon :emoji="parent.icon || '📁'" /></span>
         <span class="parent-name">{{ parent.name }}</span>
       </button>
     </div>
@@ -38,6 +38,8 @@
 import { ref, computed, watch } from 'vue'
 import { useCategoryStore } from '@/stores/categoryStore'
 import type { Category } from '@/types'
+
+import TwemojiIcon from '@/components/common/TwemojiIcon.vue'
 
 const props = defineProps<{
   type: 'expense' | 'income' | 'transfer'

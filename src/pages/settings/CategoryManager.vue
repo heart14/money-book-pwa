@@ -8,13 +8,13 @@
       <div v-if="categoryStore.categories.length === 0" class="empty-hint">暂无分类</div>
       <div v-for="cat in parentCategories" :key="cat.id" class="category-item">
         <div class="category-parent" @click="toggleChildren(cat.id!)">
-          <span class="category-icon">{{ cat.icon }}</span>
+          <span class="category-icon"><TwemojiIcon :emoji="cat.icon" /></span>
           <span class="category-name">{{ cat.name }}</span>
           <svg class="chevron small" :class="{ rotated: expandedIds.has(cat.id!) }" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#c7c7cc" stroke-width="2.5"><polyline points="6 9 12 15 18 9" /></svg>
         </div>
         <div v-if="expandedIds.has(cat.id!)" class="category-children">
           <div v-for="child in getChildren(cat.id!)" :key="child.id" class="category-child">
-            <span class="category-icon small">{{ child.icon }}</span>
+            <span class="category-icon small"><TwemojiIcon :emoji="child.icon" /></span>
             <span class="category-name">{{ child.name }}</span>
           </div>
           <div v-if="getChildren(cat.id!).length === 0" class="empty-hint small">无子分类</div>
@@ -28,6 +28,7 @@
 import { ref, computed } from 'vue'
 import { useCategoryStore } from '@/stores/categoryStore'
 import type { Category } from '@/types'
+import TwemojiIcon from '@/components/common/TwemojiIcon.vue'
 
 const categoryStore = useCategoryStore()
 

@@ -18,7 +18,7 @@
         class="account-row"
         @click="router.push('/accounts/' + account.id)"
       >
-        <span class="account-icon">{{ account.icon }}</span>
+        <span class="account-icon"><TwemojiIcon :emoji="account.icon" /></span>
         <span class="account-name">{{ account.name }}</span>
         <span class="account-balance" :class="account.balance < 0 ? 'debt' : ''">
           {{ account.balance < 0 ? '-' : '' }}{{ formatCurrency(Math.abs(account.balance)) }}
@@ -33,6 +33,7 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import type { Account } from '@/types'
+import TwemojiIcon from '@/components/common/TwemojiIcon.vue'
 import { formatCurrency } from '@/utils/format'
 
 const props = defineProps<{

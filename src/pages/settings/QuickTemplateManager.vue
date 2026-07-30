@@ -28,7 +28,7 @@
             <span class="qt-move-arrow">↓</span>
           </button>
           <div class="qt-row-content" @click="startEdit(tpl)">
-            <span class="qt-row-icon">{{ getCategoryIcon(tpl) }}</span>
+            <span class="qt-row-icon"><TwemojiIcon :emoji="getCategoryIcon(tpl)" /></span>
             <span class="qt-row-name">{{ tpl.name }}</span>
             <span class="qt-row-amount">{{ formatShortCurrency(tpl.amount) }}</span>
           </div>
@@ -115,6 +115,7 @@ import { useCategoryStore } from '@/stores/categoryStore'
 import { formatShortCurrency } from '@/utils/format'
 import type { QuickTemplate } from '@/types'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import TwemojiIcon from '@/components/common/TwemojiIcon.vue'
 
 const store = useQuickTemplateStore()
 const categoryStore = useCategoryStore()

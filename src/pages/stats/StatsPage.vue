@@ -119,7 +119,7 @@
           @click="navigateToCategory(item)"
         >
           <span class="ranking-badge" :style="{ background: rankColor(index) }">{{ rankLabel(index) }}</span>
-          <span class="ranking-icon">{{ item.icon }}</span>
+          <span class="ranking-icon"><TwemojiIcon :emoji="item.icon" /></span>
           <span class="ranking-name">{{ item.name }}</span>
           <span class="ranking-amount">{{ formatCurrency(item.amount) }}</span>
           <span class="ranking-pct">{{ item.percent }}%</span>
@@ -136,7 +136,7 @@
         class="large-row"
       >
         <span class="large-rank">{{ index + 1 }}</span>
-        <span class="large-icon">{{ item.icon }}</span>
+        <span class="large-icon"><TwemojiIcon :emoji="item.icon" /></span>
         <div class="large-info">
           <span class="large-title">{{ item.title }}</span>
           <span class="large-date">{{ item.shortDate }}</span>
@@ -155,7 +155,7 @@
         class="freq-row"
       >
         <span class="freq-rank">{{ index + 1 }}</span>
-        <span class="freq-icon">{{ item.icon }}</span>
+        <span class="freq-icon"><TwemojiIcon :emoji="item.icon" /></span>
         <span class="freq-name">{{ item.name }}</span>
         <div class="freq-stats">
           <span class="freq-count">{{ item.count }}次</span>
@@ -196,6 +196,7 @@ import { useLiveQuery } from '@/composables/useLiveQuery'
 import { formatCurrency } from '@/utils/format'
 import VChart from 'vue-echarts'
 import type { Transaction } from '@/types'
+import TwemojiIcon from '@/components/common/TwemojiIcon.vue'
 const categoryStore = useCategoryStore()
 
 type RankLevel = 'parent' | 'child'
