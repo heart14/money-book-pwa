@@ -5,14 +5,14 @@
         <div class="pin-shell">
           <!-- ── Header ── -->
           <div class="pin-header">
-            <div class="pin-lock-icon">
-              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <div class="pin-lock-badge">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="5" y="11" width="14" height="10" rx="2" />
                 <path d="M8 11V7a4 4 0 0 1 8 0v4" />
                 <circle cx="12" cy="16" r="1" fill="currentColor" stroke="none" />
               </svg>
             </div>
-            <h1 class="pin-app-name">钱书</h1>
+            <!-- <h1 class="pin-app-name">钱书</h1> -->
             <p class="pin-subtitle">已锁定</p>
           </div>
 
@@ -44,12 +44,12 @@
             >
               <span class="pin-key-label">{{ key }}</span>
             </button>
-            <div class="pin-key pin-key--placeholder" />
+            <div class="pin-key pin-key--blank" />
             <button class="pin-key" @click="onKeyPress(0)">
               <span class="pin-key-label">0</span>
             </button>
             <button class="pin-key pin-key--backspace" @click="onBackspace">
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M19 5H9l-6 7 6 7h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z" />
                 <line x1="16" y1="10" x2="12" y2="14" />
                 <line x1="12" y1="10" x2="16" y2="14" />
@@ -108,14 +108,10 @@ function onBackspace() {
   }
 }
 
-// 每次打开弹窗时重置
 watch(() => props.visible, (visible) => {
-  if (visible) {
-    clearPin()
-  }
+  if (visible) clearPin()
 })
 
-// 输错 PIN 时自动清空 + shake
 watch(() => props.errorMsg, (msg) => {
   if (msg) {
     triggerShake()
@@ -123,7 +119,6 @@ watch(() => props.errorMsg, (msg) => {
   }
 })
 
-// 收到重置信号时清空
 watch(() => props.resetKey, () => {
   clearPin()
 })
@@ -143,13 +138,13 @@ watch(() => props.resetKey, () => {
 
 .pin-shell {
   flex: 1;
-  max-width: 400px;
+  max-width: 420px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 32px;
-  padding-top: max(env(safe-area-inset-top, 0px) + 64px, 96px);
-  padding-bottom: max(env(safe-area-inset-bottom, 0px) + 32px, 40px);
+  padding: 0 36px;
+  padding-top: max(env(safe-area-inset-top, 0px) + 48px, 80px);
+  padding-bottom: max(env(safe-area-inset-bottom, 0px) + 24px, 32px);
 }
 
 /* ── Header ── */
@@ -160,33 +155,32 @@ watch(() => props.resetKey, () => {
   gap: 10px;
 }
 
-.pin-lock-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  background: var(--color-card);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+.pin-lock-badge {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #0056b3 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-primary);
-  box-shadow: var(--shadow-sm);
-  margin-bottom: 4px;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3);
+  margin-bottom: 2px;
+  transition: box-shadow 0.3s;
 }
 
 .pin-app-name {
-  font-size: var(--fs-heading, 20px);
+  font-size: 22px;
   font-weight: 700;
   color: var(--color-text);
-  letter-spacing: 0.3px;
+  letter-spacing: 0.5px;
 }
 
 .pin-subtitle {
-  font-size: var(--fs-ui, 14px);
+  font-size: 14px;
   color: var(--color-secondary-text);
   font-weight: 400;
-  margin-top: -2px;
+  margin-top: -4px;
 }
 
 /* ── PIN Dots ── */
@@ -195,39 +189,40 @@ watch(() => props.resetKey, () => {
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  margin-top: 48px;
+  margin-top: 40px;
 }
 
 .pin-dots {
   display: flex;
-  gap: 14px;
+  gap: 16px;
 }
 
 .pin-dot {
-  width: 14px;
-  height: 14px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   background: transparent;
   border: 2.5px solid var(--color-placeholder);
-  transition: background 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
-              border-color 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
-              transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: background 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+              border-color 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+              transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .pin-dot.filled {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  transform: scale(1.15);
+  transform: scale(1.2);
 }
 
 .pin-error {
-  font-size: var(--fs-ui, 13px);
+  font-size: 13px;
   color: var(--color-destructive);
   text-align: center;
   min-height: 18px;
+  font-weight: 500;
 }
 
-/* ── Error fade transition ── */
+/* ── Error fade ── */
 .err-fade-enter-active,
 .err-fade-leave-active {
   transition: opacity 0.2s ease;
@@ -237,7 +232,7 @@ watch(() => props.resetKey, () => {
   opacity: 0;
 }
 
-/* ── Shake animation ── */
+/* ── Shake ── */
 .shake {
   animation: shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97);
 }
@@ -255,21 +250,21 @@ watch(() => props.resetKey, () => {
 /* ── Spacer ── */
 .pin-spacer {
   flex: 1;
-  min-height: 24px;
+  min-height: 20px;
 }
 
 /* ── Keyboard ── */
 .pin-keyboard {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: 14px;
   width: 100%;
-  max-width: 320px;
+  max-width: 300px;
 }
 
 .pin-key {
   aspect-ratio: 1;
-  max-height: 68px;
+  max-height: 72px;
   border: none;
   border-radius: 50%;
   background: var(--color-card);
@@ -282,24 +277,25 @@ watch(() => props.resetKey, () => {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   transition: background 0.15s, transform 0.1s;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 0 0 0.5px rgba(0, 0, 0, 0.02);
   user-select: none;
   -webkit-user-select: none;
 }
 
 .pin-key:active {
   background: var(--color-disabled-bg);
-  transform: scale(0.92);
+  transform: scale(0.90);
 }
 
 .pin-key-label {
-  font-size: 26px;
+  font-size: 32px;
   font-weight: 500;
   color: var(--color-text);
   letter-spacing: 0.5px;
+  line-height: 1;
 }
 
-.pin-key--placeholder {
+.pin-key--blank {
   background: transparent;
   box-shadow: none;
   cursor: default;
@@ -308,6 +304,19 @@ watch(() => props.resetKey, () => {
 
 .pin-key--backspace {
   color: var(--color-secondary-text);
+}
+
+.pin-key--backspace:active {
+  color: var(--color-text);
+}
+
+/* ── Dark mode refinements ── */
+:root.dark .pin-key {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 0 0 0.5px rgba(255, 255, 255, 0.04);
+}
+
+:root.dark .pin-lock-badge {
+  box-shadow: 0 4px 20px rgba(10, 132, 255, 0.35);
 }
 
 /* ── Entrance transition ── */
@@ -332,7 +341,7 @@ watch(() => props.resetKey, () => {
 }
 
 .pin-enter-enter-from .pin-shell {
-  transform: translateY(12px);
+  transform: translateY(16px);
   opacity: 0;
 }
 
