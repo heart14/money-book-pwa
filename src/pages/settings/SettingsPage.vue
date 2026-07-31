@@ -32,10 +32,13 @@
         </div>
       </div>
 
-      <!-- ── 2. Appearance ── -->
+      <!-- ── 2. Appearance (collapsible) ── -->
       <div class="section">
-        <div class="section-header">外观</div>
-        <div class="section-card">
+        <button class="section-header section-header--clickable" @click="showAppearance = !showAppearance">
+          <span>外观</span>
+          <svg class="chevron collapsible-chevron" :class="{ rotated: showAppearance }" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6" /></svg>
+        </button>
+        <div v-show="showAppearance" class="section-card">
           <div class="section-row no-hover">
             <div class="row-left"><span class="row-icon">🌙</span><span class="row-label">深色模式</span></div>
             <div class="theme-toggle">
@@ -186,6 +189,7 @@ import QuickTemplateManager from './QuickTemplateManager.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 
 const uiStore = useUiStore()
+const showAppearance = ref(true)
 const fontSizeOptions = [
   { label: '很小', value: 'xs' as const },
   { label: '小', value: 'sm' as const },
@@ -282,11 +286,38 @@ async function handleDestroy() {
 .section { margin-bottom: 20px; }
 
 .section-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: var(--fs-small);
   font-weight: 600;
   color: var(--color-secondary-text);
   padding: 0 4px;
   margin-bottom: 6px;
+}
+
+.section-header--clickable {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+  padding: 8px 4px;
+  width: 100%;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.section-header--clickable:active {
+  opacity: 0.5;
+}
+
+.collapsible-chevron {
+  transition: transform 0.2s ease;
+  color: var(--color-placeholder);
+}
+
+.collapsible-chevron.rotated {
+  transform: rotate(-180deg);
 }
 
 .section-card {
