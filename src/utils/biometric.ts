@@ -12,6 +12,7 @@
 
 const ENABLED_KEY = 'biometric_enabled'
 const CREDENTIAL_ID_KEY = 'biometric_credential_id'
+const BIOMETRIC_RP_KEY = 'biometric_rp_id'
 
 // ── Helper: ArrayBuffer ←→ base64url ──
 
@@ -44,14 +45,20 @@ export function getBiometricCredentialId(): string | null {
   return localStorage.getItem(CREDENTIAL_ID_KEY)
 }
 
+export function getBiometricRpId(): string | null {
+  return localStorage.getItem('biometric_rp_id')
+}
+
 function saveCredential(id: string) {
   localStorage.setItem(CREDENTIAL_ID_KEY, id)
+  localStorage.setItem(BIOMETRIC_RP_KEY, window.location.hostname)
   localStorage.setItem(ENABLED_KEY, 'true')
 }
 
 export function clearBiometric(): void {
   localStorage.removeItem(ENABLED_KEY)
   localStorage.removeItem(CREDENTIAL_ID_KEY)
+  localStorage.removeItem(BIOMETRIC_RP_KEY)
 }
 
 // ── Platform support check ──
@@ -69,11 +76,16 @@ export async function isBiometricSupported(): Promise<boolean> {
 
 /**
  * Attempt biometric verification using the stored credential.
- * Returns true if the user successfully authenticates.
+ * Uses non-discoverable credential (residentKey: discouraged) to avoid
+ * triggering the iOS passkey sheet — should go straight to Face ID.
  */
 export async function authenticateBiometric(): Promise<boolean> {
   const credentialId = getBiometricCredentialId()
-  if (!credentialId) return false
+  const rpId = getBiometricRpId()
+  if (!credentialId || !rpId) return false
+
+  // RP ID mismatch — credential belongs to a different origin
+  if (rpId !== window.location.hostname) return false
 
   try {
     const credential = await navigator.credentials.get({
@@ -85,37 +97,32 @@ export async function authenticateBiometric(): Promise<boolean> {
           type: 'public-key',
         }],
         userVerification: 'required',
+        timeout: 60000,
       },
     })
     return credential !== null
   } catch {
-    // User cancelled Face ID, or credential no longer exists on device
     return false
   }
 }
 
-// ── Registration (enable biometric) ──
-
 /**
  * Enable biometric authentication.
  *
- * Flow:
- *   1. Try to discover an already-registered credential (empty allowCredentials).
- *      → If found, save its ID → return.
- *   2. Otherwise, create a new platform credential with residentKey: 'preferred'.
- *      → Save ID → return.
- *
- * Returns true if biometric was successfully enabled.
+ * Creates a non-discoverable platform credential (residentKey: discouraged)
+ * so that iOS treats it as a device-local credential rather than a synced
+ * passkey, avoiding the system passkey selection sheet on subsequent auth.
  */
 export async function registerBiometric(): Promise<boolean> {
-  // Phase 1: try to reuse existing credential (e.g., after localStorage was cleared)
-  const existingId = await discoverExistingCredential()
-  if (existingId) {
-    saveCredential(existingId)
+  // Check if an existing credential is already registered for this RP
+  const existingId = getBiometricCredentialId()
+  const rpId = getBiometricRpId()
+  if (existingId && rpId === window.location.hostname) {
+    // Credential already registered and RP matches — no-op
     return true
   }
 
-  // Phase 2: create new credential
+  // Create a new non-discoverable platform credential
   try {
     const credential = await navigator.credentials.create({
       publicKey: {
@@ -133,7 +140,7 @@ export async function registerBiometric(): Promise<boolean> {
         authenticatorSelection: {
           authenticatorAttachment: 'platform',
           userVerification: 'required',
-          residentKey: 'preferred',
+          residentKey: 'discouraged',
         },
         timeout: 60000,
         attestation: 'none',
@@ -149,26 +156,4 @@ export async function registerBiometric(): Promise<boolean> {
   } catch {
     return false
   }
-}
-
-// ── Internal: discover existing credential (empty allowCredentials) ──
-
-async function discoverExistingCredential(): Promise<string | null> {
-  try {
-    const credential = await navigator.credentials.get({
-      publicKey: {
-        challenge: crypto.getRandomValues(new Uint8Array(32)),
-        rpId: window.location.hostname,
-        allowCredentials: [] as PublicKeyCredentialDescriptor[],
-        userVerification: 'required',
-      },
-    })
-
-    if (credential) {
-      return bufferToBase64Url((credential as PublicKeyCredential).rawId)
-    }
-  } catch {
-    // No discoverable credential, or user cancelled
-  }
-  return null
 }
