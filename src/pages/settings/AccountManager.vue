@@ -210,7 +210,7 @@ async function handleDelete() {
   border: none;
   background: none;
   font-family: inherit;
-  font-size: 15px;
+  font-size: var(--fs-title);
   color: var(--color-text);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -221,13 +221,13 @@ async function handleDelete() {
 
 .row-left { display: flex; align-items: center; gap: 10px; }
 .row-icon { font-size: 18px; line-height: 1; }
-.row-label { font-size: 15px; color: var(--color-text); }
+.row-label { font-size: var(--fs-title); color: var(--color-text); }
 
 .chevron { color: var(--color-placeholder); flex-shrink: 0; transition: transform 0.2s; }
 .chevron.rotated { transform: rotate(180deg); }
 
 .expanded-content { padding: 4px 14px 12px; }
-.empty-hint { text-align: center; padding: 12px; font-size: 14px; color: var(--color-secondary-text); }
+.empty-hint { text-align: center; padding: 12px; font-size: var(--fs-body); color: var(--color-secondary-text); }
 
 .account-item {
   display: flex;
@@ -241,8 +241,8 @@ async function handleDelete() {
 .drag-handle { font-size: 16px; color: var(--color-placeholder); cursor: grab; user-select: none; line-height: 1; padding: 2px; flex-shrink: 0; }
 .account-icon { font-size: 16px; }
 .account-info { flex: 1; display: flex; flex-direction: column; gap: 1px; }
-.account-name { font-size: 14px; color: var(--color-text); }
-.account-balance { font-size: 12px; color: var(--color-secondary-text); }
+.account-name { font-size: var(--fs-body); color: var(--color-text); }
+.account-balance { font-size: var(--fs-small); color: var(--color-secondary-text); }
 
 .icon-btn {
   width: 28px; height: 28px; border: none; background: var(--color-bg); border-radius: 6px;
@@ -252,21 +252,21 @@ async function handleDelete() {
 
 .add-btn {
   width: 100%; padding: 10px; border: 1px dashed var(--color-placeholder); border-radius: 8px;
-  background: none; font-size: 14px; color: var(--color-primary); cursor: pointer; margin-top: 8px;
+  background: none; font-size: var(--fs-body); color: var(--color-primary); cursor: pointer; margin-top: 8px;
 }
 
 /* Delete confirm overlay */
 .modal-overlay { position: fixed; inset: 0; background: var(--color-overlay); z-index: 1000; display: flex; align-items: center; justify-content: center; }
 .modal-content { width: 280px; background: var(--color-surface); border-radius: 16px; padding: 24px; }
-.modal-desc { font-size: 14px; color: var(--color-text); text-align: center; margin-bottom: 16px; }
+.modal-desc { font-size: var(--fs-body); color: var(--color-text); text-align: center; margin-bottom: 16px; }
 .modal-actions { display: flex; gap: 12px; justify-content: center; }
 .form-group { margin-bottom: 16px; }
-.form-label { display: block; font-size: 14px; font-weight: 500; color: var(--color-secondary-text); margin-bottom: 6px; }
-.form-input { width: 100%; height: 40px; border-radius: 10px; border: 1px solid var(--color-separator); background: var(--color-input-bg); padding: 0 12px; font-size: 15px; color: var(--color-text); outline: none; box-sizing: border-box; }
+.form-label { display: block; font-size: var(--fs-body); font-weight: 500; color: var(--color-secondary-text); margin-bottom: 6px; }
+.form-input { width: 100%; height: 40px; border-radius: 10px; border: 1px solid var(--color-separator); background: var(--color-input-bg); padding: 0 12px; font-size: var(--fs-title); color: var(--color-text); outline: none; box-sizing: border-box; }
 .form-input:focus { border-color: var(--color-primary); }
-.btn-cancel { flex: 1; height: 44px; border-radius: 10px; border: none; background: var(--color-bg); color: var(--color-text); font-size: 16px; font-weight: 500; cursor: pointer; }
-.btn-primary { flex: 1; height: 44px; border-radius: 10px; border: none; background: var(--color-primary); color: #fff; font-size: 16px; font-weight: 500; cursor: pointer; }
+.btn-cancel { flex: 1; height: 44px; border-radius: 10px; border: none; background: var(--color-bg); color: var(--color-text); font-size: var(--fs-amount); font-weight: 500; cursor: pointer; }
+.btn-primary { flex: 1; height: 44px; border-radius: 10px; border: none; background: var(--color-primary); color: #fff; font-size: var(--fs-amount); font-weight: 500; cursor: pointer; }
 .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
 .btn-primary:active { opacity: 0.7; }
-.btn-danger { height: 44px; padding: 0 24px; border-radius: 10px; border: none; background: var(--color-destructive); color: #fff; font-size: 16px; font-weight: 500; cursor: pointer; }
+.btn-danger { height: 44px; padding: 0 24px; border-radius: 10px; border: none; background: var(--color-destructive); color: #fff; font-size: var(--fs-amount); font-weight: 500; cursor: pointer; }
 </style>

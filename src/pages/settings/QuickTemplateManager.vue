@@ -315,7 +315,7 @@ function showToast(msg: string) {
   border: none;
   background: none;
   font-family: inherit;
-  font-size: 15px;
+  font-size: var(--fs-title);
   color: var(--color-text);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -326,7 +326,7 @@ function showToast(msg: string) {
 
 .row-left { display: flex; align-items: center; gap: 10px; }
 .row-icon { font-size: 18px; line-height: 1; }
-.row-label { font-size: 15px; color: var(--color-text); }
+.row-label { font-size: var(--fs-title); color: var(--color-text); }
 
 .chevron { color: var(--color-placeholder); flex-shrink: 0; transition: transform 0.2s; }
 .chevron.rotated { transform: rotate(180deg); }
@@ -339,12 +339,12 @@ function showToast(msg: string) {
 }
 
 .qt-empty-text {
-  font-size: 14px;
+  font-size: var(--fs-body);
   color: var(--color-secondary-text);
 }
 
 .qt-empty-hint {
-  font-size: 14px;
+  font-size: var(--fs-body);
   color: var(--color-secondary-text);
   margin-top: 2px;
 }
@@ -405,7 +405,7 @@ function showToast(msg: string) {
 }
 
 .qt-row-name {
-  font-size: 14px;
+  font-size: var(--fs-body);
   font-weight: 500;
   color: var(--color-text);
   overflow: hidden;
@@ -414,7 +414,7 @@ function showToast(msg: string) {
 }
 
 .qt-row-amount {
-  font-size: 13px;
+  font-size: var(--fs-ui);
   font-weight: 600;
   color: var(--color-secondary-text);
   margin-left: auto;
@@ -449,7 +449,7 @@ function showToast(msg: string) {
   border: 1px dashed var(--color-placeholder);
   border-radius: 8px;
   background: none;
-  font-size: 14px;
+  font-size: var(--fs-body);
   color: var(--color-primary);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -493,7 +493,7 @@ function showToast(msg: string) {
 }
 
 .qt-dialog-title {
-  font-size: 17px;
+  font-size: var(--fs-heading);
   font-weight: 600;
   color: var(--color-text);
   text-align: center;
@@ -502,7 +502,7 @@ function showToast(msg: string) {
 
 .qt-field-label {
   display: block;
-  font-size: 13px;
+  font-size: var(--fs-ui);
   font-weight: 500;
   color: var(--color-secondary-text);
   margin-bottom: 6px;
@@ -520,7 +520,7 @@ function showToast(msg: string) {
   border: 1px solid var(--color-separator);
   border-radius: var(--radius-sm);
   background: var(--color-input-bg);
-  font-size: 15px;
+  font-size: var(--fs-title);
   color: var(--color-text);
   outline: none;
   font-family: inherit;
@@ -544,7 +544,7 @@ function showToast(msg: string) {
   border: none;
   border-radius: var(--radius-sm);
   background: var(--color-bg);
-  font-size: 14px;
+  font-size: var(--fs-body);
   font-weight: 500;
   color: var(--color-secondary-text);
   cursor: pointer;
@@ -569,7 +569,7 @@ function showToast(msg: string) {
   height: 40px;
   border: none;
   border-radius: var(--radius-sm);
-  font-size: 14px;
+  font-size: var(--fs-body);
   font-weight: 500;
   cursor: pointer;
   font-family: inherit;
@@ -606,7 +606,7 @@ function showToast(msg: string) {
   transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.8);
   color: #fff;
-  font-size: 14px;
+  font-size: var(--fs-body);
   font-weight: 500;
   padding: 10px 24px;
   border-radius: 20px;

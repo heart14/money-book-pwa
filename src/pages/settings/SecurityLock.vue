@@ -381,7 +381,7 @@ if (!hasPin.value) {
   gap: 2px;
   border: none;
   background: none;
-  font-size: 16px;
+  font-size: var(--fs-amount);
   color: var(--color-primary);
   cursor: pointer;
   padding: 4px 0;
@@ -390,7 +390,7 @@ if (!hasPin.value) {
 }
 
 .page-title {
-  font-size: 18px;
+  font-size: var(--fs-hero);
   font-weight: 600;
   color: var(--color-text);
   flex: 1;
@@ -408,7 +408,7 @@ if (!hasPin.value) {
 /* ── PIN Input ── */
 .pin-prompt {
   text-align: center;
-  font-size: 15px;
+  font-size: var(--fs-title);
   color: var(--color-text);
   margin-bottom: 16px;
 }
@@ -451,7 +451,7 @@ if (!hasPin.value) {
 
 .pin-error {
   text-align: center;
-  font-size: 14px;
+  font-size: var(--fs-body);
   color: var(--color-destructive);
   margin-bottom: 12px;
 }
@@ -465,7 +465,7 @@ if (!hasPin.value) {
   border-radius: var(--radius-sm);
   background: var(--color-primary);
   color: #fff;
-  font-size: 16px;
+  font-size: var(--fs-amount);
   font-weight: 500;
   cursor: pointer;
   font-family: inherit;
@@ -488,7 +488,7 @@ if (!hasPin.value) {
   margin-top: 8px;
   border: none;
   background: none;
-  font-size: 14px;
+  font-size: var(--fs-body);
   color: var(--color-secondary-text);
   cursor: pointer;
   text-align: center;
@@ -505,7 +505,7 @@ if (!hasPin.value) {
   padding: 14px 0;
   border: none;
   background: none;
-  font-size: 16px;
+  font-size: var(--fs-amount);
   color: var(--color-text);
   cursor: pointer;
   font-family: inherit;
@@ -540,19 +540,19 @@ if (!hasPin.value) {
 }
 
 .bio-label {
-  font-size: 15px;
+  font-size: var(--fs-title);
   color: var(--color-text);
   font-weight: 500;
 }
 
 .bio-hint {
-  font-size: 12px;
+  font-size: var(--fs-small);
   color: var(--color-secondary-text);
   margin-top: 1px;
 }
 
 .bio-sub {
-  font-size: 12px;
+  font-size: var(--fs-small);
   color: var(--color-secondary-text);
   margin: 6px 0 0;
   line-height: 1.4;
@@ -611,7 +611,7 @@ if (!hasPin.value) {
 
 .success-text {
   text-align: center;
-  font-size: 15px;
+  font-size: var(--fs-title);
   color: #2e7d32;
 }
 
