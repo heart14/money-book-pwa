@@ -1,7 +1,7 @@
 <template>
   <div>
     <button class="section-row" @click="expanded = !expanded">
-      <div class="row-left"><span class="row-icon">🏷️</span><span class="row-label">管理标签</span></div>
+      <div class="row-left"><span class="row-icon"><TwemojiIcon emoji="🏷️" /></span><span class="row-label">管理标签</span></div>
       <svg class="chevron" :class="{ rotated: expanded }" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c7c7cc" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9" /></svg>
     </button>
     <div v-if="expanded" class="expanded-content">
