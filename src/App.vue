@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useUiStore } from '@/stores/uiStore'
 import { hashPIN, getStoredPINHash } from '@/utils/crypto'
 import { isBiometricEnabled, authenticateBiometric } from '@/utils/biometric'
@@ -20,6 +20,35 @@ import MobileLayout from '@/components/layout/MobileLayout.vue'
 import PinDialog from '@/components/common/PinDialog.vue'
 
 const uiStore = useUiStore()
+
+// ── Theme management ──
+function resolveTheme(): 'light' | 'dark' {
+  if (uiStore.theme === 'system') {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  }
+  return uiStore.theme
+}
+
+function applyTheme() {
+  const isDark = resolveTheme() === 'dark'
+  document.documentElement.classList.toggle('dark', isDark)
+  const meta = document.querySelector('meta[name="theme-color"]')
+  if (meta) meta.setAttribute('content', isDark ? '#000000' : '#f2f2f6')
+}
+
+// Apply on mount
+applyTheme()
+
+// Watch store changes
+watch(() => uiStore.theme, applyTheme)
+
+// Listen to system preference changes
+const mql = window.matchMedia('(prefers-color-scheme: dark)')
+function onSystemChange() {
+  if (uiStore.theme === 'system') applyTheme()
+}
+mql.addEventListener('change', onSystemChange)
+onUnmounted(() => mql.removeEventListener('change', onSystemChange))
 
 // ── PIN / Biometric lock state ──
 const hasPin = !!getStoredPINHash()

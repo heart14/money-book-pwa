@@ -92,7 +92,7 @@ function handleComplete() {
   right: 0;
   bottom: 0;
   z-index: 901;
-  background: #e5e5ea;
+  background: var(--color-disabled-bg);
   padding-bottom: env(safe-area-inset-bottom);
   user-select: none;
   animation: slideUp 0.25s ease-out;
@@ -115,8 +115,8 @@ function handleComplete() {
 
 .key {
   border: none;
-  background: #fff;
-  color: #1c1c1e;
+  background: var(--color-surface);
+  color: var(--color-text);
   font-size: 22px;
   font-weight: 500;
   border-radius: 10px;
@@ -132,7 +132,7 @@ function handleComplete() {
 }
 
 .key:active {
-  background: #e5e5ea;
+  background: var(--color-disabled-bg);
 }
 
 .zero-key {
@@ -145,13 +145,13 @@ function handleComplete() {
 
 .backspace-key {
   grid-column: 3;
-  color: #8e8e93;
+  color: var(--color-secondary-text);
 }
 
 .confirm-key {
   grid-column: 4;
   grid-row: 1 / -1;
-  background: #007aff;
+  background: var(--color-primary);
   color: #fff;
   font-size: 24px;
   font-weight: 500;
@@ -159,7 +159,7 @@ function handleComplete() {
 }
 
 .confirm-key:active {
-  background: #0056cc;
+  background: var(--color-primary);
 }
 
 </style>

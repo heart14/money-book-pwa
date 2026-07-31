@@ -65,22 +65,22 @@ defineEmits<{
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.8);
-  color: #1c1c1e;
+  background: var(--color-card);
+  color: var(--color-text);
   -webkit-tap-highlight-color: transparent;
   transition: all 0.15s;
   font-family: inherit;
 }
 
 .chip.active {
-  background: #007aff;
+  background: var(--color-primary);
   color: #fff;
   font-weight: 500;
 }
 
 .chip.contextual {
-  background: rgba(255, 255, 255, 0.8);
-  color: #007aff;
+  background: var(--color-card);
+  color: var(--color-primary);
   font-weight: 600;
 }
 

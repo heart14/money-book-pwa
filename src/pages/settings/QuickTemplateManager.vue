@@ -316,19 +316,19 @@ function showToast(msg: string) {
   background: none;
   font-family: inherit;
   font-size: 15px;
-  color: #1c1c1e;
+  color: var(--color-text);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   text-align: left;
   transition: background 0.1s;
 }
-.section-row:active { background: rgba(0,0,0,0.03); }
+.section-row:active { background: var(--color-press); }
 
 .row-left { display: flex; align-items: center; gap: 10px; }
 .row-icon { font-size: 18px; line-height: 1; }
-.row-label { font-size: 15px; color: #1c1c1e; }
+.row-label { font-size: 15px; color: var(--color-text); }
 
-.chevron { color: #c7c7cc; flex-shrink: 0; transition: transform 0.2s; }
+.chevron { color: var(--color-placeholder); flex-shrink: 0; transition: transform 0.2s; }
 .chevron.rotated { transform: rotate(180deg); }
 
 .expanded-content { padding: 4px 14px 12px; }
@@ -340,12 +340,12 @@ function showToast(msg: string) {
 
 .qt-empty-text {
   font-size: 14px;
-  color: #8e8e93;
+  color: var(--color-secondary-text);
 }
 
 .qt-empty-hint {
   font-size: 14px;
-  color: #8e8e93;
+  color: var(--color-secondary-text);
   margin-top: 2px;
 }
 
@@ -358,7 +358,7 @@ function showToast(msg: string) {
   align-items: center;
   gap: 4px;
   padding: 10px 0;
-  border-bottom: 1px solid var(--color-separator, rgba(60,60,67,0.08));
+  border-bottom: 1px solid var(--color-separator);
 }
 
 .qt-row:last-child {
@@ -374,7 +374,7 @@ function showToast(msg: string) {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #c7c7cc;
+  color: var(--color-placeholder);
   -webkit-tap-highlight-color: transparent;
   padding: 0;
 }
@@ -407,7 +407,7 @@ function showToast(msg: string) {
 .qt-row-name {
   font-size: 14px;
   font-weight: 500;
-  color: var(--color-text, #1c1c1e);
+  color: var(--color-text);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -416,7 +416,7 @@ function showToast(msg: string) {
 .qt-row-amount {
   font-size: 13px;
   font-weight: 600;
-  color: var(--color-secondary-text, #8e8e93);
+  color: var(--color-secondary-text);
   margin-left: auto;
   margin-right: 4px;
   flex-shrink: 0;
@@ -436,7 +436,7 @@ function showToast(msg: string) {
 }
 
 .qt-edit-btn:active {
-  background: #f2f2f6;
+  background: var(--color-bg);
 }
 
 .qt-add-btn {
@@ -446,11 +446,11 @@ function showToast(msg: string) {
   gap: 6px;
   width: 100%;
   padding: 10px;
-  border: 1px dashed #c7c7cc;
+  border: 1px dashed var(--color-placeholder);
   border-radius: 8px;
   background: none;
   font-size: 14px;
-  color: #007aff;
+  color: var(--color-primary);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   font-family: inherit;
@@ -458,7 +458,7 @@ function showToast(msg: string) {
 }
 
 .qt-add-btn:active {
-  background: #f2f2f6;
+  background: var(--color-bg);
 }
 
 .qt-add-icon {
@@ -471,7 +471,7 @@ function showToast(msg: string) {
 .qt-dialog-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--color-overlay);
   z-index: 1000;
   display: flex;
   align-items: flex-end;
@@ -484,7 +484,7 @@ function showToast(msg: string) {
   max-width: 480px;
   max-height: 85vh;
   overflow-y: auto;
-  background: var(--color-card, rgba(255,255,255,0.95));
+  background: var(--color-card);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 16px 16px 0 0;
@@ -495,7 +495,7 @@ function showToast(msg: string) {
 .qt-dialog-title {
   font-size: 17px;
   font-weight: 600;
-  color: var(--color-text, #1c1c1e);
+  color: var(--color-text);
   text-align: center;
   margin-bottom: 20px;
 }
@@ -504,7 +504,7 @@ function showToast(msg: string) {
   display: block;
   font-size: 13px;
   font-weight: 500;
-  color: var(--color-secondary-text, #8e8e93);
+  color: var(--color-secondary-text);
   margin-bottom: 6px;
   margin-top: 14px;
 }
@@ -517,19 +517,20 @@ function showToast(msg: string) {
   display: block;
   width: 100%;
   padding: 10px 12px;
-  border: none;
-  border-radius: var(--radius-sm, 8px);
-  background: #f2f2f6;
+  border: 1px solid var(--color-separator);
+  border-radius: var(--radius-sm);
+  background: var(--color-input-bg);
   font-size: 15px;
-  color: var(--color-text, #1c1c1e);
+  color: var(--color-text);
   outline: none;
   font-family: inherit;
   box-sizing: border-box;
+  transition: border-color 0.15s, background 0.15s;
 }
 
 .qt-input:focus, .qt-select:focus {
-  background: #fff;
-  box-shadow: 0 0 0 1px var(--color-primary, #007aff);
+  background: var(--color-surface);
+  border-color: var(--color-primary);
 }
 
 .qt-mode-group {
@@ -541,11 +542,11 @@ function showToast(msg: string) {
   flex: 1;
   padding: 8px 0;
   border: none;
-  border-radius: var(--radius-sm, 8px);
-  background: #f2f2f6;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
   font-size: 14px;
   font-weight: 500;
-  color: var(--color-secondary-text, #8e8e93);
+  color: var(--color-secondary-text);
   cursor: pointer;
   font-family: inherit;
   transition: all 0.15s;
@@ -553,7 +554,7 @@ function showToast(msg: string) {
 }
 
 .qt-mode-btn.active {
-  background: var(--color-primary, #007aff);
+  background: var(--color-primary);
   color: #fff;
 }
 
@@ -567,7 +568,7 @@ function showToast(msg: string) {
   flex: 1;
   height: 40px;
   border: none;
-  border-radius: var(--radius-sm, 8px);
+  border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -580,19 +581,19 @@ function showToast(msg: string) {
 .qt-btn:disabled { opacity: 0.4; }
 
 .qt-btn--cancel {
-  background: #f2f2f6;
-  color: var(--color-text, #1c1c1e);
+  background: var(--color-bg);
+  color: var(--color-text);
   flex: 0.5;
 }
 
 .qt-btn--confirm {
-  background: var(--color-primary, #007aff);
+  background: var(--color-primary);
   color: #fff;
   flex: 0.5;
 }
 
 .qt-btn--danger {
-  background: #ff3b30;
+  background: var(--color-destructive);
   color: #fff;
   flex: 0.5;
 }

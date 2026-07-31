@@ -60,31 +60,31 @@ function toggleChildren(id: number) {
   background: none;
   font-family: inherit;
   font-size: 15px;
-  color: #1c1c1e;
+  color: var(--color-text);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   text-align: left;
   transition: background 0.1s;
 }
-.section-row:active { background: rgba(0,0,0,0.03); }
+.section-row:active { background: var(--color-press); }
 
 .row-left { display: flex; align-items: center; gap: 10px; }
 .row-icon { font-size: 18px; line-height: 1; }
-.row-label { font-size: 15px; color: #1c1c1e; }
+.row-label { font-size: 15px; color: var(--color-text); }
 
-.chevron { color: #c7c7cc; flex-shrink: 0; transition: transform 0.2s; }
+.chevron { color: var(--color-placeholder); flex-shrink: 0; transition: transform 0.2s; }
 .chevron.rotated { transform: rotate(180deg); }
 .chevron.small { width: 14px; height: 14px; }
 
 .expanded-content { padding: 4px 14px 12px; }
-.empty-hint { text-align: center; padding: 12px; font-size: 14px; color: #8e8e93; }
+.empty-hint { text-align: center; padding: 12px; font-size: 14px; color: var(--color-secondary-text); }
 .empty-hint.small { padding: 8px; font-size: 12px; }
 
 .category-item { margin-bottom: 4px; }
 .category-parent { display: flex; align-items: center; gap: 8px; padding: 8px 4px; cursor: pointer; }
 .category-icon { font-size: 16px; width: 24px; text-align: center; }
 .category-icon.small { font-size: 13px; }
-.category-name { flex: 1; font-size: 14px; color: #1c1c1e; }
+.category-name { flex: 1; font-size: 14px; color: var(--color-text); }
 .category-children { padding-left: 12px; }
 .category-child { display: flex; align-items: center; gap: 6px; padding: 4px 0; }
 </style>

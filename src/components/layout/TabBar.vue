@@ -138,13 +138,13 @@ function handleBookingSave() {
   left: 16px;
   right: 16px;
   height: 1px;
-  background: rgba(60, 60, 67, 0.08);
+  background: var(--color-separator);
 }
 
 .tab-item {
   text-align: center;
   font-size: 11px;
-  color: #8e8e93;
+  color: var(--color-secondary-text);
   width: 24%;
   border: none;
   background: none;
@@ -154,7 +154,7 @@ function handleBookingSave() {
 }
 
 .tab-item.active {
-  color: #007aff;
+  color: var(--color-primary);
 }
 
 .tab-label {
@@ -201,8 +201,18 @@ function handleBookingSave() {
   box-shadow: 0 4px 12px rgba(52, 199, 89, 0.4);
 }
 
+:root.dark :deep(.booking-btn) {
+  background: linear-gradient(135deg, #0a84ff, #409cff);
+  box-shadow: 0 4px 12px rgba(10, 132, 255, 0.4);
+}
+
+:root.dark :deep(.booking-btn--save) {
+  background: linear-gradient(135deg, #30d158, #40d868);
+  box-shadow: 0 4px 12px rgba(48, 209, 88, 0.4);
+}
+
 .booking-btn--save.disabled {
-  background: #c7c7cc;
+  background: var(--color-placeholder);
   box-shadow: none;
   pointer-events: none;
 }
@@ -217,7 +227,7 @@ function handleBookingSave() {
   bottom: 66px;
   left: 50%;
   transform: translateX(-50%);
-  background: #1c1c1e;
+  background: var(--color-text);
   color: #fff;
   font-size: 12px;
   font-weight: 500;
@@ -235,7 +245,7 @@ function handleBookingSave() {
   left: 50%;
   transform: translateX(-50%);
   border: 6px solid transparent;
-  border-top-color: #1c1c1e;
+  border-top-color: var(--color-text);
 }
 
 /* Hint fade transition */

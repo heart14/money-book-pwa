@@ -122,7 +122,7 @@ function handleSave() {
 .sheet-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--color-overlay);
   z-index: 1000;
   display: flex;
   align-items: flex-end;
@@ -133,7 +133,7 @@ function handleSave() {
 .sheet {
   width: 100%;
   max-width: 480px;
-  background: rgba(255,255,255,0.8);
+  background: var(--color-card);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 16px 16px 0 0;
@@ -146,7 +146,7 @@ function handleSave() {
   width: 36px;
   height: 4px;
   border-radius: 2px;
-  background: #d1d1d6;
+  background: var(--color-separator-heavy);
   margin: 8px auto 0;
 }
 
@@ -157,7 +157,7 @@ function handleSave() {
   font-weight: 700;
   text-align: center;
   margin-bottom: 20px;
-  color: #1c1c1e;
+  color: var(--color-text);
 }
 
 .edit-form { margin-bottom: 24px; }
@@ -169,7 +169,7 @@ function handleSave() {
   margin-bottom: 12px;
 }
 
-.edit-label { width: 48px; flex-shrink: 0; font-size: 14px; color: #8e8e93; }
+.edit-label { width: 48px; flex-shrink: 0; font-size: 14px; color: var(--color-secondary-text); }
 
 .edit-input {
   flex: 1;
@@ -177,9 +177,9 @@ function handleSave() {
   padding: 0 12px;
   border: none;
   border-radius: 8px;
-  background: #f2f2f6;
+  background: var(--color-bg);
   font-size: 15px;
-  color: #1c1c1e;
+  color: var(--color-text);
   outline: none;
   font-family: inherit;
 }
@@ -189,12 +189,12 @@ function handleSave() {
   display: flex;
   align-items: center;
   gap: 4px;
-  background: #f2f2f6;
+  background: var(--color-bg);
   border-radius: 8px;
   padding: 0 12px;
 }
 
-.edit-amount-sign { font-size: 16px; font-weight: 600; color: #8e8e93; }
+.edit-amount-sign { font-size: 16px; font-weight: 600; color: var(--color-secondary-text); }
 
 .edit-amount-input { flex: 1; background: none; padding: 0; }
 
@@ -210,7 +210,7 @@ function handleSave() {
   align-items: center;
   gap: 6px;
   padding: 6px 8px;
-  background: #f2f2f6;
+  background: var(--color-bg);
   border-radius: 8px;
   min-height: 36px;
 }
@@ -222,14 +222,14 @@ function handleSave() {
   font-size: 12px;
   padding: 2px 8px;
   border-radius: 4px;
-  background: #fff;
-  color: #007aff;
+  background: var(--color-surface);
+  color: var(--color-primary);
 }
 
 .edit-tag-remove {
   border: none;
   background: none;
-  color: #8e8e93;
+  color: var(--color-secondary-text);
   font-size: 14px;
   cursor: pointer;
   padding: 0;
@@ -242,13 +242,13 @@ function handleSave() {
   border: none;
   background: none;
   font-size: 13px;
-  color: #1c1c1e;
+  color: var(--color-text);
   outline: none;
   font-family: inherit;
   padding: 2px 0;
 }
 
-.edit-tag-input::placeholder { color: #c7c7cc; }
+.edit-tag-input::placeholder { color: var(--color-placeholder); }
 
 .edit-row--meta {
   padding: 4px 0;
@@ -257,7 +257,7 @@ function handleSave() {
   padding-top: 12px;
 }
 
-.edit-meta { font-size: 14px; color: #1c1c1e; }
+.edit-meta { font-size: 14px; color: var(--color-text); }
 
 .edit-actions { display: flex; gap: 12px; }
 
@@ -274,7 +274,7 @@ function handleSave() {
 }
 .btn:active { opacity: 0.7; }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.btn-secondary { background: #f2f2f6; color: #1c1c1e; }
-.btn-primary { background: #007aff; color: #fff; }
+.btn-secondary { background: var(--color-bg); color: var(--color-text); }
+.btn-primary { background: var(--color-primary); color: #fff; }
 
 </style>

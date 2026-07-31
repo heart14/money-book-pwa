@@ -33,7 +33,7 @@ defineEmits<{
 <style scoped>
 .mode-switch {
   display: inline-flex;
-  background: #e5e5ea;
+  background: var(--color-disabled-bg);
   border-radius: 20px;
   padding: 3px;
   gap: 2px;
@@ -42,7 +42,7 @@ defineEmits<{
 .mode-btn {
   border: none;
   background: transparent;
-  color: #666;
+  color: var(--color-secondary-text);
   font-size: 12px;
   font-weight: 600;
   padding: 6px 20px;
@@ -55,7 +55,7 @@ defineEmits<{
 }
 
 .mode-btn.active {
-  background: #007aff;
+  background: var(--color-primary);
   color: #fff;
   font-weight: 600;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);

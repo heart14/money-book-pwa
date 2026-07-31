@@ -142,8 +142,8 @@ const contentStyle = computed(() => {
 .ptr-spinner {
   width: 16px;
   height: 16px;
-  border: 2.5px solid #c7c7cc;
-  border-top-color: #007aff;
+  border: 2.5px solid var(--color-placeholder);
+  border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: ptr-spin 0.6s linear infinite;
   flex-shrink: 0;

@@ -31,7 +31,7 @@ defineProps<{
 
 .empty-state-message {
   font-size: 14px;
-  color: #8e8e93;
+  color: var(--color-secondary-text);
   text-align: center;
 }
 </style>

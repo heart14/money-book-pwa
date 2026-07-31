@@ -858,7 +858,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 }
 
 .header-icon-btn:active {
-  background: rgba(0,0,0,0.05);
+  background: var(--color-press);
 }
 
 /* Search bar */
@@ -879,7 +879,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
   align-items: center;
   justify-content: center;
   height: 40px;
-  background: rgba(255,255,255,0.8);
+  background: var(--color-card);
   backdrop-filter: blur(10px);
   border-radius: 10px;
   padding: 0 12px;
@@ -906,7 +906,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 .date-filter-label {
   font-size: 15px;
   font-weight: 600;
-  color: #1c1c1e;
+  color: var(--color-text);
   min-width: 80px;
   text-align: center;
 }
@@ -915,7 +915,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
   position: absolute;
   right: 12px;
   border: none;
-  background: #007aff;
+  background: var(--color-primary);
   color: #fff;
   font-size: 12px;
   font-weight: 500;
@@ -929,13 +929,13 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
   align-items: center;
   gap: 6px;
   height: 36px;
-  background: rgba(255,255,255,0.85);
+  background: var(--color-card);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 10px;
   padding: 0 8px 0 4px;
   position: relative;
-  border: 1px solid rgba(0, 122, 255, 0.12);
+  border: 1px solid var(--color-separator);
 }
 
 .search-input {
@@ -950,7 +950,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 }
 
 .search-input::placeholder {
-  color: #c7c7cc;
+  color: var(--color-placeholder);
   font-weight: 400;
 }
 
@@ -990,7 +990,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
   transition: background 0.15s;
 }
 .search-field-selector:active {
-  background: rgba(0, 122, 255, 0.08);
+  background: var(--color-press);
 }
 
 /* 竖线分隔符 */
@@ -998,13 +998,13 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
   display: inline-block;
   width: 1px;
   height: 18px;
-  background: #d1d1d6;
+  background: var(--color-separator-heavy);
   flex-shrink: 0;
 }
 
 .search-field-label {
   font-size: 13px;
-  color: #007aff;
+  color: var(--color-primary);
   font-weight: 500;
   white-space: nowrap;
   line-height: 1;
@@ -1016,7 +1016,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
   top: calc(100% + 6px);
   left: 16px;
   min-width: 120px;
-  background: rgba(255,255,255,0.95);
+  background: var(--color-card);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 10px;
@@ -1046,7 +1046,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
   border: none;
   background: none;
   font-size: 14px;
-  color: #1c1c1e;
+  color: var(--color-text);
   cursor: pointer;
   border-radius: 8px;
   text-align: left;
@@ -1056,13 +1056,13 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 }
 
 .search-field-option:active {
-  background: #f2f2f7;
+  background: var(--color-press);
 }
 
 .search-field-option.active {
-  color: #007aff;
+  color: var(--color-primary);
   font-weight: 600;
-  background: rgba(0, 122, 255, 0.06);
+  background: var(--color-press);
 }
 
 .search-field-check,
@@ -1080,7 +1080,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 /* Day groups */
 .day-group {
   margin: 8px 12px;
-  background: rgba(255,255,255,0.8);
+  background: var(--color-card);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: var(--radius-md);
@@ -1098,7 +1098,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 .day-label {
   font-size: 13px;
   font-weight: 600;
-  color: #8e8e93;
+  color: var(--color-secondary-text);
 }
 
 .day-total {
@@ -1107,11 +1107,11 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 }
 
 .total-income {
-  color: #8e8e93;
+  color: var(--color-secondary-text);
 }
 
 .total-expense {
-  color: #8e8e93;
+  color: var(--color-secondary-text);
 }
 
 /* Scroll sentinel for infinite scroll */
@@ -1128,14 +1128,14 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  color: #8e8e93;
+  color: var(--color-secondary-text);
 }
 
 .scroll-spinner {
   width: 14px;
   height: 14px;
-  border: 2px solid #c7c7cc;
-  border-top-color: #007aff;
+  border: 2px solid var(--color-placeholder);
+  border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
@@ -1146,7 +1146,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 
 .scroll-finished {
   font-size: 13px;
-  color: #c7c7cc;
+  color: var(--color-placeholder);
 }
 
 /* Child category chips — matches CategoryPicker style */
@@ -1175,8 +1175,8 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
   padding: 6px 14px;
   border: none;
   border-radius: 16px;
-  background: #f2f2f7;
-  color: #1c1c1e;
+  background: var(--color-bg);
+  color: var(--color-text);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -1187,7 +1187,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 }
 
 .child-chip.active {
-  background: #007aff;
+  background: var(--color-primary);
   color: #fff;
 }
 </style>

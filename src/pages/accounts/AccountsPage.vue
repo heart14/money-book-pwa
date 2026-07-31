@@ -215,7 +215,7 @@ async function handleDelete(acc: Account) {
 
 /* ── Balance Card ── */
 .balance-card {
-  background: linear-gradient(135deg, #1c1c1e, #2c2c2e);
+  background: linear-gradient(135deg, var(--color-text), #2c2c2e);
   border-radius: 16px;
   padding: 20px;
   margin-bottom: 20px;
@@ -237,7 +237,7 @@ async function handleDelete(acc: Account) {
 
 /* ── Accounts List ── */
 .accounts-list {
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--color-card);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 14px;
@@ -247,7 +247,7 @@ async function handleDelete(acc: Account) {
 .list-header {
   font-size: 13px;
   font-weight: 600;
-  color: #8e8e93;
+  color: var(--color-secondary-text);
   padding: 14px 16px 8px;
 }
 
@@ -257,7 +257,7 @@ async function handleDelete(acc: Account) {
   padding: 12px 16px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  border-top: 1px solid rgba(60, 60, 67, 0.05);
+  border-top: 1px solid var(--color-separator);
 }
 
 .account-row:active {
@@ -280,13 +280,13 @@ async function handleDelete(acc: Account) {
 .account-name {
   font-size: 15px;
   font-weight: 500;
-  color: #1c1c1e;
+  color: var(--color-text);
 }
 
 .account-balance {
   font-size: 15px;
   font-weight: 600;
-  color: #1c1c1e;
+  color: var(--color-text);
   font-variant-numeric: tabular-nums;
   margin-left: auto;
   margin-right: 12px;
@@ -313,7 +313,7 @@ async function handleDelete(acc: Account) {
   padding: 24px 16px;
   text-align: center;
   font-size: 14px;
-  color: #8e8e93;
+  color: var(--color-secondary-text);
 }
 
 .form-group {
@@ -333,7 +333,7 @@ async function handleDelete(acc: Account) {
   height: 40px;
   border-radius: 10px;
   border: 1px solid var(--color-separator);
-  background: #f2f2f6;
+  background: var(--color-input-bg);
   padding: 0 12px;
   font-size: 15px;
   color: var(--color-text);
@@ -362,12 +362,12 @@ async function handleDelete(acc: Account) {
 }
 
 .btn-cancel {
-  background: #f2f2f6;
+  background: var(--color-bg);
   color: var(--color-text);
 }
 
 .btn-confirm {
-  background: #007aff;
+  background: var(--color-primary);
   color: #fff;
 }
 </style>

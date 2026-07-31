@@ -32,7 +32,7 @@ defineEmits<{
 .sheet-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--color-overlay);
   z-index: 1000;
   display: flex;
   align-items: flex-end;
@@ -43,7 +43,7 @@ defineEmits<{
 .sheet {
   width: 100%;
   max-width: 480px;
-  background: #fff;
+  background: var(--color-surface);
   border-radius: 16px 16px 0 0;
   animation: slideUp 0.3s ease;
   max-height: 85vh;
@@ -55,7 +55,7 @@ defineEmits<{
   width: 36px;
   height: 4px;
   border-radius: 2px;
-  background: #d1d1d6;
+  background: var(--color-separator-heavy);
   margin: 0 auto 12px;
 }
 

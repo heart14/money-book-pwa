@@ -129,44 +129,44 @@ async function handleDeleteRegistryOnly() {
   background: none;
   font-family: inherit;
   font-size: 15px;
-  color: #1c1c1e;
+  color: var(--color-text);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   text-align: left;
   transition: background 0.1s;
 }
-.section-row:active { background: rgba(0,0,0,0.03); }
+.section-row:active { background: var(--color-press); }
 
 .row-left { display: flex; align-items: center; gap: 10px; }
 .row-icon { font-size: 18px; line-height: 1; }
-.row-label { font-size: 15px; color: #1c1c1e; }
+.row-label { font-size: 15px; color: var(--color-text); }
 
-.chevron { color: #c7c7cc; flex-shrink: 0; transition: transform 0.2s; }
+.chevron { color: var(--color-placeholder); flex-shrink: 0; transition: transform 0.2s; }
 .chevron.rotated { transform: rotate(180deg); }
 
 .expanded-content { padding: 4px 14px 12px; }
-.empty-hint { text-align: center; padding: 12px; font-size: 14px; color: #8e8e93; }
+.empty-hint { text-align: center; padding: 12px; font-size: 14px; color: var(--color-secondary-text); }
 
 .tag-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; }
-.tag-name { font-size: 14px; color: #1c1c1e; }
-.tag-delete { border: none; background: none; color: #ff3b30; font-size: 12px; cursor: pointer; font-family: inherit; }
+.tag-name { font-size: 14px; color: var(--color-text); }
+.tag-delete { border: none; background: none; color: var(--color-destructive); font-size: 12px; cursor: pointer; font-family: inherit; }
 .tag-add-row { display: flex; gap: 8px; margin-top: 8px; }
-.tag-input { flex: 1; height: 36px; border-radius: 8px; border: 1px solid #e5e5ea; padding: 0 10px; font-size: 14px; outline: none; font-family: inherit; box-sizing: border-box; }
-.tag-add-btn { height: 36px; padding: 0 16px; border: none; border-radius: 8px; background: #007aff; color: #fff; font-size: 13px; cursor: pointer; font-family: inherit; }
+.tag-input { flex: 1; height: 36px; border-radius: 8px; border: 1px solid var(--color-disabled-bg); padding: 0 10px; font-size: 14px; outline: none; font-family: inherit; box-sizing: border-box; }
+.tag-add-btn { height: 36px; padding: 0 16px; border: none; border-radius: 8px; background: var(--color-primary); color: #fff; font-size: 13px; cursor: pointer; font-family: inherit; }
 .tag-add-btn:disabled { opacity: 0.4; }
 
 
 /* Modal */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; display: flex; align-items: center; justify-content: center; }
-.modal-content { width: 300px; background: #fff; border-radius: 16px; padding: 24px; }
-.modal-desc { font-size: 14px; color: #1c1c1e; text-align: center; margin-bottom: 8px; }
-.modal-hint { font-size: 12px; color: #8e8e93; }
+.modal-overlay { position: fixed; inset: 0; background: var(--color-overlay); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+.modal-content { width: 300px; background: var(--color-surface); border-radius: 16px; padding: 24px; }
+.modal-desc { font-size: 14px; color: var(--color-text); text-align: center; margin-bottom: 8px; }
+.modal-hint { font-size: 12px; color: var(--color-secondary-text); }
 .modal-actions-col { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
 
 .btn-block { width: 100%; height: 44px; border-radius: 10px; border: none; font-size: 15px; font-weight: 500; cursor: pointer; font-family: inherit; }
 .btn-block:active { opacity: 0.7; }
-.btn-danger { background: #ff3b30; color: #fff; }
-.btn-cancel { background: #f2f2f6; color: #1c1c1e; }
+.btn-danger { background: var(--color-destructive); color: #fff; }
+.btn-cancel { background: var(--color-bg); color: var(--color-text); }
 
 /* Toast */
 .toast-msg {
@@ -176,8 +176,8 @@ async function handleDeleteRegistryOnly() {
   transform: translateX(-50%);
   padding: 12px 24px;
   border-radius: 12px;
-  background: #1c1c1e;
-  color: #fff;
+  background: var(--color-text);
+  color: var(--color-bg);
   font-size: 14px;
   font-weight: 500;
   z-index: 1100;

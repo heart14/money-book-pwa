@@ -57,7 +57,7 @@ const groupTotal = computed(() => {
 
 <style scoped>
 .account-group {
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--color-card);
   backdrop-filter: blur(10px);
   border-radius: 14px;
   overflow: hidden;
@@ -82,11 +82,11 @@ const groupTotal = computed(() => {
 .group-title {
   font-size: 13px;
   font-weight: 600;
-  color: #8e8e93;
+  color: var(--color-secondary-text);
 }
 
 .group-arrow {
-  color: #8e8e93;
+  color: var(--color-secondary-text);
   display: flex;
   transition: transform 0.2s;
 }
@@ -98,12 +98,12 @@ const groupTotal = computed(() => {
 .group-total {
   font-size: 13px;
   font-weight: 600;
-  color: #1c1c1e;
+  color: var(--color-text);
   font-variant-numeric: tabular-nums;
 }
 
 .group-total.debt {
-  color: #ff453a;
+  color: var(--color-destructive);
 }
 
 .group-items {
@@ -132,24 +132,24 @@ const groupTotal = computed(() => {
   flex: 1;
   font-size: 15px;
   font-weight: 500;
-  color: #1c1c1e;
+  color: var(--color-text);
 }
 
 .account-balance {
   font-size: 15px;
   font-weight: 600;
-  color: #1c1c1e;
+  color: var(--color-text);
   font-variant-numeric: tabular-nums;
 }
 
 .account-balance.debt {
-  color: #ff453a;
+  color: var(--color-destructive);
 }
 
 .empty-row {
   padding: 16px;
   text-align: center;
   font-size: 14px;
-  color: #8e8e93;
+  color: var(--color-secondary-text);
 }
 </style>

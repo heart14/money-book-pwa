@@ -32,7 +32,34 @@
         </div>
       </div>
 
-      <!-- ── 2. Data Management ── -->
+      <!-- ── 2. Appearance ── -->
+      <div class="section">
+        <div class="section-header">外观</div>
+        <div class="section-card">
+          <div class="section-row no-hover">
+            <div class="row-left"><span class="row-icon">🌙</span><span class="row-label">深色模式</span></div>
+            <div class="theme-toggle">
+              <button
+                class="theme-btn"
+                :class="{ active: uiStore.theme === 'system' }"
+                @click="uiStore.setTheme('system')"
+              >自动</button>
+              <button
+                class="theme-btn"
+                :class="{ active: uiStore.theme === 'light' }"
+                @click="uiStore.setTheme('light')"
+              >浅色</button>
+              <button
+                class="theme-btn"
+                :class="{ active: uiStore.theme === 'dark' }"
+                @click="uiStore.setTheme('dark')"
+              >深色</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 3. Data Management ── -->
       <div class="section">
         <div class="section-header">数据管理</div>
         <div class="section-card">
@@ -135,6 +162,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useUiStore } from '@/stores/uiStore'
 import { getStoredPINHash } from '@/utils/crypto'
 import { isBiometricEnabled } from '@/utils/biometric'
 import { exportData, importData, destroyAllData } from '@/utils/export'
@@ -146,6 +174,7 @@ import RuleManager from './RuleManager.vue'
 import QuickTemplateManager from './QuickTemplateManager.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 
+const uiStore = useUiStore()
 const currentView = ref<'main' | 'security'>('main')
 const hasPin = ref(!!getStoredPINHash())
 const hasBiometric = ref(hasPin.value && isBiometricEnabled())
@@ -230,20 +259,20 @@ async function handleDestroy() {
 }
 
 .page-header { display: flex; align-items: center; margin-bottom: 16px; }
-.page-title { font-size: 27px; font-weight: 700; color: #1c1c1e; }
+.page-title { font-size: 27px; font-weight: 700; color: var(--color-text); }
 
 .section { margin-bottom: 20px; }
 
 .section-header {
   font-size: 12px;
   font-weight: 600;
-  color: #8e8e93;
+  color: var(--color-secondary-text);
   padding: 0 4px;
   margin-bottom: 6px;
 }
 
 .section-card {
-  background: rgba(255,255,255,0.85);
+  background: var(--color-card);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 14px;
@@ -260,30 +289,57 @@ async function handleDestroy() {
   background: none;
   font-family: inherit;
   font-size: 15px;
-  color: #1c1c1e;
+  color: var(--color-text);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   text-align: left;
   transition: background 0.1s;
 }
 
-.section-row:active { background: rgba(0,0,0,0.03); }
+.section-row:active { background: var(--color-press); }
 .section-row.no-hover { cursor: default; }
 .section-row.no-hover:active { background: none; }
 
 .row-left { display: flex; align-items: center; gap: 10px; }
 .row-icon { font-size: 18px; line-height: 1; }
-.row-label { font-size: 15px; color: #1c1c1e; }
-.row-label--danger { color: #ff3b30; }
+.row-label { font-size: 15px; color: var(--color-text); }
+.row-label--danger { color: var(--color-destructive); }
 .row-right { display: flex; align-items: center; gap: 6px; }
-.row-status { font-size: 13px; color: #8e8e93; }
-.row-value { font-size: 13px; color: #8e8e93; }
-.row-label--dev { font-size: 13px; color: #8e8e93; }
-.section-row--dev:active { background: rgba(0,0,0,0.03); }
+.row-status { font-size: 13px; color: var(--color-secondary-text); }
+.row-value { font-size: 13px; color: var(--color-secondary-text); }
+.row-label--dev { font-size: 13px; color: var(--color-secondary-text); }
+.section-row--dev:active { background: var(--color-press); }
 
-.chevron { color: #c7c7cc; flex-shrink: 0; transition: transform 0.2s; }
+.chevron { color: var(--color-placeholder); flex-shrink: 0; transition: transform 0.2s; }
 
-.separator { height: 1px; background: rgba(60,60,67,0.08); margin: 0 14px; }
+.separator { height: 1px; background: var(--color-separator); margin: 0 14px; }
+
+.theme-toggle {
+  display: flex;
+  background: var(--color-bg);
+  border-radius: 8px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.theme-btn {
+  padding: 4px 10px;
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-secondary-text);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.theme-btn.active {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  font-weight: 600;
+}
 
 /* Toast messages */
 .data-msg {
@@ -301,8 +357,8 @@ async function handleDestroy() {
   max-width: 80%;
   text-align: center;
 }
-.data-msg.success { background: #34c759; color: #fff; }
-.data-msg.error { background: #ff3b30; color: #fff; }
+.data-msg.success { background: var(--color-success); color: #fff; }
+.data-msg.error { background: var(--color-destructive); color: #fff; }
 
 @keyframes dataMsgIn {
   from { opacity: 0; transform: translateX(-50%) translateY(16px); }

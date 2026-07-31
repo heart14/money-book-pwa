@@ -2,8 +2,17 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export type BookingMode = 'expense' | 'income' | 'transfer'
+export type ThemeMode = 'light' | 'dark' | 'system'
 
 export const useUiStore = defineStore('ui', () => {
+  // ── Theme state ──
+  const theme = ref<ThemeMode>((localStorage.getItem('theme') as ThemeMode) || 'system')
+
+  function setTheme(mode: ThemeMode) {
+    theme.value = mode
+    localStorage.setItem('theme', mode)
+  }
+
   // ── PIN lock state ──
   const unlocked = ref(true)
 
@@ -44,6 +53,7 @@ export const useUiStore = defineStore('ui', () => {
   }
 
   return {
+    theme,
     unlocked,
     bookingMode,
     bookingAmount,
@@ -52,6 +62,7 @@ export const useUiStore = defineStore('ui', () => {
     bookingHintVisible,
     setMode,
     setAmount,
+    setTheme,
     triggerBookingSave,
     showBookingHint,
     hideBookingHint,

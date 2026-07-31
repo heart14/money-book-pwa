@@ -444,7 +444,7 @@ watch(
   text-align: center;
   font-size: 60px;
   font-weight: 700;
-  color: #1c1c1e;
+  color: var(--color-text);
   letter-spacing: -1px;
   line-height: 1.2;
   margin-bottom: 12px;
@@ -465,7 +465,7 @@ watch(
   gap: 8px;
   padding: 10px 14px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--color-card);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -491,7 +491,7 @@ watch(
   height: 16px;
   border: none;
   border-radius: 50%;
-  background: #c7c7cc;
+  background: var(--color-placeholder);
   color: #fff;
   font-size: 12px;
   line-height: 1;
@@ -501,7 +501,7 @@ watch(
 }
 
 .tag-remove:active {
-  background: #8e8e93;
+  background: var(--color-secondary-text);
 }
 
 .tag-input {
@@ -530,12 +530,12 @@ watch(
   padding: 10px 14px;
   border: none;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--color-card);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   font-family: inherit;
   font-size: 14px;
-  color: #1c1c1e;
+  color: var(--color-text);
   outline: none;
 }
 
@@ -616,7 +616,7 @@ watch(
   padding: 6px 12px;
   border: none;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--color-card);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   font-size: 13px;
@@ -630,7 +630,7 @@ watch(
 }
 
 .quick-tpl-bubble:active {
-  background: #e5e5ea;
+  background: var(--color-disabled-bg);
 }
 
 .tpl-icon {
@@ -667,7 +667,7 @@ watch(
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--color-card);
   box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.08));
 }
 

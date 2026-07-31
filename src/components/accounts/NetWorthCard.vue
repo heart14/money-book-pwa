@@ -27,7 +27,7 @@ defineProps<{
 
 <style scoped>
 .net-worth-card {
-  background: linear-gradient(135deg, #1c1c1e, #2c2c2e);
+  background: linear-gradient(135deg, var(--color-text), #2c2c2e);
   border-radius: 16px;
   padding: 20px;
   margin-bottom: 16px;
@@ -71,10 +71,10 @@ defineProps<{
 }
 
 .nw-detail-value.assets {
-  color: #34c759;
+  color: var(--color-success);
 }
 
 .nw-detail-value.liabilities {
-  color: #ff453a;
+  color: var(--color-destructive);
 }
 </style>

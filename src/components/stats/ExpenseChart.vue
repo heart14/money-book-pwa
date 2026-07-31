@@ -148,7 +148,7 @@ onUnmounted(() => {
 
 <style scoped>
 .chart-card {
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--color-card);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 14px;

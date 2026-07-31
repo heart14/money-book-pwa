@@ -177,7 +177,7 @@ async function onExtractConfirm(name: string) {
 .sheet-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--color-overlay);
   z-index: 1000;
   display: flex;
   align-items: flex-end;
@@ -188,7 +188,7 @@ async function onExtractConfirm(name: string) {
 .sheet {
   width: 100%;
   max-width: 480px;
-  background: rgba(255,255,255,0.8);
+  background: var(--color-card);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 16px 16px 0 0;
@@ -201,7 +201,7 @@ async function onExtractConfirm(name: string) {
   width: 36px;
   height: 4px;
   border-radius: 2px;
-  background: #d1d1d6;
+  background: var(--color-separator-heavy);
   margin: 8px auto 0;
 }
 
@@ -220,7 +220,7 @@ async function onExtractConfirm(name: string) {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: #f2f2f6;
+  background: var(--color-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -229,12 +229,12 @@ async function onExtractConfirm(name: string) {
 
 .sheet-icon { font-size: 28px; line-height: 1; }
 
-.sheet-title { font-size: 17px; font-weight: 600; color: #1c1c1e; }
+.sheet-title { font-size: 17px; font-weight: 600; color: var(--color-text); }
 
 .sheet-type-badge { font-size: 12px; padding: 2px 10px; border-radius: 10px; margin-top: 6px; color: #fff; }
-.badge-expense { background: #34c759; }
-.badge-income { background: #ff3b30; }
-.badge-transfer { background: #007aff; }
+.badge-expense { background: var(--color-success); }
+.badge-income { background: var(--color-destructive); }
+.badge-transfer { background: var(--color-primary); }
 
 .sheet-amount {
   text-align: center;
@@ -243,12 +243,12 @@ async function onExtractConfirm(name: string) {
   font-variant-numeric: tabular-nums;
   margin-bottom: 24px;
 }
-.sheet-amount.amount-expense { color: #34c759; }
-.sheet-amount.amount-income { color: #ff3b30; }
-.sheet-amount.amount-transfer { color: #007aff; }
+.sheet-amount.amount-expense { color: var(--color-success); }
+.sheet-amount.amount-income { color: var(--color-destructive); }
+.sheet-amount.amount-transfer { color: var(--color-primary); }
 
 .sheet-details {
-  border-top: 1px solid rgba(60,60,67,0.08);
+  border-top: 1px solid var(--color-separator);
   padding-top: 16px;
   margin-bottom: 24px;
 }
@@ -260,17 +260,17 @@ async function onExtractConfirm(name: string) {
   font-size: 15px;
 }
 
-.detail-label { width: 56px; flex-shrink: 0; color: #8e8e93; }
+.detail-label { width: 56px; flex-shrink: 0; color: var(--color-secondary-text); }
 
-.detail-value { flex: 1; color: #1c1c1e; word-break: break-all; }
+.detail-value { flex: 1; color: var(--color-text); word-break: break-all; }
 
 .detail-tag {
   display: inline-block;
   font-size: 12px;
   padding: 2px 8px;
   border-radius: 4px;
-  background: #f2f2f6;
-  color: #8e8e93;
+  background: var(--color-bg);
+  color: var(--color-secondary-text);
   margin-right: 4px;
   margin-bottom: 2px;
 }
@@ -289,8 +289,8 @@ async function onExtractConfirm(name: string) {
   font-family: inherit;
 }
 .btn:active { opacity: 0.7; }
-.btn-secondary { background: #f2f2f6; color: #1c1c1e; }
-.btn-danger { background: #ff3b30; color: #fff; }
+.btn-secondary { background: var(--color-bg); color: var(--color-text); }
+.btn-danger { background: var(--color-destructive); color: #fff; }
 
 .sheet-title-row {
   display: flex;
@@ -304,8 +304,8 @@ async function onExtractConfirm(name: string) {
   height: 32px;
   border: none;
   border-radius: 50%;
-  background: #f2f2f6;
-  color: #ff9500;
+  background: var(--color-bg);
+  color: var(--color-warning);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -316,7 +316,7 @@ async function onExtractConfirm(name: string) {
 }
 
 .sheet-extract-btn:active {
-  background: #e5e5ea;
+  background: var(--color-disabled-bg);
 }
 
 .sheet-toast {

@@ -60,7 +60,7 @@ function onCancel() {
 .confirm-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--color-overlay);
   z-index: 1100;
   display: flex;
   align-items: center;
@@ -70,7 +70,7 @@ function onCancel() {
 
 .confirm-content {
   width: 280px;
-  background: #fff;
+  background: var(--color-surface);
   border-radius: 16px;
   padding: 24px;
 }
@@ -119,17 +119,17 @@ function onCancel() {
 }
 
 .confirm-btn--cancel {
-  background: #f2f2f6;
+  background: var(--color-bg);
   color: var(--color-text, #1c1c1e);
 }
 
 .confirm-btn--primary {
-  background: #007aff;
+  background: var(--color-primary);
   color: #fff;
 }
 
 .confirm-btn--danger {
-  background: #ff3b30;
+  background: var(--color-destructive);
   color: #fff;
 }
 

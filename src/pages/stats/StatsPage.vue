@@ -199,6 +199,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useUiStore } from '@/stores/uiStore'
 import { db } from '@/db'
 import { useCategoryStore } from '@/stores/categoryStore'
 import { useLiveQuery } from '@/composables/useLiveQuery'
@@ -207,6 +208,11 @@ import VChart from 'vue-echarts'
 import type { Transaction } from '@/types'
 import TwemojiIcon from '@/components/common/TwemojiIcon.vue'
 const categoryStore = useCategoryStore()
+const uiStore = useUiStore()
+
+function cssVar(name: string): string {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#8e8e93'
+}
 
 type RankLevel = 'parent' | 'child'
 
@@ -293,6 +299,8 @@ const totalExpense = computed(() =>
 )
 
 const lineOption = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _theme = uiStore.theme // ensure recompute on theme change
   const txType = trendType.value
   const lineColor = txType === 'expense' ? '#34c759' : '#ff3b30'
   const areaColor = txType === 'expense' ? 'rgba(52,199,89,0.12)' : 'rgba(255,59,48,0.12)'
@@ -346,16 +354,20 @@ const lineOption = computed(() => {
   }
 
   return {
+    backgroundColor: 'transparent',
     tooltip: {
       trigger: 'axis',
+      backgroundColor: cssVar('--color-card'),
+      borderColor: cssVar('--color-separator'),
+      textStyle: { color: cssVar('--color-text'), fontSize: 12 },
       valueFormatter: (v: number) => `¥${v.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
     },
     grid: { left: 8, right: 8, top: 8, bottom: 20, containLabel: true },
     xAxis: {
       type: 'category',
       data: categories,
-      axisLabel: { fontSize: 10, color: '#8e8e93', interval: 'auto' },
-      axisLine: { show: true, lineStyle: { color: '#e5e5ea' } },
+      axisLabel: { fontSize: 10, color: cssVar('--color-secondary-text'), interval: 'auto' },
+      axisLine: { show: true, lineStyle: { color: cssVar('--color-separator') } },
       axisTick: { show: false },
     },
     yAxis: { type: 'value', show: true, min: 0 },
@@ -371,11 +383,11 @@ const lineOption = computed(() => {
       markLine: {
         silent: true,
         symbol: 'none',
-        lineStyle: { color: '#8e8e93', type: 'dashed', width: 1 },
+        lineStyle: { color: cssVar('--color-secondary-text'), type: 'dashed', width: 1 },
         label: {
           formatter: (params: any) => `均值 ¥${params.value.toFixed(2)}`,
           fontSize: 10,
-          color: '#8e8e93',
+          color: cssVar('--color-secondary-text'),
           position: 'insideEndTop',
         },
         data: [{ type: 'average' }],
@@ -388,6 +400,8 @@ const lineOption = computed(() => {
 const pieColors = ['#ff3b30', '#ff9500', '#ffcc00', '#34c759', '#007aff', '#8e8e93', '#af52de', '#ff2d55']
 
 const pieOption = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _theme = uiStore.theme // ensure recompute on theme change
   const items = categoryAggregation.value.slice(0, 6).map((item, idx) => ({
     name: item.name,
     value: Math.round(item.amount / 100),
@@ -395,13 +409,14 @@ const pieOption = computed(() => {
   }))
 
   return {
-    tooltip: { trigger: 'item', formatter: '{b}: ¥{c}' },
+    backgroundColor: 'transparent',
+    tooltip: { trigger: 'item', formatter: '{b}: ¥{c}', backgroundColor: cssVar('--color-card'), borderColor: cssVar('--color-separator'), textStyle: { color: cssVar('--color-text') } },
     series: [{
       type: 'pie',
       radius: ['45%', '70%'],
       center: ['50%', '50%'],
       data: items,
-      label: { show: true, formatter: '{b}\n{d}%', fontSize: 11, color: '#1c1c1e' },
+      label: { show: true, formatter: '{b}\n{d}%', fontSize: 11, color: cssVar('--color-text') },
       emphasis: { label: { show: true, fontSize: 13, fontWeight: 'bold' } },
     }],
   }
@@ -604,7 +619,7 @@ function rankLabel(index: number): string {
 
 .mode-toggle {
   display: flex;
-  background: rgba(255,255,255,0.85);
+  background: var(--color-card);
   border-radius: 8px;
   padding: 3px;
   gap: 2px;
@@ -616,7 +631,7 @@ function rankLabel(index: number): string {
   background: transparent;
   font-size: 12px;
   font-weight: 500;
-  color: #8e8e93;
+  color: var(--color-secondary-text);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s;
@@ -624,7 +639,7 @@ function rankLabel(index: number): string {
 }
 
 .mode-btn.active {
-  background: #007aff;
+  background: var(--color-primary);
   color: #fff;
   font-weight: 600;
 }
@@ -685,7 +700,7 @@ function rankLabel(index: number): string {
 .period-label {
   font-size: 15px;
   font-weight: 600;
-  color: #1c1c1e;
+  color: var(--color-text);
   min-width: 100px;
   text-align: center;
 }
@@ -703,8 +718,8 @@ function rankLabel(index: number): string {
   padding: 10px 12px;
 }
 
-.overview-card.income { background: #ff3b30; }
-.overview-card.expense { background: #34c759; }
+.overview-card.income { background: var(--color-destructive); }
+.overview-card.expense { background: var(--color-success); }
 
 .overview-label {
   font-size: 11px;
@@ -721,7 +736,7 @@ function rankLabel(index: number): string {
 
 /* Chart Cards */
 .chart-card {
-  background: rgba(255,255,255,0.85);
+  background: var(--color-card);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 14px;
@@ -732,7 +747,7 @@ function rankLabel(index: number): string {
 .chart-title {
   font-size: 13px;
   font-weight: 600;
-  color: #1c1c1e;
+  color: var(--color-text);
   margin-bottom: 10px;
 }
 
@@ -749,7 +764,7 @@ function rankLabel(index: number): string {
 
 .ranking-toggle {
   display: flex;
-  background: #f2f2f7;
+  background: var(--color-bg);
   border-radius: 6px;
   padding: 2px;
   gap: 2px;
@@ -761,7 +776,7 @@ function rankLabel(index: number): string {
   background: transparent;
   font-size: 11px;
   font-weight: 500;
-  color: #8e8e93;
+  color: var(--color-secondary-text);
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.15s;
@@ -769,18 +784,18 @@ function rankLabel(index: number): string {
 }
 
 .toggle-btn.active {
-  background: #fff;
-  color: #007aff;
+  background: var(--color-surface);
+  color: var(--color-primary);
   font-weight: 600;
 }
 
 .hide-toggle {
   padding: 3px 10px;
-  border: 1px solid #c7c7cc;
+  border: 1px solid var(--color-placeholder);
   background: transparent;
   font-size: 11px;
   font-weight: 500;
-  color: #8e8e93;
+  color: var(--color-secondary-text);
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.15s;
@@ -789,8 +804,8 @@ function rankLabel(index: number): string {
 }
 
 .hide-toggle.active {
-  background: #ff3b30;
-  border-color: #ff3b30;
+  background: var(--color-destructive);
+  border-color: var(--color-destructive);
   color: #fff;
   font-weight: 600;
 }
@@ -816,7 +831,7 @@ function rankLabel(index: number): string {
 /* Trend toggle */
 .trend-toggle {
   display: flex;
-  background: #f2f2f7;
+  background: var(--color-bg);
   border-radius: 6px;
   padding: 2px;
   gap: 2px;
@@ -828,7 +843,7 @@ function rankLabel(index: number): string {
   background: transparent;
   font-size: 12px;
   font-weight: 500;
-  color: #8e8e93;
+  color: var(--color-secondary-text);
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.15s;
@@ -836,8 +851,8 @@ function rankLabel(index: number): string {
 }
 
 .trend-toggle .toggle-btn.active {
-  background: #fff;
-  color: #007aff;
+  background: var(--color-surface);
+  color: var(--color-primary);
   font-weight: 600;
 }
 
@@ -897,7 +912,7 @@ function rankLabel(index: number): string {
 .ranking-name {
   flex: 1;
   font-size: 13px;
-  color: #1c1c1e;
+  color: var(--color-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -906,13 +921,13 @@ function rankLabel(index: number): string {
 .ranking-amount {
   font-size: 13px;
   font-weight: 600;
-  color: #34c759;
+  color: var(--color-success);
   white-space: nowrap;
 }
 
 .ranking-pct {
   font-size: 11px;
-  color: #8e8e93;
+  color: var(--color-secondary-text);
   width: 28px;
   text-align: right;
 }
@@ -938,8 +953,8 @@ function rankLabel(index: number): string {
   width: 20px;
   height: 20px;
   border-radius: 6px;
-  background: #f2f2f7;
-  color: #8e8e93;
+  background: var(--color-bg);
+  color: var(--color-secondary-text);
   font-size: 11px;
   font-weight: 700;
   display: flex;
@@ -949,12 +964,12 @@ function rankLabel(index: number): string {
 }
 
 .large-row:nth-child(1) .large-rank {
-  background: #ff3b30;
+  background: var(--color-destructive);
   color: #fff;
 }
 
 .large-row:nth-child(2) .large-rank {
-  background: #ff9500;
+  background: var(--color-warning);
   color: #fff;
 }
 
@@ -981,7 +996,7 @@ function rankLabel(index: number): string {
 .large-title {
   font-size: 13px;
   font-weight: 500;
-  color: #1c1c1e;
+  color: var(--color-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -989,13 +1004,13 @@ function rankLabel(index: number): string {
 
 .large-date {
   font-size: 11px;
-  color: #8e8e93;
+  color: var(--color-secondary-text);
 }
 
 .large-amount {
   font-size: 14px;
   font-weight: 700;
-  color: #ff3b30;
+  color: var(--color-destructive);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -1029,8 +1044,8 @@ function rankLabel(index: number): string {
   width: 18px;
   height: 18px;
   border-radius: 6px;
-  background: #f2f2f7;
-  color: #8e8e93;
+  background: var(--color-bg);
+  color: var(--color-secondary-text);
   font-size: 10px;
   font-weight: 700;
   display: flex;
@@ -1040,12 +1055,12 @@ function rankLabel(index: number): string {
 }
 
 .freq-row:nth-child(1) .freq-rank {
-  background: #ff3b30;
+  background: var(--color-destructive);
   color: #fff;
 }
 
 .freq-row:nth-child(2) .freq-rank {
-  background: #ff9500;
+  background: var(--color-warning);
   color: #fff;
 }
 
@@ -1065,7 +1080,7 @@ function rankLabel(index: number): string {
   flex: 1;
   font-size: 13px;
   font-weight: 500;
-  color: #1c1c1e;
+  color: var(--color-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1081,20 +1096,20 @@ function rankLabel(index: number): string {
 .freq-count {
   font-size: 12px;
   font-weight: 600;
-  color: #007aff;
+  color: var(--color-primary);
   white-space: nowrap;
 }
 
 .freq-amount {
   font-size: 13px;
   font-weight: 600;
-  color: #34c759;
+  color: var(--color-success);
   white-space: nowrap;
 }
 
 .freq-avg {
   font-size: 11px;
-  color: #8e8e93;
+  color: var(--color-secondary-text);
   white-space: nowrap;
 }
 
@@ -1106,11 +1121,11 @@ function rankLabel(index: number): string {
 }
 
 .tag-chip {
-  background: #f2f2f7;
+  background: var(--color-bg);
   border-radius: 10px;
   padding: 6px 14px;
   font-size: 13px;
-  color: #1c1c1e;
+  color: var(--color-text);
   cursor: pointer;
   transition: opacity 0.15s;
   user-select: none;
@@ -1121,7 +1136,7 @@ function rankLabel(index: number): string {
 }
 
 .tag-chip--total {
-  background: #007aff;
+  background: var(--color-primary);
   color: #fff;
 }
 
@@ -1134,7 +1149,7 @@ function rankLabel(index: number): string {
 }
 
 .tag-amount {
-  color: #8e8e93;
+  color: var(--color-secondary-text);
   margin-left: 4px;
 }
 </style>

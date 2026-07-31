@@ -107,7 +107,7 @@ watch(() => props.resetKey, () => {
 .pin-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--color-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -115,7 +115,7 @@ watch(() => props.resetKey, () => {
 }
 
 .pin-dialog {
-  background: #fff;
+  background: var(--color-surface);
   border-radius: 16px;
   padding: 24px;
   width: 280px;
@@ -126,7 +126,7 @@ watch(() => props.resetKey, () => {
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 20px;
-  color: #1c1c1e;
+  color: var(--color-text);
 }
 
 .pin-dots {
@@ -140,19 +140,19 @@ watch(() => props.resetKey, () => {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  border: 2px solid #c7c7cc;
+  border: 2px solid var(--color-placeholder);
   transition: background 0.2s, border-color 0.2s;
 }
 
 .pin-dot.filled {
-  background: #007aff;
-  border-color: #007aff;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .pin-error {
   text-align: center;
   font-size: 13px;
-  color: #ff3b30;
+  color: var(--color-destructive);
   margin-bottom: 12px;
   min-height: 18px;
 }
@@ -180,10 +180,10 @@ watch(() => props.resetKey, () => {
   height: 48px;
   border: none;
   border-radius: 8px;
-  background: #f2f2f6;
+  background: var(--color-bg);
   font-size: 20px;
   font-weight: 500;
-  color: #1c1c1e;
+  color: var(--color-text);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -193,7 +193,7 @@ watch(() => props.resetKey, () => {
 }
 
 .pin-key:active {
-  background: #e5e5ea;
+  background: var(--color-disabled-bg);
 }
 
 .pin-key--empty {
@@ -206,6 +206,6 @@ watch(() => props.resetKey, () => {
 }
 
 .pin-key--backspace svg {
-  color: #8e8e93;
+  color: var(--color-secondary-text);
 }
 </style>

@@ -398,7 +398,7 @@ if (!hasPin.value) {
 
 /* ── Section Card ── */
 .section-card {
-  background: #fff;
+  background: var(--color-surface);
   border-radius: var(--radius-md);
   padding: 20px 16px;
   margin-bottom: 16px;
@@ -439,7 +439,7 @@ if (!hasPin.value) {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  border: 2px solid #c7c7cc;
+  border: 2px solid var(--color-placeholder);
   background: transparent;
   transition: all 0.2s;
 }
@@ -565,7 +565,7 @@ if (!hasPin.value) {
   height: 31px;
   border: none;
   border-radius: 16px;
-  background: #e9e9ea;
+  background: var(--color-disabled-bg);
   cursor: pointer;
   padding: 0;
   flex-shrink: 0;
@@ -574,7 +574,7 @@ if (!hasPin.value) {
 }
 
 .toggle--on {
-  background: #34c759;
+  background: var(--color-success);
 }
 
 .toggle:disabled {

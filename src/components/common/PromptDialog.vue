@@ -68,7 +68,7 @@ function onCancel() {
 .prompt-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--color-overlay);
   z-index: 1100;
   display: flex;
   align-items: center;
@@ -99,7 +99,7 @@ function onCancel() {
   padding: 10px 12px;
   border: 1px solid var(--color-separator, rgba(60,60,67,0.08));
   border-radius: var(--radius-sm, 8px);
-  background: #f2f2f6;
+  background: var(--color-input-bg);
   font-size: 15px;
   color: var(--color-text, #1c1c1e);
   outline: none;
@@ -110,7 +110,7 @@ function onCancel() {
 
 .prompt-input:focus {
   border-color: var(--color-primary, #007aff);
-  background: #fff;
+  background: var(--color-surface);
 }
 
 .prompt-actions {
@@ -135,7 +135,7 @@ function onCancel() {
 }
 
 .prompt-btn--cancel {
-  background: #f2f2f6;
+  background: var(--color-bg);
   color: var(--color-text, #1c1c1e);
 }
 

@@ -211,23 +211,23 @@ async function handleDelete() {
   background: none;
   font-family: inherit;
   font-size: 15px;
-  color: #1c1c1e;
+  color: var(--color-text);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   text-align: left;
   transition: background 0.1s;
 }
-.section-row:active { background: rgba(0,0,0,0.03); }
+.section-row:active { background: var(--color-press); }
 
 .row-left { display: flex; align-items: center; gap: 10px; }
 .row-icon { font-size: 18px; line-height: 1; }
-.row-label { font-size: 15px; color: #1c1c1e; }
+.row-label { font-size: 15px; color: var(--color-text); }
 
-.chevron { color: #c7c7cc; flex-shrink: 0; transition: transform 0.2s; }
+.chevron { color: var(--color-placeholder); flex-shrink: 0; transition: transform 0.2s; }
 .chevron.rotated { transform: rotate(180deg); }
 
 .expanded-content { padding: 4px 14px 12px; }
-.empty-hint { text-align: center; padding: 12px; font-size: 14px; color: #8e8e93; }
+.empty-hint { text-align: center; padding: 12px; font-size: 14px; color: var(--color-secondary-text); }
 
 .account-item {
   display: flex;
@@ -238,35 +238,35 @@ async function handleDelete() {
   padding: 8px 4px;
 }
 .account-item.drag-over { background: rgba(0, 122, 255, 0.08); }
-.drag-handle { font-size: 16px; color: #c7c7cc; cursor: grab; user-select: none; line-height: 1; padding: 2px; flex-shrink: 0; }
+.drag-handle { font-size: 16px; color: var(--color-placeholder); cursor: grab; user-select: none; line-height: 1; padding: 2px; flex-shrink: 0; }
 .account-icon { font-size: 16px; }
 .account-info { flex: 1; display: flex; flex-direction: column; gap: 1px; }
-.account-name { font-size: 14px; color: #1c1c1e; }
-.account-balance { font-size: 12px; color: #8e8e93; }
+.account-name { font-size: 14px; color: var(--color-text); }
+.account-balance { font-size: 12px; color: var(--color-secondary-text); }
 
 .icon-btn {
-  width: 28px; height: 28px; border: none; background: #f2f2f6; border-radius: 6px;
-  display: flex; align-items: center; justify-content: center; cursor: pointer; color: #8e8e93;
+  width: 28px; height: 28px; border: none; background: var(--color-bg); border-radius: 6px;
+  display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--color-secondary-text);
 }
-.icon-btn--danger { color: #ff3b30; }
+.icon-btn--danger { color: var(--color-destructive); }
 
 .add-btn {
-  width: 100%; padding: 10px; border: 1px dashed #c7c7cc; border-radius: 8px;
-  background: none; font-size: 14px; color: #007aff; cursor: pointer; margin-top: 8px;
+  width: 100%; padding: 10px; border: 1px dashed var(--color-placeholder); border-radius: 8px;
+  background: none; font-size: 14px; color: var(--color-primary); cursor: pointer; margin-top: 8px;
 }
 
 /* Delete confirm overlay */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; display: flex; align-items: center; justify-content: center; }
-.modal-content { width: 280px; background: #fff; border-radius: 16px; padding: 24px; }
-.modal-desc { font-size: 14px; color: #1c1c1e; text-align: center; margin-bottom: 16px; }
+.modal-overlay { position: fixed; inset: 0; background: var(--color-overlay); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+.modal-content { width: 280px; background: var(--color-surface); border-radius: 16px; padding: 24px; }
+.modal-desc { font-size: 14px; color: var(--color-text); text-align: center; margin-bottom: 16px; }
 .modal-actions { display: flex; gap: 12px; justify-content: center; }
 .form-group { margin-bottom: 16px; }
-.form-label { display: block; font-size: 14px; font-weight: 500; color: #8e8e93; margin-bottom: 6px; }
-.form-input { width: 100%; height: 40px; border-radius: 10px; border: 1px solid rgba(60,60,67,0.12); background: #f2f2f6; padding: 0 12px; font-size: 15px; color: #1c1c1e; outline: none; box-sizing: border-box; }
-.form-input:focus { border-color: #007aff; }
-.btn-cancel { flex: 1; height: 44px; border-radius: 10px; border: none; background: #f2f2f6; color: #1c1c1e; font-size: 16px; font-weight: 500; cursor: pointer; }
-.btn-primary { flex: 1; height: 44px; border-radius: 10px; border: none; background: #007aff; color: #fff; font-size: 16px; font-weight: 500; cursor: pointer; }
+.form-label { display: block; font-size: 14px; font-weight: 500; color: var(--color-secondary-text); margin-bottom: 6px; }
+.form-input { width: 100%; height: 40px; border-radius: 10px; border: 1px solid var(--color-separator); background: var(--color-input-bg); padding: 0 12px; font-size: 15px; color: var(--color-text); outline: none; box-sizing: border-box; }
+.form-input:focus { border-color: var(--color-primary); }
+.btn-cancel { flex: 1; height: 44px; border-radius: 10px; border: none; background: var(--color-bg); color: var(--color-text); font-size: 16px; font-weight: 500; cursor: pointer; }
+.btn-primary { flex: 1; height: 44px; border-radius: 10px; border: none; background: var(--color-primary); color: #fff; font-size: 16px; font-weight: 500; cursor: pointer; }
 .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
 .btn-primary:active { opacity: 0.7; }
-.btn-danger { height: 44px; padding: 0 24px; border-radius: 10px; border: none; background: #ff3b30; color: #fff; font-size: 16px; font-weight: 500; cursor: pointer; }
+.btn-danger { height: 44px; padding: 0 24px; border-radius: 10px; border: none; background: var(--color-destructive); color: #fff; font-size: 16px; font-weight: 500; cursor: pointer; }
 </style>

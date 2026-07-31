@@ -117,7 +117,7 @@ watch(
 
 .picker-label {
   font-size: 13px;
-  color: #8e8e93;
+  color: var(--color-secondary-text);
   margin-bottom: 8px;
   padding: 0 4px;
 }
@@ -137,7 +137,7 @@ watch(
   padding: 12px 0;
   border: none;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--color-card);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   cursor: pointer;
@@ -147,7 +147,7 @@ watch(
 }
 
 .parent-item.selected {
-  background: #007aff;
+  background: var(--color-primary);
   box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25);
 }
 
@@ -164,7 +164,7 @@ watch(
 
 .parent-name {
   font-size: 11px;
-  color: #1c1c1e;
+  color: var(--color-text);
   font-weight: 500;
   line-height: 1.2;
 }
@@ -194,8 +194,8 @@ watch(
   padding: 6px 14px;
   border: none;
   border-radius: 16px;
-  background: #f2f2f7;
-  color: #1c1c1e;
+  background: var(--color-bg);
+  color: var(--color-text);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -206,7 +206,7 @@ watch(
 }
 
 .child-chip.active {
-  background: #007aff;
+  background: var(--color-primary);
   color: #fff;
 }
 </style>
