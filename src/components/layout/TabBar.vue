@@ -229,7 +229,7 @@ function handleBookingSave() {
   transform: translateX(-50%);
   background: var(--color-text);
   color: #fff;
-  font-size: 12px;
+  font-size: var(--fs-small);
   font-weight: 500;
   padding: 6px 14px;
   border-radius: 8px;

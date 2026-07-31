@@ -151,7 +151,7 @@ watch(() => props.resetKey, () => {
 
 .pin-error {
   text-align: center;
-  font-size: 13px;
+  font-size: var(--fs-ui);
   color: var(--color-destructive);
   margin-bottom: 12px;
   min-height: 18px;
@@ -181,7 +181,7 @@ watch(() => props.resetKey, () => {
   border: none;
   border-radius: 8px;
   background: var(--color-bg);
-  font-size: 20px;
+  font-size: var(--fs-hero);
   font-weight: 500;
   color: var(--color-text);
   cursor: pointer;

@@ -612,7 +612,7 @@ function rankLabel(index: number): string {
 }
 
 .page-title {
-  font-size: 27px;
+  font-size: var(--fs-page-title);
   font-weight: 700;
   color: var(--color-text);
 }
@@ -629,7 +629,7 @@ function rankLabel(index: number): string {
   padding: 4px 10px;
   border: none;
   background: transparent;
-  font-size: 12px;
+  font-size: var(--fs-small);
   font-weight: 500;
   color: var(--color-secondary-text);
   border-radius: 6px;
@@ -674,7 +674,7 @@ function rankLabel(index: number): string {
 }
 
 .period-selector.custom .period-label.small {
-  font-size: 15px;
+  font-size: var(--fs-title);
   min-width: auto;
   flex-shrink: 0;
   white-space: nowrap;
@@ -698,7 +698,7 @@ function rankLabel(index: number): string {
 }
 
 .period-label {
-  font-size: 15px;
+  font-size: var(--fs-title);
   font-weight: 600;
   color: var(--color-text);
   min-width: 100px;
@@ -728,7 +728,7 @@ function rankLabel(index: number): string {
 }
 
 .overview-amount {
-  font-size: 18px;
+  font-size: var(--fs-hero);
   font-weight: 700;
   color: #fff;
   font-variant-numeric: tabular-nums;
@@ -745,7 +745,7 @@ function rankLabel(index: number): string {
 }
 
 .chart-title {
-  font-size: 13px;
+  font-size: var(--fs-ui);
   font-weight: 600;
   color: var(--color-text);
   margin-bottom: 10px;
@@ -813,7 +813,7 @@ function rankLabel(index: number): string {
 .empty-text {
   text-align: center;
   padding: 24px 0;
-  font-size: 14px;
+  font-size: var(--fs-body);
   color: var(--color-secondary-text);
 }
 
@@ -841,7 +841,7 @@ function rankLabel(index: number): string {
   padding: 3px 12px;
   border: none;
   background: transparent;
-  font-size: 12px;
+  font-size: var(--fs-small);
   font-weight: 500;
   color: var(--color-secondary-text);
   border-radius: 4px;
@@ -894,7 +894,7 @@ function rankLabel(index: number): string {
   height: 18px;
   border-radius: 6px;
   color: #fff;
-  font-size: 10px;
+  font-size: var(--fs-micro);
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -903,7 +903,7 @@ function rankLabel(index: number): string {
 }
 
 .ranking-icon {
-  font-size: 14px;
+  font-size: var(--fs-body);
   width: 20px;
   text-align: center;
   flex-shrink: 0;
@@ -911,7 +911,7 @@ function rankLabel(index: number): string {
 
 .ranking-name {
   flex: 1;
-  font-size: 13px;
+  font-size: var(--fs-ui);
   color: var(--color-text);
   white-space: nowrap;
   overflow: hidden;
@@ -919,7 +919,7 @@ function rankLabel(index: number): string {
 }
 
 .ranking-amount {
-  font-size: 13px;
+  font-size: var(--fs-ui);
   font-weight: 600;
   color: var(--color-success);
   white-space: nowrap;
@@ -979,7 +979,7 @@ function rankLabel(index: number): string {
 }
 
 .large-icon {
-  font-size: 16px;
+  font-size: var(--fs-amount);
   width: 24px;
   text-align: center;
   flex-shrink: 0;
@@ -994,7 +994,7 @@ function rankLabel(index: number): string {
 }
 
 .large-title {
-  font-size: 13px;
+  font-size: var(--fs-ui);
   font-weight: 500;
   color: var(--color-text);
   white-space: nowrap;
@@ -1008,7 +1008,7 @@ function rankLabel(index: number): string {
 }
 
 .large-amount {
-  font-size: 14px;
+  font-size: var(--fs-body);
   font-weight: 700;
   color: var(--color-destructive);
   white-space: nowrap;
@@ -1046,7 +1046,7 @@ function rankLabel(index: number): string {
   border-radius: 6px;
   background: var(--color-bg);
   color: var(--color-secondary-text);
-  font-size: 10px;
+  font-size: var(--fs-micro);
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -1070,7 +1070,7 @@ function rankLabel(index: number): string {
 }
 
 .freq-icon {
-  font-size: 14px;
+  font-size: var(--fs-body);
   width: 20px;
   text-align: center;
   flex-shrink: 0;
@@ -1078,7 +1078,7 @@ function rankLabel(index: number): string {
 
 .freq-name {
   flex: 1;
-  font-size: 13px;
+  font-size: var(--fs-ui);
   font-weight: 500;
   color: var(--color-text);
   white-space: nowrap;
@@ -1094,14 +1094,14 @@ function rankLabel(index: number): string {
 }
 
 .freq-count {
-  font-size: 12px;
+  font-size: var(--fs-small);
   font-weight: 600;
   color: var(--color-primary);
   white-space: nowrap;
 }
 
 .freq-amount {
-  font-size: 13px;
+  font-size: var(--fs-ui);
   font-weight: 600;
   color: var(--color-success);
   white-space: nowrap;
@@ -1124,7 +1124,7 @@ function rankLabel(index: number): string {
   background: var(--color-bg);
   border-radius: 10px;
   padding: 6px 14px;
-  font-size: 13px;
+  font-size: var(--fs-ui);
   color: var(--color-text);
   cursor: pointer;
   transition: opacity 0.15s;

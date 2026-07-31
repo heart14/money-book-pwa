@@ -125,7 +125,7 @@ const contentStyle = computed(() => {
 }
 
 .ptr-text {
-  font-size: 13px;
+  font-size: var(--fs-ui);
   color: var(--color-secondary-text);
   white-space: nowrap;
 }

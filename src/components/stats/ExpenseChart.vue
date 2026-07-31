@@ -156,7 +156,7 @@ onUnmounted(() => {
 }
 
 .chart-title {
-  font-size: 15px;
+  font-size: var(--fs-title);
   font-weight: 600;
   color: var(--color-text);
   margin-bottom: 12px;

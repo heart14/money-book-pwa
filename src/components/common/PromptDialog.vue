@@ -87,7 +87,7 @@ function onCancel() {
 }
 
 .prompt-title {
-  font-size: 17px;
+  font-size: var(--fs-heading);
   font-weight: 600;
   color: var(--color-text, #1c1c1e);
   text-align: center;
@@ -100,7 +100,7 @@ function onCancel() {
   border: 1px solid var(--color-separator, rgba(60,60,67,0.08));
   border-radius: var(--radius-sm, 8px);
   background: var(--color-input-bg);
-  font-size: 15px;
+  font-size: var(--fs-title);
   color: var(--color-text, #1c1c1e);
   outline: none;
   font-family: inherit;
@@ -123,7 +123,7 @@ function onCancel() {
   height: 40px;
   border: none;
   border-radius: var(--radius-sm, 8px);
-  font-size: 15px;
+  font-size: var(--fs-title);
   font-weight: 500;
   cursor: pointer;
   font-family: inherit;

@@ -76,7 +76,7 @@ function onCancel() {
 }
 
 .confirm-title {
-  font-size: 17px;
+  font-size: var(--fs-heading);
   font-weight: 600;
   text-align: center;
   margin-bottom: 8px;
@@ -84,7 +84,7 @@ function onCancel() {
 }
 
 .confirm-desc {
-  font-size: 14px;
+  font-size: var(--fs-body);
   color: var(--color-secondary-text, #8e8e93);
   text-align: center;
   margin-bottom: 20px;
@@ -106,7 +106,7 @@ function onCancel() {
   height: 44px;
   border-radius: 10px;
   border: none;
-  font-size: 16px;
+  font-size: var(--fs-amount);
   font-weight: 500;
   cursor: pointer;
   font-family: inherit;

@@ -30,7 +30,7 @@ defineProps<{
 }
 
 .empty-state-message {
-  font-size: 14px;
+  font-size: var(--fs-body);
   color: var(--color-secondary-text);
   text-align: center;
 }
