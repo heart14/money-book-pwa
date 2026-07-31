@@ -32,42 +32,47 @@
         </div>
       </div>
 
-      <!-- ── 2. Appearance (collapsible) ── -->
+      <!-- ── 2. Appearance ── -->
       <div class="section">
-        <button class="section-header section-header--clickable" @click="showAppearance = !showAppearance">
-          <span>外观</span>
-          <svg class="chevron collapsible-chevron" :class="{ rotated: showAppearance }" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6" /></svg>
-        </button>
-        <div v-show="showAppearance" class="section-card">
-          <div class="section-row no-hover">
-            <div class="row-left"><span class="row-icon">🌙</span><span class="row-label">深色模式</span></div>
-            <div class="theme-toggle">
-              <button
-                class="theme-btn"
-                :class="{ active: uiStore.theme === 'system' }"
-                @click="uiStore.setTheme('system')"
-              >自动</button>
-              <button
-                class="theme-btn"
-                :class="{ active: uiStore.theme === 'light' }"
-                @click="uiStore.setTheme('light')"
-              >浅色</button>
-              <button
-                class="theme-btn"
-                :class="{ active: uiStore.theme === 'dark' }"
-                @click="uiStore.setTheme('dark')"
-              >深色</button>
+        <div class="section-header">外观</div>
+        <div class="section-card">
+          <button class="section-row" @click="showAppearance = !showAppearance">
+            <div class="row-left">
+              <span class="row-icon">🎨</span>
+              <span class="row-label">显示与主题</span>
             </div>
-          </div>
-          <!-- Font Size -->
-          <div class="setting-row">
-            <span class="setting-label">文字大小</span>
-            <div class="theme-toggle">
-              <button
-                v-for="opt in fontSizeOptions" :key="opt.value"
-                class="theme-btn" :class="{ active: uiStore.fontSize === opt.value }"
-                @click="uiStore.setFontSize(opt.value)"
-              >{{ opt.label }}</button>
+            <svg class="chevron" :class="{ rotated: showAppearance }" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c7c7cc" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9" /></svg>
+          </button>
+          <div v-if="showAppearance" class="expanded-content">
+            <div class="setting-row">
+              <span class="setting-label">深色模式</span>
+              <div class="theme-toggle">
+                <button
+                  class="theme-btn"
+                  :class="{ active: uiStore.theme === 'system' }"
+                  @click="uiStore.setTheme('system')"
+                >自动</button>
+                <button
+                  class="theme-btn"
+                  :class="{ active: uiStore.theme === 'light' }"
+                  @click="uiStore.setTheme('light')"
+                >浅色</button>
+                <button
+                  class="theme-btn"
+                  :class="{ active: uiStore.theme === 'dark' }"
+                  @click="uiStore.setTheme('dark')"
+                >深色</button>
+              </div>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">文字大小</span>
+              <div class="theme-toggle">
+                <button
+                  v-for="opt in fontSizeOptions" :key="opt.value"
+                  class="theme-btn" :class="{ active: uiStore.fontSize === opt.value }"
+                  @click="uiStore.setFontSize(opt.value)"
+                >{{ opt.label }}</button>
+              </div>
             </div>
           </div>
         </div>
@@ -286,38 +291,11 @@ async function handleDestroy() {
 .section { margin-bottom: 20px; }
 
 .section-header {
-  display: flex;
-  align-items: center;
-  gap: 6px;
   font-size: var(--fs-small);
   font-weight: 600;
   color: var(--color-secondary-text);
   padding: 0 4px;
   margin-bottom: 6px;
-}
-
-.section-header--clickable {
-  cursor: pointer;
-  border: none;
-  background: none;
-  font-family: inherit;
-  padding: 8px 4px;
-  width: 100%;
-  text-align: left;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.section-header--clickable:active {
-  opacity: 0.5;
-}
-
-.collapsible-chevron {
-  transition: transform 0.2s ease;
-  color: var(--color-placeholder);
-}
-
-.collapsible-chevron.rotated {
-  transform: rotate(-180deg);
 }
 
 .section-card {
@@ -373,6 +351,9 @@ async function handleDestroy() {
 }
 
 .chevron { color: var(--color-placeholder); flex-shrink: 0; transition: transform 0.2s; }
+.chevron.rotated { transform: rotate(180deg); }
+
+.expanded-content { padding: 4px 14px 12px; }
 
 .separator { height: 1px; background: var(--color-separator); margin: 0 14px; }
 
