@@ -693,7 +693,7 @@ watch(
 }
 
 .quick-tpl-empty-hint {
-  font-size: 11px;
+  font-size: var(--fs-micro);
   color: var(--color-tertiary-text, #aeaeb2);
   margin-bottom: 6px;
 }

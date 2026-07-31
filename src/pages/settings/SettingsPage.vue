@@ -277,12 +277,12 @@ async function handleDestroy() {
 }
 
 .page-header { display: flex; align-items: center; margin-bottom: 16px; }
-.page-title { font-size: 27px; font-weight: 700; color: var(--color-text); }
+.page-title { font-size: var(--fs-page-title); font-weight: 700; color: var(--color-text); }
 
 .section { margin-bottom: 20px; }
 
 .section-header {
-  font-size: 12px;
+  font-size: var(--fs-small);
   font-weight: 600;
   color: var(--color-secondary-text);
   padding: 0 4px;
@@ -306,7 +306,7 @@ async function handleDestroy() {
   border: none;
   background: none;
   font-family: inherit;
-  font-size: 15px;
+  font-size: var(--fs-title);
   color: var(--color-text);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -320,12 +320,12 @@ async function handleDestroy() {
 
 .row-left { display: flex; align-items: center; gap: 10px; }
 .row-icon { font-size: 18px; line-height: 1; }
-.row-label { font-size: 15px; color: var(--color-text); }
+.row-label { font-size: var(--fs-title); color: var(--color-text); }
 .row-label--danger { color: var(--color-destructive); }
 .row-right { display: flex; align-items: center; gap: 6px; }
-.row-status { font-size: 13px; color: var(--color-secondary-text); }
-.row-value { font-size: 13px; color: var(--color-secondary-text); }
-.row-label--dev { font-size: 13px; color: var(--color-secondary-text); }
+.row-status { font-size: var(--fs-ui); color: var(--color-secondary-text); }
+.row-value { font-size: var(--fs-ui); color: var(--color-secondary-text); }
+.row-label--dev { font-size: var(--fs-ui); color: var(--color-secondary-text); }
 .section-row--dev:active { background: var(--color-press); }
 
 .setting-row {
@@ -337,7 +337,7 @@ async function handleDestroy() {
 }
 
 .setting-label {
-  font-size: 15px;
+  font-size: var(--fs-title);
   color: var(--color-text);
 }
 
@@ -357,7 +357,7 @@ async function handleDestroy() {
   padding: 4px 10px;
   border: none;
   background: transparent;
-  font-size: 12px;
+  font-size: var(--fs-small);
   font-weight: 500;
   color: var(--color-secondary-text);
   border-radius: 6px;
@@ -380,7 +380,7 @@ async function handleDestroy() {
   transform: translateX(-50%);
   padding: 12px 24px;
   border-radius: 12px;
-  font-size: 15px;
+  font-size: var(--fs-title);
   font-weight: 500;
   z-index: 1100;
   cursor: pointer;
