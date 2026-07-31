@@ -194,7 +194,7 @@ import QuickTemplateManager from './QuickTemplateManager.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 
 const uiStore = useUiStore()
-const showAppearance = ref(true)
+const showAppearance = ref(false)
 const fontSizeOptions = [
   { label: '很小', value: 'xs' as const },
   { label: '小', value: 'sm' as const },
