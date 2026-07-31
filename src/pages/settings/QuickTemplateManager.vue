@@ -40,7 +40,7 @@
 
       <button class="qt-add-btn" @click="startAdd">
         <span class="qt-add-icon">+</span>
-        <span>添加新模板</span>
+        <span>新建模板</span>
       </button>
     </div>
 
