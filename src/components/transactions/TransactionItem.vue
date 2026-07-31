@@ -103,7 +103,7 @@ const displayAmount = computed(() => {
 }
 
 .item-title {
-  font-size: 15px;
+  font-size: var(--fs-title);
   font-weight: 600;
   color: var(--color-text);
   line-height: 1.3;
@@ -113,7 +113,7 @@ const displayAmount = computed(() => {
 }
 
 .item-sub {
-  font-size: 12px;
+  font-size: var(--fs-small);
   color: var(--color-secondary-text);
   margin-top: 1px;
   white-space: nowrap;
@@ -125,7 +125,7 @@ const displayAmount = computed(() => {
   text-align: right;
   flex-shrink: 0;
   margin-left: 12px;
-  font-size: 16px;
+  font-size: var(--fs-amount);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   line-height: 1.3;
@@ -143,7 +143,7 @@ const displayAmount = computed(() => {
 }
 
 .item-tags span {
-  font-size: 10px;
+  font-size: var(--fs-micro);
   color: var(--color-secondary-text);
   white-space: nowrap;
 }

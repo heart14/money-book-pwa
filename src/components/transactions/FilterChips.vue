@@ -62,7 +62,7 @@ defineEmits<{
   padding: 0 14px;
   border-radius: 18px;
   border: none;
-  font-size: 13px;
+  font-size: var(--fs-ui);
   font-weight: 500;
   cursor: pointer;
   background: var(--color-card);

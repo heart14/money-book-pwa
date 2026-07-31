@@ -153,7 +153,7 @@ function handleSave() {
 .sheet-body { padding: 16px 24px 32px; }
 
 .edit-sheet-title {
-  font-size: 18px;
+  font-size: var(--fs-hero);
   font-weight: 700;
   text-align: center;
   margin-bottom: 20px;
@@ -169,7 +169,7 @@ function handleSave() {
   margin-bottom: 12px;
 }
 
-.edit-label { width: 48px; flex-shrink: 0; font-size: 14px; color: var(--color-secondary-text); }
+.edit-label { width: 48px; flex-shrink: 0; font-size: var(--fs-body); color: var(--color-secondary-text); }
 
 .edit-input {
   flex: 1;
@@ -178,7 +178,7 @@ function handleSave() {
   border: none;
   border-radius: 8px;
   background: var(--color-bg);
-  font-size: 15px;
+  font-size: var(--fs-title);
   color: var(--color-text);
   outline: none;
   font-family: inherit;
@@ -194,7 +194,7 @@ function handleSave() {
   padding: 0 12px;
 }
 
-.edit-amount-sign { font-size: 16px; font-weight: 600; color: var(--color-secondary-text); }
+.edit-amount-sign { font-size: var(--fs-amount); font-weight: 600; color: var(--color-secondary-text); }
 
 .edit-amount-input { flex: 1; background: none; padding: 0; }
 
@@ -219,7 +219,7 @@ function handleSave() {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 12px;
+  font-size: var(--fs-small);
   padding: 2px 8px;
   border-radius: 4px;
   background: var(--color-surface);
@@ -230,7 +230,7 @@ function handleSave() {
   border: none;
   background: none;
   color: var(--color-secondary-text);
-  font-size: 14px;
+  font-size: var(--fs-body);
   cursor: pointer;
   padding: 0;
   line-height: 1;
@@ -241,7 +241,7 @@ function handleSave() {
   min-width: 80px;
   border: none;
   background: none;
-  font-size: 13px;
+  font-size: var(--fs-ui);
   color: var(--color-text);
   outline: none;
   font-family: inherit;
@@ -257,7 +257,7 @@ function handleSave() {
   padding-top: 12px;
 }
 
-.edit-meta { font-size: 14px; color: var(--color-text); }
+.edit-meta { font-size: var(--fs-body); color: var(--color-text); }
 
 .edit-actions { display: flex; gap: 12px; }
 
@@ -266,7 +266,7 @@ function handleSave() {
   height: 44px;
   border-radius: 10px;
   border: none;
-  font-size: 16px;
+  font-size: var(--fs-amount);
   font-weight: 500;
   cursor: pointer;
   transition: opacity 0.15s;

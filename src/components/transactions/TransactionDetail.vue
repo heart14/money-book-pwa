@@ -229,9 +229,9 @@ async function onExtractConfirm(name: string) {
 
 .sheet-icon { font-size: 28px; line-height: 1; }
 
-.sheet-title { font-size: 17px; font-weight: 600; color: var(--color-text); }
+.sheet-title { font-size: var(--fs-heading); font-weight: 600; color: var(--color-text); }
 
-.sheet-type-badge { font-size: 12px; padding: 2px 10px; border-radius: 10px; margin-top: 6px; color: #fff; }
+.sheet-type-badge { font-size: var(--fs-small); padding: 2px 10px; border-radius: 10px; margin-top: 6px; color: #fff; }
 .badge-expense { background: var(--color-success); }
 .badge-income { background: var(--color-destructive); }
 .badge-transfer { background: var(--color-primary); }
@@ -257,7 +257,7 @@ async function onExtractConfirm(name: string) {
   display: flex;
   align-items: flex-start;
   padding: 8px 0;
-  font-size: 15px;
+  font-size: var(--fs-title);
 }
 
 .detail-label { width: 56px; flex-shrink: 0; color: var(--color-secondary-text); }
@@ -266,7 +266,7 @@ async function onExtractConfirm(name: string) {
 
 .detail-tag {
   display: inline-block;
-  font-size: 12px;
+  font-size: var(--fs-small);
   padding: 2px 8px;
   border-radius: 4px;
   background: var(--color-bg);
@@ -282,7 +282,7 @@ async function onExtractConfirm(name: string) {
   height: 44px;
   border-radius: 10px;
   border: none;
-  font-size: 16px;
+  font-size: var(--fs-amount);
   font-weight: 500;
   cursor: pointer;
   transition: opacity 0.15s;
@@ -326,7 +326,7 @@ async function onExtractConfirm(name: string) {
   transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.8);
   color: #fff;
-  font-size: 14px;
+  font-size: var(--fs-body);
   font-weight: 500;
   padding: 10px 24px;
   border-radius: 20px;

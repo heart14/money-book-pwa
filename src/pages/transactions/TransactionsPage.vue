@@ -834,7 +834,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 }
 
 .page-title {
-  font-size: 27px;
+  font-size: var(--fs-page-title);
   font-weight: 700;
   color: var(--color-text);
 }
@@ -904,7 +904,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 }
 
 .date-filter-label {
-  font-size: 15px;
+  font-size: var(--fs-title);
   font-weight: 600;
   color: var(--color-text);
   min-width: 80px;
@@ -917,7 +917,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
   border: none;
   background: var(--color-primary);
   color: #fff;
-  font-size: 12px;
+  font-size: var(--fs-small);
   font-weight: 500;
   padding: 4px 10px;
   border-radius: 6px;
@@ -943,7 +943,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
   min-width: 0;
   border: none;
   background: none;
-  font-size: 15px;
+  font-size: var(--fs-title);
   color: var(--color-text);
   outline: none;
   font-family: inherit;
@@ -970,7 +970,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 
 .search-clear-x {
   position: absolute;
-  font-size: 10px;
+  font-size: var(--fs-micro);
   color: #fff;
   line-height: 1;
   pointer-events: none;
@@ -1003,7 +1003,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 }
 
 .search-field-label {
-  font-size: 13px;
+  font-size: var(--fs-ui);
   color: var(--color-primary);
   font-weight: 500;
   white-space: nowrap;
@@ -1045,7 +1045,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
   padding: 8px 12px;
   border: none;
   background: none;
-  font-size: 14px;
+  font-size: var(--fs-body);
   color: var(--color-text);
   cursor: pointer;
   border-radius: 8px;
@@ -1096,13 +1096,13 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 }
 
 .day-label {
-  font-size: 13px;
+  font-size: var(--fs-ui);
   font-weight: 600;
   color: var(--color-secondary-text);
 }
 
 .day-total {
-  font-size: 13px;
+  font-size: var(--fs-ui);
   font-weight: 600;
 }
 
@@ -1127,7 +1127,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: var(--fs-ui);
   color: var(--color-secondary-text);
 }
 
@@ -1145,7 +1145,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 }
 
 .scroll-finished {
-  font-size: 13px;
+  font-size: var(--fs-ui);
   color: var(--color-placeholder);
 }
 
@@ -1177,7 +1177,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
   border-radius: 16px;
   background: var(--color-bg);
   color: var(--color-text);
-  font-size: 13px;
+  font-size: var(--fs-ui);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
