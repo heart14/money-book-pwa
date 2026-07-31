@@ -349,10 +349,6 @@ function showToast(msg: string) {
   margin-top: 2px;
 }
 
-.qt-list {
-  /* container */
-}
-
 .qt-row {
   display: flex;
   align-items: center;
