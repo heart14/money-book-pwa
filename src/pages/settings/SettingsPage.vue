@@ -13,7 +13,7 @@
         <div class="section-card">
           <button class="section-row" @click="currentView = 'security'">
             <div class="row-left">
-              <span class="row-icon">🔒</span>
+              <span class="row-icon"><TwemojiIcon emoji="🔒" /></span>
               <span class="row-label">PIN 码锁</span>
             </div>
             <div class="row-right">
@@ -24,7 +24,7 @@
           <div v-if="hasBiometric" class="separator"></div>
           <div v-if="hasBiometric" class="section-row no-hover">
             <div class="row-left">
-              <span class="row-icon">🔐</span>
+              <span class="row-icon"><TwemojiIcon emoji="🔐" /></span>
               <span class="row-label">Face ID / Touch ID</span>
             </div>
             <span class="row-status">已开启</span>
@@ -38,7 +38,7 @@
         <div class="section-card">
           <button class="section-row" @click="showAppearance = !showAppearance">
             <div class="row-left">
-              <span class="row-icon">🎨</span>
+              <span class="row-icon"><TwemojiIcon emoji="🎨" /></span>
               <span class="row-label">显示与主题</span>
             </div>
             <svg class="chevron" :class="{ rotated: showAppearance }" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c7c7cc" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9" /></svg>
@@ -83,18 +83,18 @@
         <div class="section-header">数据管理</div>
         <div class="section-card">
           <button class="section-row" @click="handleExport">
-            <div class="row-left"><span class="row-icon">📤</span><span class="row-label">导出备份</span></div>
+            <div class="row-left"><span class="row-icon"><TwemojiIcon emoji="📤" /></span><span class="row-label">导出备份</span></div>
             <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c7c7cc" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6" /></svg>
           </button>
           <div class="separator"></div>
           <button class="section-row" @click="triggerImport">
-            <div class="row-left"><span class="row-icon">📥</span><span class="row-label">导入数据</span></div>
+            <div class="row-left"><span class="row-icon"><TwemojiIcon emoji="📥" /></span><span class="row-label">导入数据</span></div>
             <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c7c7cc" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6" /></svg>
           </button>
           <input ref="fileInputRef" type="file" accept=".json" style="display:none" @change="onFileSelected" />
           <div class="separator"></div>
           <button class="section-row" @click="showDestroyConfirm1 = true">
-            <div class="row-left"><span class="row-icon">🗑️</span><span class="row-label row-label--danger">彻底销毁数据</span></div>
+            <div class="row-left"><span class="row-icon"><TwemojiIcon emoji="🗑️" /></span><span class="row-label row-label--danger">彻底销毁数据</span></div>
             <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c7c7cc" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6" /></svg>
           </button>
         </div>
@@ -133,7 +133,7 @@
         <div class="section-header">关于</div>
         <div class="section-card">
           <div class="section-row no-hover">
-            <div class="row-left"><span class="row-icon">ℹ️</span><span class="row-label">关于钱书</span></div>
+            <div class="row-left"><span class="row-icon"><TwemojiIcon emoji="ℹ️" /></span><span class="row-label">关于钱书</span></div>
             <span class="row-value">v1.0.0</span>
           </div>
         </div>
@@ -192,6 +192,7 @@ import TagManager from './TagManager.vue'
 import RuleManager from './RuleManager.vue'
 import QuickTemplateManager from './QuickTemplateManager.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import TwemojiIcon from '@/components/common/TwemojiIcon.vue'
 
 const uiStore = useUiStore()
 const showAppearance = ref(false)
