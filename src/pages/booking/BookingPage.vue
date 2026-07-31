@@ -493,7 +493,7 @@ watch(
   border-radius: 50%;
   background: var(--color-placeholder);
   color: #fff;
-  font-size: 12px;
+  font-size: var(--fs-small);
   line-height: 1;
   cursor: pointer;
   padding: 0;
