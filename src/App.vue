@@ -15,7 +15,6 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useUiStore } from '@/stores/uiStore'
 import { hashPIN, getStoredPINHash } from '@/utils/crypto'
-import { isBiometricEnabled, authenticateBiometric } from '@/utils/biometric'
 import MobileLayout from '@/components/layout/MobileLayout.vue'
 import PinDialog from '@/components/common/PinDialog.vue'
 
@@ -59,39 +58,21 @@ function onSystemChange() {
 mql.addEventListener('change', onSystemChange)
 onUnmounted(() => mql.removeEventListener('change', onSystemChange))
 
-// ── PIN / Biometric lock state ──
+// ── PIN lock state ──
 const hasPin = !!getStoredPINHash()
-const hasBiometric = hasPin && isBiometricEnabled()
 
 if (!hasPin) {
-  // 无 PIN → 直接解锁
   uiStore.unlocked = true
-} else if (hasBiometric) {
-  // 有 PIN + Biometric → 先不弹 PIN 弹窗，等待生物识别
-  uiStore.unlocked = false
 } else {
-  // 只有 PIN → 立即弹出 PIN 弹窗
   uiStore.unlocked = false
 }
 
-const showPinLock = ref(!hasPin ? false : hasBiometric ? false : true)
+const showPinLock = ref(hasPin)
 const pinError = ref('')
 const pinResetVersion = ref(0)
 
-// ── 生物识别首次尝试 (仅在 hasBiometric 时执行) ──
-async function tryBiometricUnlock() {
-  const ok = await authenticateBiometric()
-  if (ok) {
-    unlockApp()
-  } else {
-    // 用户取消或凭证不可用 → 显示 PIN 弹窗
-    showPinLock.value = true
-    pinResetVersion.value++
-  }
-}
-
 async function onPinSubmit(pin: string) {
-  pinError.value = ''  // 清空上次错误，确保下次错误赋值能触发 watch
+  pinError.value = ''
   const stored = getStoredPINHash()
   if (!stored) { unlockApp(); return }
   const hash = await hashPIN(pin)
@@ -116,31 +97,17 @@ function onVisibilityChange() {
   if (document.hidden) {
     uiStore.unlocked = false
   } else if (getStoredPINHash()) {
-    // 回到前台且有 PIN → 重新锁定
+    // 回到前台且有 PIN → 立即弹出 PIN 弹窗
     pinError.value = ''
     pinResetVersion.value++
-
-    if (hasBiometric) {
-      // 先不弹 PIN 弹窗，优先尝试生物识别
-      showPinLock.value = false
-      tryBiometricUnlock()
-    } else {
-      // 只有 PIN → 立即弹出 PIN 弹窗
-      showPinLock.value = true
-    }
+    showPinLock.value = true
   } else {
-    // 回到前台且无 PIN → 恢复解锁状态
     uiStore.unlocked = true
   }
 }
 
 onMounted(() => {
   document.addEventListener('visibilitychange', onVisibilityChange)
-
-  // 首次加载时尝试生物识别
-  if (hasBiometric) {
-    tryBiometricUnlock()
-  }
 })
 
 onUnmounted(() => {

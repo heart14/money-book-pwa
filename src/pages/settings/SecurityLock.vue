@@ -142,30 +142,6 @@
             关闭 PIN 码
           </button>
         </div>
-
-        <!-- Biometric toggle card -->
-        <div v-if="biometricSupported === true" class="section-card">
-          <div class="bio-row">
-            <div class="bio-row-left">
-              <span class="bio-icon">🔐</span>
-              <div>
-                <div class="bio-label">Face ID / Touch ID</div>
-                <div v-if="biometricBusy" class="bio-hint">验证中…</div>
-              </div>
-            </div>
-            <button
-              class="toggle"
-              :class="{ 'toggle--on': biometricEnabled, 'toggle--busy': biometricBusy }"
-              :disabled="biometricBusy"
-              @click="onBiometricToggle"
-            >
-              <span class="toggle-thumb" />
-            </button>
-          </div>
-          <p class="bio-sub">
-            {{ biometricEnabled ? '通过生物识别快速解锁' : '设置后可用 Face ID / Touch ID 代替 PIN 码' }}
-          </p>
-        </div>
       </div>
     </template>
 
@@ -188,9 +164,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, watch, onMounted } from 'vue'
+import { ref, nextTick, watch } from 'vue'
 import { hashPIN, getStoredPINHash, setStoredPINHash, clearPIN } from '@/utils/crypto'
-import { isBiometricEnabled, isBiometricSupported, registerBiometric, clearBiometric } from '@/utils/biometric'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 
 defineEmits<{
@@ -214,11 +189,6 @@ const newPinConfirm = ref('')
 
 // Modal state
 const showDisableConfirm = ref(false)
-
-// Biometric state
-const biometricSupported = ref<boolean | null>(null)
-const biometricEnabled = ref(isBiometricEnabled())
-const biometricBusy = ref(false)
 
 // Refs for auto-focus
 const pinInputRef = ref<HTMLInputElement | null>(null)
@@ -320,41 +290,12 @@ function cancelChange() {
 // ── Has PIN: Disable ──
 async function onDisable() {
   clearPIN()
-  clearBiometric()  // Biometric cannot exist without PIN
   hasPin.value = false
   verified.value = false
-  biometricEnabled.value = false
   showDisableConfirm.value = false
   successMsg.value = 'PIN 码已关闭'
   nextTick(() => startSetup())
 }
-
-// ── Biometric ──
-
-async function onBiometricToggle() {
-  if (biometricBusy.value) return
-  biometricBusy.value = true
-  try {
-    if (biometricEnabled.value) {
-      // Turn off
-      clearBiometric()
-      biometricEnabled.value = false
-    } else {
-      // Turn on: try register (with reuse discovery built-in)
-      const ok = await registerBiometric()
-      if (ok) {
-        biometricEnabled.value = true
-        successMsg.value = 'Face ID / Touch ID 已开启'
-      }
-    }
-  } finally {
-    biometricBusy.value = false
-  }
-}
-
-onMounted(async () => {
-  biometricSupported.value = await isBiometricSupported()
-})
 
 // If no PIN initially, start setup immediately
 if (!hasPin.value) {
@@ -518,84 +459,6 @@ if (!hasPin.value) {
 
 .action-row--danger {
   color: var(--color-destructive);
-}
-
-/* ── Biometric Row ── */
-.bio-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 6px 0;
-}
-
-.bio-row-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.bio-icon {
-  font-size: 20px;
-  line-height: 1;
-}
-
-.bio-label {
-  font-size: var(--fs-title);
-  color: var(--color-text);
-  font-weight: 500;
-}
-
-.bio-hint {
-  font-size: var(--fs-small);
-  color: var(--color-secondary-text);
-  margin-top: 1px;
-}
-
-.bio-sub {
-  font-size: var(--fs-small);
-  color: var(--color-secondary-text);
-  margin: 6px 0 0;
-  line-height: 1.4;
-}
-
-/* ── iOS-style Toggle Switch ── */
-.toggle {
-  position: relative;
-  width: 51px;
-  height: 31px;
-  border: none;
-  border-radius: 16px;
-  background: var(--color-disabled-bg);
-  cursor: pointer;
-  padding: 0;
-  flex-shrink: 0;
-  transition: background 0.25s;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.toggle--on {
-  background: var(--color-success);
-}
-
-.toggle:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.toggle-thumb {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 27px;
-  height: 27px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  transition: transform 0.25s;
-}
-
-.toggle--on .toggle-thumb {
-  transform: translateX(20px);
 }
 
 .separator {

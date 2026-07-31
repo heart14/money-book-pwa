@@ -57,10 +57,6 @@
             </button>
           </div>
 
-          <!-- ── Biometric hint ── -->
-          <p v-if="biometricHint" class="pin-biometric-hint">
-            {{ biometricHint }}
-          </p>
         </div>
       </div>
     </Transition>
@@ -68,8 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
-import { isBiometricEnabled } from '@/utils/biometric'
+import { ref, watch } from 'vue'
 
 const props = defineProps<{
   visible: boolean
@@ -85,14 +80,7 @@ const emit = defineEmits<{
 const pinValue = ref('')
 const pinLength = ref(0)
 const shaking = ref(false)
-const prevErrorLen = ref(0)
-
 const keys = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-
-const biometricHint = computed(() => {
-  if (isBiometricEnabled()) return '也可使用 Face ID / 触控 ID 解锁'
-  return ''
-})
 
 function clearPin() {
   pinValue.value = ''
@@ -124,7 +112,6 @@ function onBackspace() {
 watch(() => props.visible, (visible) => {
   if (visible) {
     clearPin()
-    prevErrorLen.value = 0
   }
 })
 
@@ -321,14 +308,6 @@ watch(() => props.resetKey, () => {
 
 .pin-key--backspace {
   color: var(--color-secondary-text);
-}
-
-/* ── Biometric hint ── */
-.pin-biometric-hint {
-  font-size: var(--fs-small, 12px);
-  color: var(--color-secondary-text);
-  text-align: center;
-  margin-top: 20px;
 }
 
 /* ── Entrance transition ── */
