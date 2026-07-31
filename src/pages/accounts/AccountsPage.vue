@@ -96,6 +96,17 @@
         <button class="btn btn-confirm" @click="handleEdit">保存</button>
       </template>
     </CommonBottomSheet>
+
+    <!-- Delete Confirm Dialog -->
+    <ConfirmDialog
+      :visible="deleteTarget != null"
+      title="确认删除"
+      :message="deleteTarget ? `确定删除「${deleteTarget.name}」？` : ''"
+      confirm-text="删除"
+      confirm-type="danger"
+      @confirm="handleConfirmDelete"
+      @update:visible="deleteTarget = null"
+    />
   </div>
 </template>
 
@@ -105,6 +116,7 @@ import { useAccountStore } from '@/stores/accountStore'
 import { formatCurrency } from '@/utils/format'
 import type { Account } from '@/types'
 import CommonBottomSheet from '@/components/common/CommonBottomSheet.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import TwemojiIcon from '@/components/common/TwemojiIcon.vue'
 
 const accountStore = useAccountStore()
@@ -162,10 +174,18 @@ async function handleEdit() {
 }
 
 // ── Delete ──
-async function handleDelete(acc: Account) {
+const deleteTarget = ref<Account | null>(null)
+
+function handleDelete(acc: Account) {
   if (acc.id == null) return
-  if (!confirm(`确定删除「${acc.name}」？`)) return
+  deleteTarget.value = acc
+}
+
+async function handleConfirmDelete() {
+  const acc = deleteTarget.value
+  if (!acc || acc.id == null) return
   await accountStore.deleteAccount(acc.id)
+  deleteTarget.value = null
 }
 </script>
 
