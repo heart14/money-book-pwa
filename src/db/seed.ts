@@ -101,7 +101,6 @@ async function seedCategories() {
         { type: 'income', parentId: null, name: '税后薪酬', icon: '', sort: 1 },
         { type: 'income', parentId: null, name: '绩效奖金', icon: '', sort: 2 },
         { type: 'income', parentId: null, name: '兼职外包', icon: '', sort: 3 },
-        { type: 'income', parentId: null, name: '公积金入账', icon: '', sort: 4 },
       ],
     },
     {
@@ -126,7 +125,7 @@ async function seedCategories() {
       parent: { type: 'transfer', parentId: null, name: '借入借出', icon: '🤝', sort: 1 },
       children: [
         { type: 'transfer', parentId: null, name: '借出/还款', icon: '', sort: 1 },
-        { type: 'transfer', parentId: null, name: '借入/收回', icon: '', sort: 2 },
+        { type: 'transfer', parentId: null, name: '借入/收款', icon: '', sort: 2 },
       ],
     },
     {
