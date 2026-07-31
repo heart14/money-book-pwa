@@ -1107,11 +1107,11 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 }
 
 .total-income {
-  color: #ff3b30;
+  color: #8e8e93;
 }
 
 .total-expense {
-  color: #34c759;
+  color: #8e8e93;
 }
 
 /* Scroll sentinel for infinite scroll */

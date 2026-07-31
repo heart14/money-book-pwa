@@ -6,14 +6,7 @@
       </div> -->
       <div class="item-info">
         <div class="item-title">{{ title || categoryName }}</div>
-        <div class="item-sub">
-          <template v-if="transaction.type !== 'transfer'">
-            {{ categoryName }} · {{ displayTime }}
-          </template>
-          <template v-else>
-            转账 · {{ displayTime }}
-          </template>
-        </div>
+        <div class="item-sub">{{ categoryName }} · {{ displayTime }}</div>
       </div>
     </div>
     <div class="item-amount" :class="amountClass">
