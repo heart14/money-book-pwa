@@ -40,6 +40,19 @@
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  /* ── 字号令牌（5档字号：xs/sm/md(默认)/lg/xl） ── */
+  --fs-micro: 10px;
+  --fs-small: 12px;
+  --fs-ui:    13px;
+  --fs-body:  14px;
+  --fs-title: 15px;
+  --fs-amount:16px;
+  --fs-heading:17px;
+  --fs-hero:  20px;
+  --fs-page-title: 27px;
+  --fs-amount-lg: 34px;
+  --fs-amount-xl: 60px;
 }
 
 /* ── 深色主题 ── */
@@ -106,6 +119,35 @@ body {
 [class*="btn"]:not(.no-transition),
 [class*="row"]:not(.no-transition) {
   transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+/* ── 字号覆盖（5档字号） ── */
+:root.font-xs {
+  --fs-micro: 8px;  --fs-small: 10px;  --fs-ui: 10px;
+  --fs-body: 11px;  --fs-title: 12px;  --fs-amount: 13px;
+  --fs-heading: 14px; --fs-hero: 16px; --fs-page-title: 22px;
+  --fs-amount-lg: 27px; --fs-amount-xl: 48px;
+}
+
+:root.font-sm {
+  --fs-micro: 9px;  --fs-small: 11px;  --fs-ui: 12px;
+  --fs-body: 13px;  --fs-title: 14px;  --fs-amount: 14px;
+  --fs-heading: 15px; --fs-hero: 18px; --fs-page-title: 24px;
+  --fs-amount-lg: 31px; --fs-amount-xl: 54px;
+}
+
+:root.font-lg {
+  --fs-micro: 12px; --fs-small: 14px;  --fs-ui: 15px;
+  --fs-body: 16px;  --fs-title: 17px;  --fs-amount: 18px;
+  --fs-heading: 20px; --fs-hero: 23px; --fs-page-title: 31px;
+  --fs-amount-lg: 39px; --fs-amount-xl: 69px;
+}
+
+:root.font-xl {
+  --fs-micro: 13px; --fs-small: 16px;  --fs-ui: 17px;
+  --fs-body: 18px;  --fs-title: 20px;  --fs-amount: 21px;
+  --fs-heading: 22px; --fs-hero: 26px; --fs-page-title: 35px;
+  --fs-amount-lg: 44px; --fs-amount-xl: 78px;
 }
 
 /* Page base style */

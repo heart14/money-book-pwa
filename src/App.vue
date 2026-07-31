@@ -36,11 +36,20 @@ function applyTheme() {
   if (meta) meta.setAttribute('content', isDark ? '#000000' : '#f2f2f6')
 }
 
+function applyFontSize() {
+  const html = document.documentElement
+  html.classList.remove('font-xs', 'font-sm', 'font-lg', 'font-xl')
+  const level = uiStore.fontSize
+  if (level !== 'md') html.classList.add(`font-${level}`)
+}
+
 // Apply on mount
 applyTheme()
+applyFontSize()
 
 // Watch store changes
 watch(() => uiStore.theme, applyTheme)
+watch(() => uiStore.fontSize, applyFontSize)
 
 // Listen to system preference changes
 const mql = window.matchMedia('(prefers-color-scheme: dark)')

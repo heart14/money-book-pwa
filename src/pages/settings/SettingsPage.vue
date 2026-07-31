@@ -56,6 +56,17 @@
               >深色</button>
             </div>
           </div>
+          <!-- Font Size -->
+          <div class="setting-row">
+            <span class="setting-label">文字大小</span>
+            <div class="theme-toggle">
+              <button
+                v-for="opt in fontSizeOptions" :key="opt.value"
+                class="theme-btn" :class="{ active: uiStore.fontSize === opt.value }"
+                @click="uiStore.setFontSize(opt.value)"
+              >{{ opt.label }}</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -175,6 +186,13 @@ import QuickTemplateManager from './QuickTemplateManager.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 
 const uiStore = useUiStore()
+const fontSizeOptions = [
+  { label: '很小', value: 'xs' as const },
+  { label: '小', value: 'sm' as const },
+  { label: '中', value: 'md' as const },
+  { label: '大', value: 'lg' as const },
+  { label: '特大', value: 'xl' as const },
+]
 const currentView = ref<'main' | 'security'>('main')
 const hasPin = ref(!!getStoredPINHash())
 const hasBiometric = ref(hasPin.value && isBiometricEnabled())
@@ -309,6 +327,19 @@ async function handleDestroy() {
 .row-value { font-size: 13px; color: var(--color-secondary-text); }
 .row-label--dev { font-size: 13px; color: var(--color-secondary-text); }
 .section-row--dev:active { background: var(--color-press); }
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  width: 100%;
+}
+
+.setting-label {
+  font-size: 15px;
+  color: var(--color-text);
+}
 
 .chevron { color: var(--color-placeholder); flex-shrink: 0; transition: transform 0.2s; }
 

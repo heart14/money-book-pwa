@@ -3,6 +3,7 @@ import { ref } from 'vue'
 
 export type BookingMode = 'expense' | 'income' | 'transfer'
 export type ThemeMode = 'light' | 'dark' | 'system'
+export type FontSizeLevel = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
 export const useUiStore = defineStore('ui', () => {
   // ── Theme state ──
@@ -11,6 +12,14 @@ export const useUiStore = defineStore('ui', () => {
   function setTheme(mode: ThemeMode) {
     theme.value = mode
     localStorage.setItem('theme', mode)
+  }
+
+  // ── FontSize state ──
+  const fontSize = ref<FontSizeLevel>((localStorage.getItem('fontSize') as FontSizeLevel) || 'md')
+
+  function setFontSize(level: FontSizeLevel) {
+    fontSize.value = level
+    localStorage.setItem('fontSize', level)
   }
 
   // ── PIN lock state ──
@@ -54,6 +63,7 @@ export const useUiStore = defineStore('ui', () => {
 
   return {
     theme,
+    fontSize,
     unlocked,
     bookingMode,
     bookingAmount,
@@ -63,6 +73,7 @@ export const useUiStore = defineStore('ui', () => {
     setMode,
     setAmount,
     setTheme,
+    setFontSize,
     triggerBookingSave,
     showBookingHint,
     hideBookingHint,
