@@ -23,6 +23,17 @@ const emojiList = {
   '📋': 'clipboard',                   // U+1F4CB
   '📁': 'file-folder',                 // U+1F4C1
   '💸': 'money-with-wings',            // U+1F4B8
+  // ── Settings page icons ──
+  '🔒': 'locked',                      // U+1F512
+  '🎨': 'artist-palette',              // U+1F3A8
+  '📤': 'outbox-tray',                 // U+1F4E4
+  '📥': 'inbox-tray',                  // U+1F4E5
+  '🗑️': 'wastebasket',                // U+1F5D1
+  'ℹ️': 'information',                 // U+2122
+  '📂': 'open-file-folder',             // U+1F4C2
+  '⚡': 'high-voltage',                 // U+26A1
+  '🏷️': 'label',                      // U+1F3F7
+  '🔄': 'counterclockwise-arrows-button', // U+1F504
 };
 
 const iconsPath = path.join(ROOT, 'node_modules/@iconify-json/twemoji/icons.json');
