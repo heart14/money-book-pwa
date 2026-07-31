@@ -1,11 +1,6 @@
 <template>
   <div class="booking-page">
-    <div
-      class="booking-content"
-      :class="{ 'booking-content--no-scroll': !keyboardVisible }"
-      @touchstart="onTouchStart"
-      @touchend="onTouchEnd"
-    >
+    <div class="booking-content" @touchstart="onTouchStart" @touchend="onTouchEnd">
       <!-- Mode Switch centered -->
       <div class="mode-switch-wrapper">
         <ModeSwitch v-model="bookingMode" @update:model-value="onModeChange" />
@@ -435,10 +430,6 @@ watch(
   padding: 16px;
   padding-bottom: 280px;
   -webkit-overflow-scrolling: touch;
-}
-
-.booking-content--no-scroll {
-  overflow-y: hidden;
 }
 
 /* ── Mode Switch ── */
