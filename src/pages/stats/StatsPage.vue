@@ -128,7 +128,14 @@
 
       <!-- Large Expenses -->
     <div class="chart-card large-expense-card">
-      <div class="chart-title">大额支出</div>
+      <div class="chart-title-row">
+        <span class="chart-title">大额支出</span>
+        <button
+          class="hide-toggle"
+          :class="{ active: hideCarHousing }"
+          @click="hideCarHousing = !hideCarHousing"
+        >屏蔽车贷房贷</button>
+      </div>
       <div v-if="largeExpenses.length === 0" class="empty-text">暂无大额支出</div>
       <div
         v-for="(item, index) in largeExpenses"
@@ -207,6 +214,7 @@ const rankingLevel = ref<RankLevel>('parent')
 const timeMode = ref<'month' | 'year' | 'custom'>('month')
 const trendType = ref<'expense' | 'income'>('expense')
 const currentDate = ref(new Date())
+const hideCarHousing = ref(false)
 
 // Custom date range state
 const customRange = reactive({
@@ -478,11 +486,36 @@ function navigateToCategory(item: { categoryId: number }) {
   router.push({ name: 'transactions', query: { categoryId: String(item.categoryId), yearMonth: ym } })
 }
 
+/** 需要屏蔽的二级分类 ID（车贷房贷相关） */
+const excludedCategoryIds = computed(() => {
+  const ids = new Set<number>()
+  const cats = categoryStore.categories
+  // "居住" → "房租房贷"
+  const livingParent = cats.find((c) => c.type === 'expense' && c.parentId === null && c.name === '居住')
+  if (livingParent) {
+    const rentChild = cats.find((c) => c.parentId === livingParent.id && c.name === '房租房贷')
+    if (rentChild) ids.add(rentChild.id!)
+  }
+  // "特别" → "购车"、"购房"
+  const specialParent = cats.find((c) => c.type === 'expense' && c.parentId === null && c.name === '特别')
+  if (specialParent) {
+    for (const name of ['购车', '购房']) {
+      const child = cats.find((c) => c.parentId === specialParent.id && c.name === name)
+      if (child) ids.add(child.id!)
+    }
+  }
+  return ids
+})
+
 /** 大额支出: 单笔 > 1000 元 (100000 分), 按金额降序, 最多 10 条 */
 const largeExpenses = computed(() => {
   const LARGE_THRESHOLD = 100000 // 1000 元 = 100000 分
   return transactions.value
-    .filter((tx) => tx.type === 'expense' && tx.amount > LARGE_THRESHOLD)
+    .filter((tx) => {
+      if (tx.type !== 'expense' || tx.amount <= LARGE_THRESHOLD) return false
+      if (hideCarHousing.value && tx.categoryId != null && excludedCategoryIds.value.has(tx.categoryId)) return false
+      return true
+    })
     .sort((a, b) => b.amount - a.amount)
     .slice(0, 10)
     .map((tx) => {
@@ -738,6 +771,27 @@ function rankLabel(index: number): string {
 .toggle-btn.active {
   background: #fff;
   color: #007aff;
+  font-weight: 600;
+}
+
+.hide-toggle {
+  padding: 3px 10px;
+  border: 1px solid #c7c7cc;
+  background: transparent;
+  font-size: 11px;
+  font-weight: 500;
+  color: #8e8e93;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.hide-toggle.active {
+  background: #ff3b30;
+  border-color: #ff3b30;
+  color: #fff;
   font-weight: 600;
 }
 
