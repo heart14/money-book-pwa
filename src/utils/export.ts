@@ -67,10 +67,23 @@ export async function importData(file: File): Promise<void> {
       db.accounts.bulkAdd(accounts),
       db.categories.bulkAdd(categories),
       db.transactions.bulkAdd(transactions),
-      db.tags.bulkAdd(tags),
       db.recurringRules.bulkAdd(recurringRules),
       db.quickTemplates.bulkAdd(quickTemplates),
     ])
+
+    // Regenerate tags table from BOTH imported tags and transaction tags.
+    // This handles old backups that lack a "tags" key, and ensures no
+    // drift between the tags registry and actual transaction references.
+    const allTxs = await db.transactions.toArray()
+    const tagNameSet = new Set<string>()
+    for (const t of tags) { if (t.name) tagNameSet.add(t.name) }
+    for (const tx of allTxs) {
+      for (const tag of (tx.tags || [])) {
+        if (tag) tagNameSet.add(tag)
+      }
+    }
+    const uniqueTags = Array.from(tagNameSet).sort().map((name) => ({ name }))
+    await db.tags.bulkAdd(uniqueTags, { allKeys: true })
   })
 }
 
