@@ -153,6 +153,8 @@
         v-for="(item, index) in highFrequencyExpenses"
         :key="item.categoryId"
         class="freq-row"
+        :class="{ clickable: timeMode === 'month' }"
+        @click="navigateToCategory(item)"
       >
         <span class="freq-rank">{{ index + 1 }}</span>
         <span class="freq-icon"><TwemojiIcon :emoji="item.icon" /></span>
@@ -959,6 +961,14 @@ function rankLabel(index: number): string {
 
 .freq-row:last-child {
   border-bottom: none;
+}
+
+.freq-row.clickable {
+  cursor: pointer;
+}
+
+.freq-row.clickable:active {
+  opacity: 0.5;
 }
 
 .freq-rank {
