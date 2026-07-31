@@ -442,7 +442,7 @@ watch(
 /* ── Amount Display ── */
 .amount-display {
   text-align: center;
-  font-size: 60px;
+  font-size: var(--fs-amount-xl);
   font-weight: 700;
   color: var(--color-text);
   letter-spacing: -1px;
@@ -477,7 +477,7 @@ watch(
   background: #e9e9ed;
   border-radius: 14px;
   padding: 4px 10px;
-  font-size: 12px;
+  font-size: var(--fs-small);
   font-weight: 500;
   color: var(--color-text);
   white-space: nowrap;
@@ -510,7 +510,7 @@ watch(
   border: none;
   background: transparent;
   font-family: inherit;
-  font-size: 14px;
+  font-size: var(--fs-body);
   color: var(--color-text);
   outline: none;
 }
@@ -534,7 +534,7 @@ watch(
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   font-family: inherit;
-  font-size: 14px;
+  font-size: var(--fs-body);
   color: var(--color-text);
   outline: none;
 }
@@ -562,7 +562,7 @@ watch(
   transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.8);
   color: #fff;
-  font-size: 14px;
+  font-size: var(--fs-body);
   font-weight: 500;
   padding: 10px 24px;
   border-radius: 20px;
@@ -597,7 +597,7 @@ watch(
 }
 
 .quick-tpl-label {
-  font-size: 12px;
+  font-size: var(--fs-small);
   color: var(--color-secondary-text, #8e8e93);
   margin-bottom: 8px;
 }
@@ -619,7 +619,7 @@ watch(
   background: var(--color-card);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  font-size: 13px;
+  font-size: var(--fs-ui);
   color: var(--color-text, #1c1c1e);
   cursor: pointer;
   transition: background 0.15s;
@@ -634,7 +634,7 @@ watch(
 }
 
 .tpl-icon {
-  font-size: 14px;
+  font-size: var(--fs-body);
   line-height: 1;
 }
 
@@ -687,7 +687,7 @@ watch(
 }
 
 .quick-tpl-empty-text {
-  font-size: 13px;
+  font-size: var(--fs-ui);
   color: var(--color-secondary-text, #8e8e93);
   font-weight: 500;
 }

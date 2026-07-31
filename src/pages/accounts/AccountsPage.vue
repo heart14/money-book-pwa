@@ -184,7 +184,7 @@ async function handleDelete(acc: Account) {
 }
 
 .page-title {
-  font-size: 27px;
+  font-size: var(--fs-page-title);
   font-weight: 700;
   color: var(--color-text);
 }
@@ -222,13 +222,13 @@ async function handleDelete(acc: Account) {
 }
 
 .balance-label {
-  font-size: 13px;
+  font-size: var(--fs-ui);
   color: rgba(255, 255, 255, 0.6);
   margin-bottom: 4px;
 }
 
 .balance-amount {
-  font-size: 34px;
+  font-size: var(--fs-amount-lg);
   font-weight: 700;
   color: #fff;
   letter-spacing: -1px;
@@ -245,7 +245,7 @@ async function handleDelete(acc: Account) {
 }
 
 .list-header {
-  font-size: 13px;
+  font-size: var(--fs-ui);
   font-weight: 600;
   color: var(--color-secondary-text);
   padding: 14px 16px 8px;
@@ -278,13 +278,13 @@ async function handleDelete(acc: Account) {
 }
 
 .account-name {
-  font-size: 15px;
+  font-size: var(--fs-title);
   font-weight: 500;
   color: var(--color-text);
 }
 
 .account-balance {
-  font-size: 15px;
+  font-size: var(--fs-title);
   font-weight: 600;
   color: var(--color-text);
   font-variant-numeric: tabular-nums;
@@ -312,7 +312,7 @@ async function handleDelete(acc: Account) {
 .empty-row {
   padding: 24px 16px;
   text-align: center;
-  font-size: 14px;
+  font-size: var(--fs-body);
   color: var(--color-secondary-text);
 }
 
@@ -322,7 +322,7 @@ async function handleDelete(acc: Account) {
 
 .form-label {
   display: block;
-  font-size: 14px;
+  font-size: var(--fs-body);
   font-weight: 500;
   color: var(--color-secondary-text);
   margin-bottom: 6px;
@@ -335,7 +335,7 @@ async function handleDelete(acc: Account) {
   border: 1px solid var(--color-separator);
   background: var(--color-input-bg);
   padding: 0 12px;
-  font-size: 15px;
+  font-size: var(--fs-title);
   color: var(--color-text);
   outline: none;
   box-sizing: border-box;
@@ -350,7 +350,7 @@ async function handleDelete(acc: Account) {
   height: 44px;
   border-radius: 10px;
   border: none;
-  font-size: 16px;
+  font-size: var(--fs-amount);
   font-weight: 500;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;

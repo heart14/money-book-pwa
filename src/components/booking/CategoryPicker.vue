@@ -116,7 +116,7 @@ watch(
 }
 
 .picker-label {
-  font-size: 13px;
+  font-size: var(--fs-ui);
   color: var(--color-secondary-text);
   margin-bottom: 8px;
   padding: 0 4px;
@@ -196,7 +196,7 @@ watch(
   border-radius: 16px;
   background: var(--color-bg);
   color: var(--color-text);
-  font-size: 13px;
+  font-size: var(--fs-ui);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;

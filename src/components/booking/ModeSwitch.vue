@@ -43,7 +43,7 @@ defineEmits<{
   border: none;
   background: transparent;
   color: var(--color-secondary-text);
-  font-size: 12px;
+  font-size: var(--fs-small);
   font-weight: 600;
   padding: 6px 20px;
   border-radius: 18px;

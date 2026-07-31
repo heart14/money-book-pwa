@@ -34,13 +34,13 @@ defineProps<{
 }
 
 .nw-label {
-  font-size: 13px;
+  font-size: var(--fs-ui);
   color: rgba(255, 255, 255, 0.6);
   margin-bottom: 4px;
 }
 
 .nw-amount {
-  font-size: 34px;
+  font-size: var(--fs-amount-lg);
   font-weight: 700;
   color: #fff;
   letter-spacing: -1px;
@@ -66,7 +66,7 @@ defineProps<{
 }
 
 .nw-detail-value {
-  font-size: 15px;
+  font-size: var(--fs-title);
   font-weight: 600;
 }
 

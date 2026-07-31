@@ -80,7 +80,7 @@ const groupTotal = computed(() => {
 }
 
 .group-title {
-  font-size: 13px;
+  font-size: var(--fs-ui);
   font-weight: 600;
   color: var(--color-secondary-text);
 }
@@ -96,7 +96,7 @@ const groupTotal = computed(() => {
 }
 
 .group-total {
-  font-size: 13px;
+  font-size: var(--fs-ui);
   font-weight: 600;
   color: var(--color-text);
   font-variant-numeric: tabular-nums;
@@ -130,13 +130,13 @@ const groupTotal = computed(() => {
 
 .account-name {
   flex: 1;
-  font-size: 15px;
+  font-size: var(--fs-title);
   font-weight: 500;
   color: var(--color-text);
 }
 
 .account-balance {
-  font-size: 15px;
+  font-size: var(--fs-title);
   font-weight: 600;
   color: var(--color-text);
   font-variant-numeric: tabular-nums;
@@ -149,7 +149,7 @@ const groupTotal = computed(() => {
 .empty-row {
   padding: 16px;
   text-align: center;
-  font-size: 14px;
+  font-size: var(--fs-body);
   color: var(--color-secondary-text);
 }
 </style>
