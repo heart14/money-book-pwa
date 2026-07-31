@@ -80,6 +80,7 @@ import { db } from '@/db'
 import { formatCurrency } from '@/utils/format'
 import type { RecurringRule } from '@/types'
 import CommonBottomSheet from '@/components/common/CommonBottomSheet.vue'
+import TwemojiIcon from '@/components/common/TwemojiIcon.vue'
 
 const expanded = ref(false)
 

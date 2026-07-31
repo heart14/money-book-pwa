@@ -46,6 +46,7 @@ import { ref } from 'vue'
 import { db } from '@/db'
 import { useLiveQuery } from '@/composables/useLiveQuery'
 import type { Tag } from '@/types'
+import TwemojiIcon from '@/components/common/TwemojiIcon.vue'
 
 const expanded = ref(false)
 
