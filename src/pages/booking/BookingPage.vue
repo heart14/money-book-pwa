@@ -180,9 +180,8 @@ const tags = ref<string[]>([])
 const tagInput = ref('')
 
 // ── 日期时间状态 ──
-const now = new Date()
-const selectedDate = ref(toDateString(now))
-const selectedTime = ref(`${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`)
+const selectedDate = ref(toDateString(new Date()))
+const selectedTime = ref(`${String(new Date().getHours()).padStart(2, '0')}:${String(new Date().getMinutes()).padStart(2, '0')}`)
 const datePickerVisible = ref(false)
 
 // ── Computed: 日期时间显示文本 ──
