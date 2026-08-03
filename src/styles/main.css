@@ -52,7 +52,7 @@
   --fs-hero:  20px;
   --fs-page-title: 27px;
   --fs-amount-lg: 34px;
-  --fs-amount-xl: 60px;
+  --fs-amount-xl: 68px;
 }
 
 /* ── 深色主题 ── */
@@ -126,28 +126,28 @@ body {
   --fs-micro: 8px;  --fs-small: 10px;  --fs-ui: 10px;
   --fs-body: 11px;  --fs-title: 12px;  --fs-amount: 13px;
   --fs-heading: 14px; --fs-hero: 16px; --fs-page-title: 22px;
-  --fs-amount-lg: 27px; --fs-amount-xl: 48px;
+  --fs-amount-lg: 27px; --fs-amount-xl: 55px;
 }
 
 :root.font-sm {
   --fs-micro: 9px;  --fs-small: 11px;  --fs-ui: 12px;
   --fs-body: 13px;  --fs-title: 14px;  --fs-amount: 14px;
   --fs-heading: 15px; --fs-hero: 18px; --fs-page-title: 24px;
-  --fs-amount-lg: 31px; --fs-amount-xl: 54px;
+  --fs-amount-lg: 31px; --fs-amount-xl: 61px;
 }
 
 :root.font-lg {
   --fs-micro: 12px; --fs-small: 14px;  --fs-ui: 15px;
   --fs-body: 16px;  --fs-title: 17px;  --fs-amount: 18px;
   --fs-heading: 20px; --fs-hero: 23px; --fs-page-title: 31px;
-  --fs-amount-lg: 39px; --fs-amount-xl: 69px;
+  --fs-amount-lg: 39px; --fs-amount-xl: 76px;
 }
 
 :root.font-xl {
   --fs-micro: 13px; --fs-small: 16px;  --fs-ui: 17px;
   --fs-body: 18px;  --fs-title: 20px;  --fs-amount: 21px;
   --fs-heading: 22px; --fs-hero: 26px; --fs-page-title: 35px;
-  --fs-amount-lg: 44px; --fs-amount-xl: 78px;
+  --fs-amount-lg: 44px; --fs-amount-xl: 84px;
 }
 
 /* Page base style */

@@ -3,23 +3,23 @@
     <div class="time-picker-content">
       <div class="picker-columns">
         <div class="picker-column">
-          <div class="picker-column-label">小时</div>
+          <div class="picker-column-label">时</div>
           <PickerWheel
             :items="hourItems"
             :model-value="selectedHour"
             :item-height="40"
             :visible-count="5"
-            @update:model-value="selectedHour = $event"
+            @update:model-value="onHourChange"
           />
         </div>
         <div class="picker-column">
-          <div class="picker-column-label">分钟</div>
+          <div class="picker-column-label">分</div>
           <PickerWheel
             :items="minuteItems"
             :model-value="selectedMinute"
             :item-height="40"
             :visible-count="5"
-            @update:model-value="selectedMinute = $event"
+            @update:model-value="onMinuteChange"
           />
         </div>
       </div>
@@ -32,21 +32,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import CommonBottomSheet from './CommonBottomSheet.vue'
 import PickerWheel from './PickerWheel.vue'
 
 const props = withDefaults(defineProps<{
   visible: boolean
   modelValue?: string
+  /** 当前选择的日期，用于判断是否限制未来时间 */
+  selectedDate?: string
 }>(), {
   modelValue: '',
+  selectedDate: '',
 })
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void
   (e: 'update:visible', value: boolean): void
-  (e: 'close'): void
 }>()
 
 function parseTime(timeStr: string): { hour: number; minute: number } {
@@ -71,28 +73,62 @@ watch(() => props.visible, (open) => {
   }
 })
 
-const hourItems = Array.from({ length: 24 }, (_, i) => ({
-  label: String(i).padStart(2, '0'),
-  value: i,
-}))
+// ── Future time restriction ──
+const now = new Date()
+const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+const isToday = computed(() => props.selectedDate === todayStr)
 
-const minuteItems = Array.from({ length: 60 }, (_, i) => ({
-  label: String(i).padStart(2, '0'),
-  value: i,
-}))
+const maxHour = computed(() => isToday.value ? now.getHours() : 23)
+const maxMinute = computed(() => (isToday.value && selectedHour.value === now.getHours()) ? now.getMinutes() : 59)
+
+const hourItems = computed(() =>
+  Array.from({ length: maxHour.value + 1 }, (_, i) => ({
+    label: String(i).padStart(2, '0'),
+    value: i,
+  }))
+)
+
+const minuteItems = computed(() =>
+  Array.from({ length: maxMinute.value + 1 }, (_, i) => ({
+    label: String(i).padStart(2, '0'),
+    value: i,
+  }))
+)
+
+function onHourChange(hour: number) {
+  selectedHour.value = hour
+  // Clamp minute if needed
+  if (isToday.value && hour === now.getHours() && selectedMinute.value > now.getMinutes()) {
+    selectedMinute.value = now.getMinutes()
+  }
+}
+
+function onMinuteChange(minute: number) {
+  selectedMinute.value = minute
+}
 
 function toTimeStr(hour: number, minute: number): string {
   return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
 }
 
 function onConfirm() {
-  emit('update:modelValue', toTimeStr(selectedHour.value, selectedMinute.value))
+  // Safety clamp
+  let h = selectedHour.value
+  let m = selectedMinute.value
+  if (isToday.value) {
+    if (h > now.getHours()) {
+      h = now.getHours()
+      m = now.getMinutes()
+    } else if (h === now.getHours() && m > now.getMinutes()) {
+      m = now.getMinutes()
+    }
+  }
+  emit('update:modelValue', toTimeStr(h, m))
   emit('update:visible', false)
 }
 
 function onCancel() {
   emit('update:visible', false)
-  emit('close')
 }
 </script>
 

@@ -12,12 +12,10 @@
       <!-- Date & Time Inline -->
       <div class="dt-row">
         <div class="dt-picker" @click="datePickerOpen = true">
-          <span class="dt-picker-icon">📅</span>
-          <span class="dt-picker-text">{{ formatDateLabel(selectedDate) }}</span>
+          <span class="dt-picker-text">{{ formatDate(selectedDate) }}</span>
         </div>
         <div class="dt-picker" @click="timePickerOpen = true">
-          <span class="dt-picker-icon">⏰</span>
-          <span class="dt-picker-text">{{ selectedTime }}</span>
+          <span class="dt-picker-text">{{ displayTime }}</span>
         </div>
       </div>
 
@@ -140,12 +138,12 @@
 
     <!-- Date/Time Pickers -->
     <DatePickerSheet v-model:visible="datePickerOpen" v-model="selectedDate" />
-    <TimePickerSheet v-model:visible="timePickerOpen" v-model="selectedTime" />
+    <TimePickerSheet v-model:visible="timePickerOpen" v-model="selectedTime" :selected-date="selectedDate" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useCategoryStore } from '@/stores/categoryStore'
 import { useTransactionStore } from '@/stores/transactionStore'
 import { useUiStore, type BookingMode } from '@/stores/uiStore'
@@ -155,7 +153,7 @@ import NumberKeyboard from '@/components/booking/NumberKeyboard.vue'
 import CategoryPicker from '@/components/booking/CategoryPicker.vue'
 import { useQuickTemplateStore } from '@/stores/quickTemplateStore'
 import PromptDialog from '@/components/common/PromptDialog.vue'
-import { formatShortCurrency, toDateString, formatDate as formatDateLabel } from '@/utils/format'
+import { formatShortCurrency, toDateString, formatDate } from '@/utils/format'
 import type { QuickTemplate } from '@/types'
 import TwemojiIcon from '@/components/common/TwemojiIcon.vue'
 import DatePickerSheet from '@/components/common/DatePickerSheet.vue'
@@ -184,6 +182,52 @@ const selectedDate = ref(toDateString(new Date()))
 const selectedTime = ref(`${String(new Date().getHours()).padStart(2, '0')}:${String(new Date().getMinutes()).padStart(2, '0')}`)
 const datePickerOpen = ref(false)
 const timePickerOpen = ref(false)
+
+// ── 实时时间显示 ──
+const currentSeconds = ref(String(new Date().getSeconds()).padStart(2, '0'))
+let secondsTimer: ReturnType<typeof setInterval> | null = null
+
+const displayTime = computed(() => {
+  const n = new Date()
+  const today = toDateString(n)
+  const now = `${String(n.getHours()).padStart(2, '0')}:${String(n.getMinutes()).padStart(2, '0')}`
+  const modified = selectedDate.value !== today || selectedTime.value !== now
+  return `${selectedTime.value}:${modified ? '00' : currentSeconds.value}`
+})
+
+function startSecondsTimer() {
+  if (secondsTimer) return
+  secondsTimer = setInterval(() => {
+    currentSeconds.value = String(new Date().getSeconds()).padStart(2, '0')
+  }, 1000)
+}
+
+function stopSecondsTimer() {
+  if (secondsTimer) {
+    clearInterval(secondsTimer)
+    secondsTimer = null
+  }
+}
+
+function onVisibilityChange() {
+  if (document.hidden) {
+    stopSecondsTimer()
+  } else {
+    // Update seconds immediately on return
+    currentSeconds.value = String(new Date().getSeconds()).padStart(2, '0')
+    startSecondsTimer()
+  }
+}
+
+onMounted(() => {
+  startSecondsTimer()
+  document.addEventListener('visibilitychange', onVisibilityChange)
+})
+
+onUnmounted(() => {
+  stopSecondsTimer()
+  document.removeEventListener('visibilitychange', onVisibilityChange)
+})
 
 // Touch swipe state
 let touchStartX = 0
@@ -480,18 +524,29 @@ watch(
 }
 
 /* ── Date / Time Inline ── */
-.dt-row { display: flex; gap: 8px; margin-bottom: 12px; }
-.dt-picker {
-  flex: 1; height: 44px; display: flex; align-items: center; gap: 6px;
-  padding: 0 12px; border: none; border-radius: 10px;
-  background: var(--color-card); font-size: 15px; font-weight: 600;
-  color: var(--color-text); font-family: inherit;
-  font-variant-numeric: tabular-nums; cursor: pointer;
-  transition: background 0.15s; -webkit-tap-highlight-color: transparent;
+.dt-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 12px;
+  height: 32px;
 }
-.dt-picker:active { background: var(--color-disabled-bg); }
-.dt-picker-icon { font-size: 16px; line-height: 1; opacity: 0.6; }
-.dt-picker-text { flex: 1; text-align: center; }
+.dt-picker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2px;
+  border: none;
+  background: transparent;
+  font-size: var(--fs-ui, 13px);
+  font-weight: 400;
+  color: var(--color-secondary-text);
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
 
 /* ── Tags Input ── */
 .tags-section {

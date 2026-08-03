@@ -56,7 +56,6 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void
   (e: 'update:visible', value: boolean): void
-  (e: 'close'): void
 }>()
 
 // Parse initial date
@@ -84,28 +83,45 @@ watch(() => props.visible, (open) => {
   }
 })
 
+const now = new Date()
+const currentYear = now.getFullYear()
+const currentMonth = now.getMonth() + 1
+const currentDay = now.getDate()
+
+// Compute max selectable date (today)
+function dateToNum(year: number, month: number, day: number): number {
+  return year * 10000 + month * 100 + day
+}
+const todayNum = dateToNum(currentYear, currentMonth, currentDay)
+
 // Column data
 const yearItems = computed(() => {
   const years: { label: string; value: number }[] = []
-  for (let y = 1970; y <= 2050; y++) {
+  for (let y = 1970; y <= currentYear; y++) {
     years.push({ label: `${y}`, value: y })
   }
   return years
 })
 
 const monthItems = computed(() => {
-  return Array.from({ length: 12 }, (_, i) => ({
+  const maxMonth = selectedYear.value === currentYear ? currentMonth : 12
+  return Array.from({ length: maxMonth }, (_, i) => ({
     label: `${i + 1}`,
     value: i + 1,
   }))
 })
 
 const daysInMonth = computed(() => {
+  // month 为 1-indexed，Date monthIndex 为 0-indexed
+  // Month 作为 monthIndex 时 day=0 回绕到上个月最后一天
   return new Date(selectedYear.value, selectedMonth.value, 0).getDate()
 })
 
 const dayItems = computed(() => {
-  return Array.from({ length: daysInMonth.value }, (_, i) => ({
+  const maxDay = (selectedYear.value === currentYear && selectedMonth.value === currentMonth)
+    ? currentDay
+    : daysInMonth.value
+  return Array.from({ length: maxDay }, (_, i) => ({
     label: `${i + 1}`,
     value: i + 1,
   }))
@@ -114,10 +130,18 @@ const dayItems = computed(() => {
 // Handlers with cross-column correction
 function onYearChange(year: number) {
   selectedYear.value = year
+  // Clamp month if at current year
+  if (year === currentYear && selectedMonth.value > currentMonth) {
+    selectedMonth.value = currentMonth
+  }
   // Fix day if needed (e.g., Feb 29 in non-leap year)
   const maxDay = new Date(year, selectedMonth.value, 0).getDate()
   if (selectedDay.value > maxDay) {
     selectedDay.value = maxDay
+  }
+  // Clamp day if at today
+  if (year === currentYear && selectedMonth.value === currentMonth && selectedDay.value > currentDay) {
+    selectedDay.value = currentDay
   }
 }
 
@@ -127,6 +151,10 @@ function onMonthChange(month: number) {
   const maxDay = new Date(selectedYear.value, month, 0).getDate()
   if (selectedDay.value > maxDay) {
     selectedDay.value = maxDay
+  }
+  // Clamp day if at current month of current year
+  if (selectedYear.value === currentYear && month === currentMonth && selectedDay.value > currentDay) {
+    selectedDay.value = currentDay
   }
 }
 
@@ -141,13 +169,21 @@ function toDateStr(year: number, month: number, day: number): string {
 }
 
 function onConfirm() {
-  emit('update:modelValue', toDateStr(selectedYear.value, selectedMonth.value, selectedDay.value))
+  // Safety clamp: ensure not future
+  let y = selectedYear.value
+  let m = selectedMonth.value
+  let d = selectedDay.value
+  if (dateToNum(y, m, d) > todayNum) {
+    y = currentYear
+    m = currentMonth
+    d = currentDay
+  }
+  emit('update:modelValue', toDateStr(y, m, d))
   emit('update:visible', false)
 }
 
 function onCancel() {
   emit('update:visible', false)
-  emit('close')
 }
 </script>
 

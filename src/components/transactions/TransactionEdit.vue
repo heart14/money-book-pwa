@@ -63,7 +63,7 @@
       </div>
       <!-- Date/Time Pickers -->
       <DatePickerSheet v-model:visible="datePickerOpen" v-model="form.date" />
-      <TimePickerSheet v-model:visible="timePickerOpen" v-model="form.time" />
+      <TimePickerSheet v-model:visible="timePickerOpen" v-model="form.time" :selected-date="form.date" />
     </div>
   </Teleport>
 </template>

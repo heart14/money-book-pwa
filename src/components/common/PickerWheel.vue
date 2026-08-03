@@ -45,7 +45,11 @@ const isAnimating = ref(false)
 // Find selected index from modelValue
 const selectedIndex = computed(() => {
   const idx = props.items.findIndex(item => item.value === props.modelValue)
-  return idx >= 0 ? idx : 0
+  if (idx < 0) {
+    console.warn(`[PickerWheel] modelValue ${props.modelValue} not found in items`)
+    return 0
+  }
+  return idx
 })
 
 const containerHeight = computed(() => props.itemHeight * props.visibleCount)
@@ -173,7 +177,14 @@ function animateMomentum(velocity: number) {
 function snapToNearest() {
   isAnimating.value = true
   const rawIndex = Math.round((centerOffset.value - offset.value) / props.itemHeight)
-  const idx = clamp(rawIndex, 0, props.items.length - 1)
+  let idx = clamp(rawIndex, 0, props.items.length - 1)
+
+  // Prefer current modelValue if still valid (handles programmatic clamping during animation)
+  const currentIdx = props.items.findIndex(item => item.value === props.modelValue)
+  if (currentIdx >= 0) {
+    idx = currentIdx
+  }
+
   const targetOffset = centerOffset.value - idx * props.itemHeight
 
   // Animate to target
@@ -268,13 +279,9 @@ onUnmounted(() => {
   position: absolute;
   left: 8px;
   right: 8px;
-  border-radius: 8px;
-  background: var(--color-card);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   pointer-events: none;
-  box-shadow: var(--shadow-sm);
-  border: 0.5px solid var(--color-separator);
   z-index: 1;
+  border-top: 1.5px solid var(--color-separator-heavy);
+  border-bottom: 1.5px solid var(--color-separator-heavy);
 }
 </style>
