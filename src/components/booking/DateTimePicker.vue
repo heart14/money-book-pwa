@@ -11,7 +11,7 @@
     <div class="dt-section">
       <div class="dt-month-nav">
         <button class="dt-nav-btn" @click="prevMonth">&#x25C0;</button>
-        <span class="dt-month-label">{{ currentYear }}年{{ currentMonth }}月</span>
+        <span class="dt-month-label">{{ navYear }}年{{ navMonth }}月</span>
         <button class="dt-nav-btn" @click="nextMonth">&#x25B6;</button>
       </div>
       <div class="dt-date-chips">
@@ -133,9 +133,6 @@ const daysInMonth = computed(() => {
   return days
 })
 
-const currentYear = computed(() => navYear.value)
-const currentMonth = computed(() => navMonth.value)
-
 function prevMonth() {
   if (navMonth.value === 1) {
     navYear.value--
@@ -204,12 +201,12 @@ function onCancel() {
   emit('close')
 }
 
-// 打开时初始化
+// 打开时初始化（immediate 确保挂载时 visible=true 也执行）
 watch(() => props.visible, (v) => {
   if (v) {
     initLocal()
   }
-})
+}, { immediate: true })
 
 // 父组件 date/time 变化时同步（如外部 reset）
 watch(() => props.date, (v) => {
