@@ -193,7 +193,7 @@ function snapToNearest() {
       animFrameId = requestAnimationFrame(animateSnap)
     } else {
       isAnimating.value = false
-      offset.value = centerOffset.value - selectedIndex.value * props.itemHeight
+      offset.value = centerOffset.value - idx * props.itemHeight
       emitValue(idx)
     }
   }
