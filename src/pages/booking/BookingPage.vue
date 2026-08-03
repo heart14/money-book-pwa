@@ -9,6 +9,13 @@
       <!-- Amount Display -->
       <div class="amount-display" @click="keyboardVisible = true">{{ displayAmount }}</div>
 
+      <!-- DateTime Display -->
+      <div class="datetime-display" @click="datePickerVisible = true">
+        <span class="datetime-icon">📅</span>
+        <span class="datetime-label">{{ dateTimeLabel }}</span>
+        <span class="datetime-arrow">›</span>
+      </div>
+
       <!-- Animated content area -->
       <Transition name="mode-fade" mode="out-in">
         <div :key="bookingMode" class="mode-content">
@@ -125,6 +132,16 @@
       @cancel="promptVisible = false"
       @update:visible="promptVisible = $event"
     />
+
+    <!-- Date Time Picker -->
+    <DateTimePicker
+      :date="selectedDate"
+      :time="selectedTime"
+      :visible="datePickerVisible"
+      @update:date="selectedDate = $event"
+      @update:time="selectedTime = $event"
+      @close="datePickerVisible = false"
+    />
   </div>
 </template>
 
@@ -139,9 +156,10 @@ import NumberKeyboard from '@/components/booking/NumberKeyboard.vue'
 import CategoryPicker from '@/components/booking/CategoryPicker.vue'
 import { useQuickTemplateStore } from '@/stores/quickTemplateStore'
 import PromptDialog from '@/components/common/PromptDialog.vue'
-import { formatShortCurrency } from '@/utils/format'
+import { formatShortCurrency, toDateString, formatTimeLabel } from '@/utils/format'
 import type { QuickTemplate } from '@/types'
 import TwemojiIcon from '@/components/common/TwemojiIcon.vue'
+import DateTimePicker from '@/components/booking/DateTimePicker.vue'
 
 const categoryStore = useCategoryStore()
 const transactionStore = useTransactionStore()
@@ -160,6 +178,15 @@ const note = ref('')
 const title = ref('')
 const tags = ref<string[]>([])
 const tagInput = ref('')
+
+// ── 日期时间状态 ──
+const now = new Date()
+const selectedDate = ref(toDateString(now))
+const selectedTime = ref(`${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`)
+const datePickerVisible = ref(false)
+
+// ── Computed: 日期时间显示文本 ──
+const dateTimeLabel = computed(() => formatTimeLabel(selectedDate.value, selectedTime.value))
 
 // Touch swipe state
 let touchStartX = 0
@@ -274,9 +301,8 @@ async function handleConfirm() {
   if (isNaN(amount) || amount <= 0) return
   if (!selectedCategoryId.value) return
 
-  const now = new Date()
-  const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
-  const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+  const dateStr = selectedDate.value
+  const timeStr = selectedTime.value
 
   const tx: Omit<Transaction, 'id'> = {
     type: bookingMode.value,
@@ -391,6 +417,10 @@ function resetState() {
   title.value = ''
   tags.value = []
   tagInput.value = ''
+  // 重置日期时间为当前时间
+  const n = new Date()
+  selectedDate.value = toDateString(n)
+  selectedTime.value = `${String(n.getHours()).padStart(2, '0')}:${String(n.getMinutes()).padStart(2, '0')}`
 }
 
 // ── Bridge to TabBar checkmark save ──
@@ -450,6 +480,40 @@ watch(
   margin-bottom: 12px;
   font-variant-numeric: tabular-nums;
   cursor: text;
+}
+
+/* ── DateTime Display ── */
+.datetime-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.datetime-display:active {
+  opacity: 0.6;
+}
+
+.datetime-icon {
+  font-size: var(--fs-body);
+  line-height: 1;
+}
+
+.datetime-label {
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--color-secondary-text);
+}
+
+.datetime-arrow {
+  font-size: var(--fs-body);
+  color: var(--color-tertiary-text);
+  line-height: 1;
 }
 
 /* ── Tags Input ── */
