@@ -19,11 +19,15 @@
             </div>
             <div class="edit-row">
               <label class="edit-label">日期</label>
-              <input v-model="form.date" class="edit-input" type="date" />
+              <div class="edit-input edit-picker-trigger" @click="datePickerOpen = true">
+                {{ formatDateLabel(form.date) }}
+              </div>
             </div>
             <div class="edit-row">
               <label class="edit-label">时间</label>
-              <input v-model="form.time" class="edit-input" type="time" />
+              <div class="edit-input edit-picker-trigger" @click="timePickerOpen = true">
+                {{ form.time }}
+              </div>
             </div>
             <div class="edit-row">
               <label class="edit-label">备注</label>
@@ -57,6 +61,9 @@
           </div>
         </div>
       </div>
+      <!-- Date/Time Pickers -->
+      <DatePickerSheet v-model:visible="datePickerOpen" v-model="form.date" />
+      <TimePickerSheet v-model:visible="timePickerOpen" v-model="form.time" />
     </div>
   </Teleport>
 </template>
@@ -64,7 +71,10 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue'
 import { useCategoryStore } from '@/stores/categoryStore'
+import { formatDate as formatDateLabel } from '@/utils/format'
 import type { Transaction } from '@/types'
+import DatePickerSheet from '@/components/common/DatePickerSheet.vue'
+import TimePickerSheet from '@/components/common/TimePickerSheet.vue'
 
 const props = defineProps<{
   transaction: Transaction
@@ -84,6 +94,8 @@ const categoryName = computed(() => {
 })
 
 const tagInput = ref('')
+const datePickerOpen = ref(false)
+const timePickerOpen = ref(false)
 
 const form = reactive({
   title: props.transaction.title || '',
@@ -277,4 +289,16 @@ function handleSave() {
 .btn-secondary { background: var(--color-bg); color: var(--color-text); }
 .btn-primary { background: var(--color-primary); color: #fff; }
 
+.edit-picker-trigger {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--color-text);
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.edit-picker-trigger:active {
+  background: var(--color-disabled-bg);
+}
 </style>

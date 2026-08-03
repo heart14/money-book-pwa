@@ -11,8 +11,14 @@
 
       <!-- Date & Time Inline -->
       <div class="dt-row">
-        <input v-model="selectedDate" type="date" class="dt-input" />
-        <input v-model="selectedTime" type="time" class="dt-input" />
+        <div class="dt-picker" @click="datePickerOpen = true">
+          <span class="dt-picker-icon">📅</span>
+          <span class="dt-picker-text">{{ formatDateLabel(selectedDate) }}</span>
+        </div>
+        <div class="dt-picker" @click="timePickerOpen = true">
+          <span class="dt-picker-icon">⏰</span>
+          <span class="dt-picker-text">{{ selectedTime }}</span>
+        </div>
       </div>
 
       <!-- Animated content area -->
@@ -131,6 +137,10 @@
       @cancel="promptVisible = false"
       @update:visible="promptVisible = $event"
     />
+
+    <!-- Date/Time Pickers -->
+    <DatePickerSheet v-model:visible="datePickerOpen" v-model="selectedDate" />
+    <TimePickerSheet v-model:visible="timePickerOpen" v-model="selectedTime" />
   </div>
 </template>
 
@@ -145,9 +155,11 @@ import NumberKeyboard from '@/components/booking/NumberKeyboard.vue'
 import CategoryPicker from '@/components/booking/CategoryPicker.vue'
 import { useQuickTemplateStore } from '@/stores/quickTemplateStore'
 import PromptDialog from '@/components/common/PromptDialog.vue'
-import { formatShortCurrency, toDateString } from '@/utils/format'
+import { formatShortCurrency, toDateString, formatDate as formatDateLabel } from '@/utils/format'
 import type { QuickTemplate } from '@/types'
 import TwemojiIcon from '@/components/common/TwemojiIcon.vue'
+import DatePickerSheet from '@/components/common/DatePickerSheet.vue'
+import TimePickerSheet from '@/components/common/TimePickerSheet.vue'
 
 const categoryStore = useCategoryStore()
 const transactionStore = useTransactionStore()
@@ -170,6 +182,8 @@ const tagInput = ref('')
 // ── 日期时间状态 ──
 const selectedDate = ref(toDateString(new Date()))
 const selectedTime = ref(`${String(new Date().getHours()).padStart(2, '0')}:${String(new Date().getMinutes()).padStart(2, '0')}`)
+const datePickerOpen = ref(false)
+const timePickerOpen = ref(false)
 
 // Touch swipe state
 let touchStartX = 0
@@ -466,31 +480,18 @@ watch(
 }
 
 /* ── Date / Time Inline ── */
-.dt-row {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
+.dt-row { display: flex; gap: 8px; margin-bottom: 12px; }
+.dt-picker {
+  flex: 1; height: 44px; display: flex; align-items: center; gap: 6px;
+  padding: 0 12px; border: none; border-radius: 10px;
+  background: var(--color-card); font-size: 15px; font-weight: 600;
+  color: var(--color-text); font-family: inherit;
+  font-variant-numeric: tabular-nums; cursor: pointer;
+  transition: background 0.15s; -webkit-tap-highlight-color: transparent;
 }
-.dt-input {
-  flex: 1;
-  height: 44px;
-  padding: 0 12px;
-  border: none;
-  border-radius: 10px;
-  background: var(--color-card);
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--color-text);
-  font-family: inherit;
-  font-variant-numeric: tabular-nums;
-  outline: none;
-  cursor: pointer;
-}
-.dt-input::-webkit-calendar-picker-indicator {
-  opacity: .4;
-  cursor: pointer;
-  padding: 6px;
-}
+.dt-picker:active { background: var(--color-disabled-bg); }
+.dt-picker-icon { font-size: 16px; line-height: 1; opacity: 0.6; }
+.dt-picker-text { flex: 1; text-align: center; }
 
 /* ── Tags Input ── */
 .tags-section {
