@@ -9,11 +9,10 @@
       <!-- Amount Display -->
       <div class="amount-display" @click="keyboardVisible = true">{{ displayAmount }}</div>
 
-      <!-- DateTime Display -->
-      <div class="datetime-display" @click="datePickerVisible = true">
-        <span class="datetime-icon">📅</span>
-        <span class="datetime-label">{{ dateTimeLabel }}</span>
-        <span class="datetime-arrow">›</span>
+      <!-- Date & Time Inline -->
+      <div class="dt-row">
+        <input v-model="selectedDate" type="date" class="dt-input" />
+        <input v-model="selectedTime" type="time" class="dt-input" />
       </div>
 
       <!-- Animated content area -->
@@ -132,16 +131,6 @@
       @cancel="promptVisible = false"
       @update:visible="promptVisible = $event"
     />
-
-    <!-- Date Time Picker -->
-    <DateTimePicker
-      :date="selectedDate"
-      :time="selectedTime"
-      :visible="datePickerVisible"
-      @update:date="selectedDate = $event"
-      @update:time="selectedTime = $event"
-      @close="datePickerVisible = false"
-    />
   </div>
 </template>
 
@@ -156,10 +145,9 @@ import NumberKeyboard from '@/components/booking/NumberKeyboard.vue'
 import CategoryPicker from '@/components/booking/CategoryPicker.vue'
 import { useQuickTemplateStore } from '@/stores/quickTemplateStore'
 import PromptDialog from '@/components/common/PromptDialog.vue'
-import { formatShortCurrency, toDateString, formatTimeLabel } from '@/utils/format'
+import { formatShortCurrency, toDateString } from '@/utils/format'
 import type { QuickTemplate } from '@/types'
 import TwemojiIcon from '@/components/common/TwemojiIcon.vue'
-import DateTimePicker from '@/components/booking/DateTimePicker.vue'
 
 const categoryStore = useCategoryStore()
 const transactionStore = useTransactionStore()
@@ -182,10 +170,6 @@ const tagInput = ref('')
 // ── 日期时间状态 ──
 const selectedDate = ref(toDateString(new Date()))
 const selectedTime = ref(`${String(new Date().getHours()).padStart(2, '0')}:${String(new Date().getMinutes()).padStart(2, '0')}`)
-const datePickerVisible = ref(false)
-
-// ── Computed: 日期时间显示文本 ──
-const dateTimeLabel = computed(() => formatTimeLabel(selectedDate.value, selectedTime.value))
 
 // Touch swipe state
 let touchStartX = 0
@@ -481,38 +465,31 @@ watch(
   cursor: text;
 }
 
-/* ── DateTime Display ── */
-.datetime-display {
+/* ── Date / Time Inline ── */
+.dt-row {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 8px 16px;
+  gap: 8px;
   margin-bottom: 12px;
+}
+.dt-input {
+  flex: 1;
+  height: 44px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 10px;
+  background: var(--color-card);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+  outline: none;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
 }
-
-.datetime-display:active {
-  opacity: 0.6;
-}
-
-.datetime-icon {
-  font-size: var(--fs-body);
-  line-height: 1;
-}
-
-.datetime-label {
-  font-size: var(--fs-body);
-  font-weight: 500;
-  color: var(--color-secondary-text);
-}
-
-.datetime-arrow {
-  font-size: var(--fs-body);
-  color: var(--color-tertiary-text);
-  line-height: 1;
+.dt-input::-webkit-calendar-picker-indicator {
+  opacity: .4;
+  cursor: pointer;
+  padding: 6px;
 }
 
 /* ── Tags Input ── */

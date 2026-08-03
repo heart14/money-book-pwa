@@ -17,10 +17,13 @@
                 <input v-model.number="form.amountYuan" class="edit-input edit-amount-input" type="number" step="0.01" min="0" />
               </div>
             </div>
-            <div class="edit-row edit-row--datetime" @click="datePickerVisible = true">
-              <label class="edit-label">日期时间</label>
-              <span class="edit-datetime-value">{{ form.date }} {{ form.time }}</span>
-              <span class="edit-datetime-arrow">›</span>
+            <div class="edit-row">
+              <label class="edit-label">日期</label>
+              <input v-model="form.date" class="edit-input" type="date" />
+            </div>
+            <div class="edit-row">
+              <label class="edit-label">时间</label>
+              <input v-model="form.time" class="edit-input" type="time" />
             </div>
             <div class="edit-row">
               <label class="edit-label">备注</label>
@@ -55,16 +58,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Date Time Picker -->
-    <DateTimePicker
-      :date="form.date"
-      :time="form.time"
-      :visible="datePickerVisible"
-      @update:date="form.date = $event"
-      @update:time="form.time = $event"
-      @close="datePickerVisible = false"
-    />
   </Teleport>
 </template>
 
@@ -72,7 +65,6 @@
 import { ref, reactive, computed } from 'vue'
 import { useCategoryStore } from '@/stores/categoryStore'
 import type { Transaction } from '@/types'
-import DateTimePicker from '@/components/booking/DateTimePicker.vue'
 
 const props = defineProps<{
   transaction: Transaction
@@ -92,7 +84,6 @@ const categoryName = computed(() => {
 })
 
 const tagInput = ref('')
-const datePickerVisible = ref(false)
 
 const form = reactive({
   title: props.transaction.title || '',
@@ -264,25 +255,6 @@ function handleSave() {
   border-top: 1px solid #f2f2f2;
   margin-top: 4px;
   padding-top: 12px;
-}
-
-.edit-row--datetime {
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-.edit-row--datetime:active { opacity: 0.6; }
-
-.edit-datetime-value {
-  flex: 1;
-  font-size: var(--fs-title);
-  color: var(--color-text);
-  font-variant-numeric: tabular-nums;
-}
-
-.edit-datetime-arrow {
-  font-size: 18px;
-  color: var(--color-tertiary-text);
-  line-height: 1;
 }
 
 .edit-meta { font-size: var(--fs-body); color: var(--color-text); }
