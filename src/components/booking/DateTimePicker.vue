@@ -1,111 +1,112 @@
 <template>
-  <CommonBottomSheet :visible="visible" title="" @close="onCancel">
-    <!-- 顶部操作栏 -->
-    <div class="dt-header">
-      <button class="dt-header-btn" @click="onCancel">
-        <span class="dt-header-btn-icon">✕</span>
-      </button>
-      <span class="dt-header-title">选择日期和时间</span>
-      <button class="dt-header-btn dt-header-confirm" @click="onConfirm">
-        <span class="dt-header-btn-icon">✓</span>
-      </button>
-    </div>
+  <Teleport to="body">
+    <div v-if="visible" class="dt-overlay" @click.self="onCancel">
+      <div class="dt-panel">
+        <!-- 顶部操作栏 -->
+        <div class="dt-hdr">
+          <button class="dt-hdr-btn" @click="onCancel">取消</button>
+          <div class="dt-hdr-selected">
+            <span class="dt-hdr-date">{{ displayDate }}</span>
+            <span class="dt-hdr-time">{{ displayTime }}</span>
+          </div>
+          <button class="dt-hdr-btn dt-hdr-done" @click="onConfirm">完成</button>
+        </div>
 
-    <!-- 日历区 -->
-    <div class="dt-calendar">
-      <!-- 月份导航 -->
-      <div class="dt-month-nav">
-        <button class="dt-nav-btn" @click="prevMonth" aria-label="上个月">
-          <span class="dt-nav-arrow">◀</span>
-        </button>
-        <span class="dt-month-label">{{ navYear }}年 {{ navMonth }}月</span>
-        <button class="dt-nav-btn" @click="nextMonth" aria-label="下个月">
-          <span class="dt-nav-arrow">▶</span>
-        </button>
-      </div>
+        <!-- 主体 -->
+        <div class="dt-body">
+          <!-- ─── 日历 ─── -->
+          <div class="dt-cal">
+            <!-- 月份 -->
+            <div class="dt-month">
+              <button class="dt-arrow" @click="prevMonth">
+                <svg width="9" height="14" viewBox="0 0 9 14"><path d="M7 12L2 7L7 2" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="dt-month-txt">
+                <span class="dt-month-num">{{ navMonth }}</span>
+                <span class="dt-month-unit">月</span>
+                <span class="dt-month-num dt-month-num--yr">{{ navYear }}</span>
+              </div>
+              <button class="dt-arrow" @click="nextMonth">
+                <svg width="9" height="14" viewBox="0 0 9 14"><path d="M2 12L7 7L2 2" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
 
-      <!-- 星期行 -->
-      <div class="dt-weekdays">
-        <span v-for="w in weekdays" :key="w" class="dt-weekday">{{ w }}</span>
-      </div>
+            <!-- 星期 -->
+            <div class="dt-wk">
+              <span v-for="w in weekdays" :key="w" class="dt-wk-lbl">{{ w }}</span>
+            </div>
 
-      <!-- 日期网格 -->
-      <div class="dt-grid">
-        <div
-          v-for="(cell, idx) in calendarCells"
-          :key="idx"
-          class="dt-cell"
-          :class="cell.classes"
-          @click="cell.onClick"
-        >
-          <span v-if="cell.label" class="dt-cell-day">{{ cell.label }}</span>
+            <!-- 日期网格 -->
+            <div class="dt-grd">
+              <div v-for="(c, i) in calendarCells" :key="i" class="dt-cel" :class="c.cls" @click="c.cb">
+                <template v-if="c.lb">
+                  <span class="dt-cel-n">{{ c.lb }}</span>
+                </template>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─── 分隔 ─── -->
+          <div class="dt-div">
+            <div class="dt-div-line" />
+            <div class="dt-div-dot" />
+            <div class="dt-div-line" />
+          </div>
+
+          <!-- ─── 时间 ─── -->
+          <div class="dt-tm">
+            <!-- 小时 -->
+            <div class="dt-tm-col">
+              <span class="dt-tm-lbl">小时</span>
+              <div class="dt-tm-strip">
+                <button class="dt-tm-arrow" @click="adjustHour(1)" :class="{ 'dt-tm-arrow--d': localHour >= 23 }" :disabled="localHour >= 23">
+                  <svg width="12" height="8" viewBox="0 0 12 8"><path d="M1 7L6 2L11 7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+                </button>
+                <div class="dt-tm-context">
+                  <span class="dt-tm-ctx dt-tm-ctx--prev">{{ String((localHour - 1 + 24) % 24).padStart(2, '0') }}</span>
+                  <span class="dt-tm-val">{{ String(localHour).padStart(2, '0') }}</span>
+                  <span class="dt-tm-ctx dt-tm-ctx--next">{{ String((localHour + 1) % 24).padStart(2, '0') }}</span>
+                </div>
+                <button class="dt-tm-arrow" @click="adjustHour(-1)" :class="{ 'dt-tm-arrow--d': localHour <= 0 }" :disabled="localHour <= 0">
+                  <svg width="12" height="8" viewBox="0 0 12 8"><path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <span class="dt-tm-colon">:</span>
+
+            <!-- 分钟 -->
+            <div class="dt-tm-col">
+              <span class="dt-tm-lbl">分钟</span>
+              <div class="dt-tm-strip">
+                <button class="dt-tm-arrow" @click="adjustMinute(1)" :class="{ 'dt-tm-arrow--d': localMinute >= 59 }" :disabled="localMinute >= 59">
+                  <svg width="12" height="8" viewBox="0 0 12 8"><path d="M1 7L6 2L11 7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+                </button>
+                <div class="dt-tm-context">
+                  <span class="dt-tm-ctx dt-tm-ctx--prev">{{ String((localMinute - 1 + 60) % 60).padStart(2, '0') }}</span>
+                  <span class="dt-tm-val">{{ String(localMinute).padStart(2, '0') }}</span>
+                  <span class="dt-tm-ctx dt-tm-ctx--next">{{ String((localMinute + 1) % 60).padStart(2, '0') }}</span>
+                </div>
+                <button class="dt-tm-arrow" @click="adjustMinute(-1)" :class="{ 'dt-tm-arrow--d': localMinute <= 0 }" :disabled="localMinute <= 0">
+                  <svg width="12" height="8" viewBox="0 0 12 8"><path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 底部 -->
+        <div class="dt-foot">
+          <button class="dt-now-btn" @click="setToNow">回到今天</button>
         </div>
       </div>
     </div>
-
-    <!-- 分隔装饰 -->
-    <div class="dt-separator">
-      <span class="dt-separator-dot" />
-    </div>
-
-    <!-- 时间选择区 -->
-    <div class="dt-time-section">
-      <div class="dt-time-col">
-        <span class="dt-time-label">时</span>
-        <button
-          class="dt-time-btn"
-          :class="{ 'dt-time-btn--disabled': localHour >= 23 }"
-          :disabled="localHour >= 23"
-          @click="adjustHour(1)"
-        >
-          <span class="dt-time-btn-icon">▲</span>
-        </button>
-        <div class="dt-time-value">{{ String(localHour).padStart(2, '0') }}</div>
-        <button
-          class="dt-time-btn"
-          :class="{ 'dt-time-btn--disabled': localHour <= 0 }"
-          :disabled="localHour <= 0"
-          @click="adjustHour(-1)"
-        >
-          <span class="dt-time-btn-icon">▼</span>
-        </button>
-      </div>
-
-      <span class="dt-time-colon">:</span>
-
-      <div class="dt-time-col">
-        <span class="dt-time-label">分</span>
-        <button
-          class="dt-time-btn"
-          :class="{ 'dt-time-btn--disabled': localMinute >= 59 }"
-          :disabled="localMinute >= 59"
-          @click="adjustMinute(1)"
-        >
-          <span class="dt-time-btn-icon">▲</span>
-        </button>
-        <div class="dt-time-value">{{ String(localMinute).padStart(2, '0') }}</div>
-        <button
-          class="dt-time-btn"
-          :class="{ 'dt-time-btn--disabled': localMinute <= 0 }"
-          :disabled="localMinute <= 0"
-          @click="adjustMinute(-1)"
-        >
-          <span class="dt-time-btn-icon">▼</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- 底部操作区 -->
-    <div class="dt-footer">
-      <button class="dt-today-btn" @click="setToNow">设为今天</button>
-    </div>
-  </CommonBottomSheet>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import CommonBottomSheet from '@/components/common/CommonBottomSheet.vue'
-import { toDateString } from '@/utils/format'
+import { ref, computed, watch, nextTick } from 'vue'
+import { toDateString, formatDate } from '@/utils/format'
 
 const props = defineProps<{
   date: string
@@ -119,126 +120,115 @@ const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
-// 本地状态
 const localDate = ref(props.date)
 const localHour = ref(0)
 const localMinute = ref(0)
 const navYear = ref(0)
 const navMonth = ref(0)
 
-const WEEKDAY_NAMES_SHORT = ['日', '一', '二', '三', '四', '五', '六']
 const weekdays = ['一', '二', '三', '四', '五', '六', '日']
+
+const displayDate = computed(() => {
+  const d = formatDate(localDate.value)
+  return d === '今天' ? '今天' : d === '昨天' ? '昨天' : d
+})
+
+const displayTime = computed(() => {
+  return `${String(localHour.value).padStart(2, '0')}:${String(localMinute.value).padStart(2, '0')}`
+})
 
 function initLocal() {
   localDate.value = props.date
   const [h, m] = props.time.split(':').map(Number)
   localHour.value = h
   localMinute.value = m
-  const d = parseLocalDate(props.date)
+  const d = pDate(props.date)
   navYear.value = d.getFullYear()
   navMonth.value = d.getMonth() + 1
 }
 
-function parseLocalDate(dateStr: string): Date {
-  const [y, m, d] = dateStr.split('-').map(Number)
+function pDate(s: string): Date {
+  const [y, m, d] = s.split('-').map(Number)
   return new Date(y, m - 1, d)
 }
 
-function toLocalDateString(year: number, month: number, day: number): string {
-  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+function lds(y: number, m: number, d: number): string {
+  return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`
 }
 
 const calendarCells = computed(() => {
-  const year = navYear.value
-  const month = navMonth.value
-  const daysCount = new Date(year, month, 0).getDate()
-  const firstDay = new Date(year, month - 1, 1).getDay()
-  // 周一为一周起始：周一=0，周日=6
-  const startOffset = firstDay === 0 ? 6 : firstDay - 1
-
-  const todayStr = toDateString(new Date())
+  const y = navYear.value, m = navMonth.value
+  const cnt = new Date(y, m, 0).getDate()
+  const fd = new Date(y, m - 1, 1).getDay()
+  const off = fd === 0 ? 6 : fd - 1
+  const ts = toDateString(new Date())
   const now = new Date()
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const td = new Date(now.getFullYear(), now.getMonth(), now.getDate())
 
-  const cells: { label: number | ''; classes: string; onClick: () => void }[] = []
+  type C = { lb: number | ''; cls: string[]; cb: () => void }
+  const cells: C[] = []
 
-  // 填充空白格
-  for (let i = 0; i < startOffset; i++) {
-    cells.push({ label: '', classes: 'dt-cell--empty', onClick: () => {} })
-  }
+  for (let i = 0; i < off; i++) cells.push({ lb: '', cls: ['dt-cel--e'], cb: () => {} })
 
-  // 日期格
-  for (let d = 1; d <= daysCount; d++) {
-    const dateStr = toLocalDateString(year, month, d)
-    const dateObj = new Date(year, month - 1, d)
-    const isToday = dateStr === todayStr
-    const isFuture = dateObj > todayStart
-    const isSelected = dateStr === localDate.value
+  for (let d = 1; d <= cnt; d++) {
+    const ds = lds(y, m, d)
+    const ob = new Date(y, m - 1, d)
+    const today = ds === ts
+    const future = ob > td
+    const sel = ds === localDate.value
+    const wd = ob.getDay()
+    const weekend = wd === 0 || wd === 6
 
-    const classes = [
-      'dt-cell--day',
-      isToday && 'dt-cell--today',
-      isSelected && 'dt-cell--selected',
-      isFuture && 'dt-cell--future',
-    ].filter(Boolean).join(' ')
+    const cls = ['dt-cel--d']
+    if (sel) cls.push('dt-cel--s')
+    else if (today) cls.push('dt-cel--t')
+    if (future) cls.push('dt-cel--f')
+    if (weekend && !sel && !today) cls.push('dt-cel--w')
 
     cells.push({
-      label: d,
-      classes,
-      onClick: () => {
-        if (!isFuture) localDate.value = dateStr
-      },
+      lb: d,
+      cls,
+      cb: () => { if (!future) localDate.value = ds },
     })
   }
-
   return cells
 })
 
 function prevMonth() {
-  if (navMonth.value === 1) {
-    navYear.value--
-    navMonth.value = 12
-  } else {
-    navMonth.value--
-  }
-  adjustSelectedDate()
+  if (navMonth.value === 1) { navYear.value--; navMonth.value = 12 }
+  else navMonth.value--
+  adjDate()
 }
 
 function nextMonth() {
-  if (navMonth.value === 12) {
-    navYear.value++
-    navMonth.value = 1
-  } else {
-    navMonth.value++
-  }
-  adjustSelectedDate()
+  if (navMonth.value === 12) { navYear.value++; navMonth.value = 1 }
+  else navMonth.value++
+  adjDate()
 }
 
-function adjustSelectedDate() {
-  const lastDay = new Date(navYear.value, navMonth.value, 0).getDate()
-  const currentDay = parseLocalDate(localDate.value).getDate()
-  if (currentDay > lastDay) {
-    localDate.value = toLocalDateString(navYear.value, navMonth.value, lastDay)
-  }
+function adjDate() {
+  const ld = new Date(navYear.value, navMonth.value, 0).getDate()
+  const cd = pDate(localDate.value).getDate()
+  if (cd > ld) localDate.value = lds(navYear.value, navMonth.value, ld)
 }
 
-function adjustHour(delta: number) {
-  const v = localHour.value + delta
+function adjustHour(d: number) {
+  const v = localHour.value + d
   if (v >= 0 && v <= 23) localHour.value = v
 }
 
-function adjustMinute(delta: number) {
-  const v = localMinute.value + delta
+function adjustMinute(d: number) {
+  const v = localMinute.value + d
   if (v >= 0 && v <= 59) localMinute.value = v
 }
 
 function setToNow() {
-  const now = new Date()
-  localDate.value = toDateString(now)
-  localHour.value = now.getHours()
-  localMinute.value = now.getMinutes()
-  navYear.value = now.getFullYear()
-  navMonth.value = now.getMonth() + 1
+  const n = new Date()
+  localDate.value = toDateString(n)
+  localHour.value = n.getHours()
+  localMinute.value = n.getMinutes()
+  navYear.value = n.getFullYear()
+  navMonth.value = n.getMonth() + 1
 }
 
 function onConfirm() {
@@ -247,327 +237,168 @@ function onConfirm() {
   emit('close')
 }
 
-function onCancel() {
-  emit('close')
-}
+function onCancel() { emit('close') }
 
-watch(() => props.visible, (v) => {
-  if (v) initLocal()
-}, { immediate: true })
-
-watch(() => props.date, (v) => {
-  if (!props.visible) localDate.value = v
-})
-
+watch(() => props.visible, (v) => { if (v) initLocal() }, { immediate: true })
+watch(() => props.date, (v) => { if (!props.visible) localDate.value = v })
 watch(() => props.time, (v) => {
-  if (!props.visible) {
-    const [h, m] = v.split(':').map(Number)
-    localHour.value = h
-    localMinute.value = m
-  }
+  if (!props.visible) { const [h, m] = v.split(':').map(Number); localHour.value = h; localMinute.value = m }
 })
 </script>
 
 <style scoped>
-/* ========================================
-   头部操作栏
-   ======================================== */
-.dt-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 0 16px;
+/* ============== 遮罩 ============== */
+.dt-overlay {
+  position: fixed; inset: 0;
+  background: var(--color-overlay);
+  z-index: 1000;
+  display: flex; align-items: flex-end; justify-content: center;
+  animation: dtFade .2s;
+}
+@keyframes dtFade { from { opacity:0 } to { opacity:1 } }
+
+/* ============== 面板 ============== */
+.dt-panel {
+  width: 100%; max-width: 480px;
+  background: var(--color-surface);
+  border-radius: 24px 24px 0 0;
+  animation: dtUp .35s cubic-bezier(.32,.72,0,1);
+  max-height: 88vh;
+  display: flex; flex-direction: column;
+}
+@keyframes dtUp { from { transform:translateY(100%) } to { transform:translateY(0) } }
+
+/* ============== 头部 ============== */
+.dt-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px 12px; flex-shrink: 0;
+}
+.dt-hdr-btn {
+  border:none; background:transparent;
+  font-size:16px; color:var(--color-secondary-text);
+  cursor:pointer; font-family:inherit; padding:4px 0;
+  -webkit-tap-highlight-color:transparent;
+}
+.dt-hdr-done { color:var(--color-primary); font-weight:600; }
+.dt-hdr-selected {
+  display:flex; flex-direction:column; align-items:center; gap:2px;
+}
+.dt-hdr-date { font-size:13px; font-weight:500; color:var(--color-secondary-text); }
+.dt-hdr-time { font-size:15px; font-weight:700; color:var(--color-primary); letter-spacing:1px; font-variant-numeric:tabular-nums; }
+
+/* ============== 主体 ============== */
+.dt-body {
+  flex:1; overflow-y:auto; padding:0 20px 0;
+  -webkit-overflow-scrolling:touch;
 }
 
-.dt-header-btn {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 50%;
-  background: transparent;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: background 0.15s;
-  font-family: inherit;
-}
+/* ============== 日历 ============== */
+.dt-cal { padding:0 0 8px; }
 
-.dt-header-btn:active {
-  background: var(--color-separator);
+/* 月份 */
+.dt-month {
+  display:flex; align-items:center; justify-content:center; gap:28px;
+  padding:6px 0 14px;
 }
-
-.dt-header-btn-icon {
-  font-size: 18px;
-  color: var(--color-secondary-text);
-  line-height: 1;
+.dt-arrow {
+  width:36px; height:36px; display:flex; align-items:center; justify-content:center;
+  border:none; border-radius:50%; background:transparent;
+  color:var(--color-secondary-text); cursor:pointer;
+  transition:background .15s, color .15s;
+  -webkit-tap-highlight-color:transparent; font-family:inherit;
 }
-
-.dt-header-confirm .dt-header-btn-icon {
-  color: var(--color-primary);
-  font-weight: 700;
-}
-
-.dt-header-title {
-  font-size: 17px;
-  font-weight: 600;
-  color: var(--color-text);
-}
-
-/* ========================================
-   日历区
-   ======================================== */
-.dt-calendar {
-  padding: 0 0 4px;
-}
-
-/* 月份导航 */
-.dt-month-nav {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  margin-bottom: 18px;
-}
-
-.dt-nav-btn {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 50%;
-  background: var(--color-card);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: background 0.15s;
-  font-family: inherit;
-}
-
-.dt-nav-btn:active {
-  background: var(--color-separator-heavy);
-}
-
-.dt-nav-arrow {
-  font-size: 11px;
-  color: var(--color-secondary-text);
-  line-height: 1;
-}
-
-.dt-month-label {
-  font-size: 17px;
-  font-weight: 600;
-  color: var(--color-text);
-  min-width: 110px;
-  text-align: center;
-  letter-spacing: 0.5px;
-}
+.dt-arrow:active { background:var(--color-separator); color:var(--color-primary); }
+.dt-month-txt { font-size:17px; font-weight:600; color:var(--color-text); min-width:120px; text-align:center; }
+.dt-month-num--yr { font-weight:400; opacity:.45; margin-left:4px; }
 
 /* 星期行 */
-.dt-weekdays {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  margin-bottom: 6px;
-  padding: 0 4px;
+.dt-wk {
+  display:grid; grid-template-columns:repeat(7,1fr); margin-bottom:4px;
+}
+.dt-wk-lbl {
+  text-align:center; font-size:11px; font-weight:500;
+  color:var(--color-secondary-text); padding:4px 0; line-height:1.2;
 }
 
-.dt-weekday {
-  text-align: center;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--color-secondary-text);
-  padding: 4px 0;
-  line-height: 1.2;
+/* 网格 */
+.dt-grd {
+  display:grid; grid-template-columns:repeat(7,1fr); gap:0;
+}
+.dt-cel {
+  aspect-ratio:1; display:flex; align-items:center; justify-content:center;
+  cursor:pointer; user-select:none;
+  -webkit-tap-highlight-color:transparent; position:relative;
+}
+.dt-cel:active:not(.dt-cel--e):not(.dt-cel--f) { transform:scale(.88); }
+.dt-cel--e { cursor:default; }
+.dt-cel-n {
+  width:38px; height:38px; display:flex; align-items:center; justify-content:center;
+  border-radius:50%; font-size:15px; font-weight:400; color:var(--color-text);
+  line-height:1; transition:all .15s;
+}
+.dt-cel--t .dt-cel-n { color:var(--color-primary); font-weight:600; background:rgba(0,122,255,.07); }
+.dt-cel--s .dt-cel-n { background:var(--color-primary); color:#fff; font-weight:700; box-shadow:0 2px 8px rgba(0,122,255,.35); }
+.dt-cel--f .dt-cel-n { color:var(--color-separator-heavy); }
+.dt-cel--f { cursor:not-allowed; }
+.dt-cel--w:not(.dt-cel--t):not(.dt-cel--s) .dt-cel-n { color:var(--color-secondary-text); }
+
+/* ============== 分隔线 ============== */
+.dt-div {
+  display:flex; align-items:center; gap:8px;
+  padding:6px 0 10px;
+}
+.dt-div-line { flex:1; height:1px; background:var(--color-separator); }
+.dt-div-dot { width:3px; height:3px; border-radius:50%; background:var(--color-separator-heavy); opacity:.5; }
+
+/* ============== 时间 ============== */
+.dt-tm {
+  display:flex; align-items:flex-start; justify-content:center;
+  padding:4px 0 12px; gap:0;
+}
+.dt-tm-col { display:flex; flex-direction:column; align-items:center; flex:1; max-width:130px; }
+.dt-tm-lbl { font-size:11px; font-weight:500; color:var(--color-secondary-text); letter-spacing:2px; margin-bottom:10px; }
+
+.dt-tm-strip {
+  display:flex; flex-direction:column; align-items:center; gap:4px;
 }
 
-/* 日期网格 */
-.dt-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
-  padding: 0 4px;
+.dt-tm-arrow {
+  width:36px; height:36px; display:flex; align-items:center; justify-content:center;
+  border:none; border-radius:50%; background:var(--color-card);
+  color:var(--color-secondary-text); cursor:pointer;
+  transition:all .15s;
+  -webkit-tap-highlight-color:transparent; font-family:inherit;
+}
+.dt-tm-arrow:active:not(.dt-tm-arrow--d) {
+  background:var(--color-primary); color:#fff;
+}
+.dt-tm-arrow--d { opacity:.2; cursor:not-allowed; }
+
+.dt-tm-context {
+  display:flex; flex-direction:column; align-items:center;
+  padding:4px 0;
+}
+.dt-tm-ctx { font-size:13px; font-weight:400; color:var(--color-text); opacity:.35; line-height:1.6; }
+.dt-tm-val {
+  font-size:30px; font-weight:700; color:var(--color-primary);
+  font-variant-numeric:tabular-nums; line-height:1.15;
+  min-width:50px; text-align:center;
+}
+.dt-tm-colon {
+  font-size:28px; font-weight:700; color:var(--color-primary);
+  padding-top:54px; flex-shrink:0; line-height:1;
 }
 
-.dt-cell {
-  aspect-ratio: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: background 0.12s, color 0.12s, transform 0.12s;
-  user-select: none;
+/* ============== 底部 ============== */
+.dt-foot {
+  padding:6px 20px 24px; display:flex; justify-content:center; flex-shrink:0;
 }
-
-.dt-cell:active:not(.dt-cell--empty):not(.dt-cell--future) {
-  transform: scale(0.88);
+.dt-now-btn {
+  border:none; background:rgba(0,122,255,.08);
+  color:var(--color-primary); font-size:14px; font-weight:600;
+  padding:10px 28px; border-radius:22px; cursor:pointer;
+  transition:all .15s;
+  -webkit-tap-highlight-color:transparent; font-family:inherit;
 }
-
-.dt-cell--empty {
-  cursor: default;
-}
-
-.dt-cell-day {
-  font-size: 15px;
-  font-weight: 400;
-  color: var(--color-text);
-  line-height: 1;
-}
-
-/* 今天：蓝色细圈 */
-.dt-cell--today .dt-cell-day {
-  color: var(--color-primary);
-  font-weight: 600;
-}
-
-/* 选中：蓝色实心圆 */
-.dt-cell--selected {
-  background: var(--color-primary);
-}
-
-.dt-cell--selected .dt-cell-day {
-  color: #fff;
-  font-weight: 600;
-}
-
-.dt-cell--selected:active {
-  background: var(--color-primary);
-}
-
-/* 未来日期：不可用 */
-.dt-cell--future {
-  cursor: not-allowed;
-}
-
-.dt-cell--future .dt-cell-day {
-  color: var(--color-separator-heavy);
-}
-
-/* ========================================
-   分隔装饰
-   ======================================== */
-.dt-separator {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 0 8px;
-}
-
-.dt-separator-dot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--color-separator-heavy);
-  opacity: 0.5;
-}
-
-/* ========================================
-   时间选择区
-   ======================================== */
-.dt-time-section {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 4px 0 12px;
-}
-
-.dt-time-col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-
-.dt-time-label {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--color-secondary-text);
-  letter-spacing: 2px;
-  margin-bottom: 2px;
-}
-
-.dt-time-btn {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 50%;
-  background: var(--color-card);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: background 0.12s, opacity 0.12s;
-  font-family: inherit;
-}
-
-.dt-time-btn:active:not(.dt-time-btn--disabled) {
-  background: var(--color-separator-heavy);
-}
-
-.dt-time-btn--disabled {
-  opacity: 0.2;
-  cursor: not-allowed;
-}
-
-.dt-time-btn-icon {
-  font-size: 14px;
-  color: var(--color-secondary-text);
-  line-height: 1;
-}
-
-.dt-time-value {
-  font-size: 30px;
-  font-weight: 700;
-  color: var(--color-text);
-  font-variant-numeric: tabular-nums;
-  min-width: 64px;
-  text-align: center;
-  line-height: 1;
-  padding: 4px 0;
-}
-
-.dt-time-colon {
-  font-size: 30px;
-  font-weight: 600;
-  color: var(--color-text);
-  line-height: 1;
-  margin-top: -4px;
-  /* 减去 label 区域让冒号视觉居中于数字行 */
-  align-self: center;
-  margin-bottom: 50px;
-}
-
-/* ========================================
-   底部操作区
-   ======================================== */
-.dt-footer {
-  display: flex;
-  justify-content: center;
-  padding: 4px 0 8px;
-}
-
-.dt-today-btn {
-  border: 1px solid var(--color-separator-heavy);
-  background: transparent;
-  color: var(--color-primary);
-  font-size: 14px;
-  font-weight: 600;
-  padding: 9px 28px;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
-  -webkit-tap-highlight-color: transparent;
-  font-family: inherit;
-  letter-spacing: 0.3px;
-}
-
-.dt-today-btn:active {
-  background: var(--color-separator);
-  border-color: var(--color-primary);
-}
+.dt-now-btn:active { background:rgba(0,122,255,.18); transform:scale(.96); }
 </style>
