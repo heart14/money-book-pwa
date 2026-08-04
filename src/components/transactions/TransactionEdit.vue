@@ -20,7 +20,7 @@
             <div class="edit-row">
               <label class="edit-label">日期</label>
               <div class="edit-input edit-picker-trigger" @click="datePickerOpen = true">
-                {{ formatDateLabel(form.date) }}
+                {{ form.date }}
               </div>
             </div>
             <div class="edit-row">
@@ -71,7 +71,6 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue'
 import { useCategoryStore } from '@/stores/categoryStore'
-import { formatDate as formatDateLabel } from '@/utils/format'
 import type { Transaction } from '@/types'
 import DatePickerSheet from '@/components/common/DatePickerSheet.vue'
 import TimePickerSheet from '@/components/common/TimePickerSheet.vue'

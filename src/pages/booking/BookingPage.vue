@@ -12,7 +12,7 @@
       <!-- Date & Time Inline -->
       <div class="dt-row">
         <div class="dt-picker" @click="datePickerOpen = true">
-          <span class="dt-picker-text">{{ formatDate(selectedDate) }}</span>
+          <span class="dt-picker-text">{{ selectedDate }}</span>
         </div>
         <div class="dt-picker" @click="timePickerOpen = true">
           <span class="dt-picker-text">{{ displayTime }}</span>
@@ -153,7 +153,7 @@ import NumberKeyboard from '@/components/booking/NumberKeyboard.vue'
 import CategoryPicker from '@/components/booking/CategoryPicker.vue'
 import { useQuickTemplateStore } from '@/stores/quickTemplateStore'
 import PromptDialog from '@/components/common/PromptDialog.vue'
-import { formatShortCurrency, toDateString, formatDate } from '@/utils/format'
+import { formatShortCurrency, toDateString } from '@/utils/format'
 import type { QuickTemplate } from '@/types'
 import TwemojiIcon from '@/components/common/TwemojiIcon.vue'
 import DatePickerSheet from '@/components/common/DatePickerSheet.vue'

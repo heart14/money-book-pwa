@@ -177,13 +177,7 @@ function animateMomentum(velocity: number) {
 function snapToNearest() {
   isAnimating.value = true
   const rawIndex = Math.round((centerOffset.value - offset.value) / props.itemHeight)
-  let idx = clamp(rawIndex, 0, props.items.length - 1)
-
-  // Prefer current modelValue if still valid (handles programmatic clamping during animation)
-  const currentIdx = props.items.findIndex(item => item.value === props.modelValue)
-  if (currentIdx >= 0) {
-    idx = currentIdx
-  }
+  const idx = clamp(rawIndex, 0, props.items.length - 1)
 
   const targetOffset = centerOffset.value - idx * props.itemHeight
 
