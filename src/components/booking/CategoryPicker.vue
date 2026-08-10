@@ -19,7 +19,7 @@
 
     <!-- Level 2: Children chips -->
     <div v-if="children.length > 0" class="children-bar">
-      <div class="children-scroll">
+      <div class="children-scroll" @touchstart.stop @touchend.stop>
         <button
           v-for="child in children"
           :key="child.id"
