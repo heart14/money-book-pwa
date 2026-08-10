@@ -7,7 +7,7 @@
       </div>
 
       <!-- Amount Display -->
-      <div class="amount-display" @click="keyboardVisible = true">{{ displayAmount }}</div>
+      <div class="amount-display" :class="amountSizeClass" @click="keyboardVisible = true">{{ displayAmount }}</div>
 
       <!-- Date & Time Inline -->
       <div class="dt-row">
@@ -247,6 +247,15 @@ const displayAmount = computed(() => {
   }
 
   return `¥${parseInt(v).toLocaleString('zh-CN')}`
+})
+
+// 根据显示文本长度动态缩小字号，防止长数字溢出屏幕
+const amountSizeClass = computed(() => {
+  const len = displayAmount.value.length
+  if (len >= 17) return 'amount-size-xs'
+  if (len >= 14) return 'amount-size-sm'
+  if (len >= 11) return 'amount-size-md'
+  return ''
 })
 
 const canSave = computed(() => {
@@ -521,6 +530,22 @@ watch(
   margin-bottom: 12px;
   font-variant-numeric: tabular-nums;
   cursor: text;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 100%;
+  padding: 0 4px;
+}
+
+.amount-display.amount-size-md {
+  font-size: calc(var(--fs-amount-xl) * 0.72);
+}
+
+.amount-display.amount-size-sm {
+  font-size: calc(var(--fs-amount-xl) * 0.58);
+}
+
+.amount-display.amount-size-xs {
+  font-size: calc(var(--fs-amount-xl) * 0.44);
 }
 
 /* ── Date / Time Inline ── */
