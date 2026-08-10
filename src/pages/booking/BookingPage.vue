@@ -1,9 +1,17 @@
 <template>
   <div class="booking-page">
     <div class="booking-content" @touchstart="onTouchStart" @touchend="onTouchEnd">
-      <!-- Mode Switch centered -->
-      <div class="mode-switch-wrapper">
-        <ModeSwitch v-model="bookingMode" @update:model-value="onModeChange" />
+      <!-- Mode Switch with undo -->
+      <div class="mode-switch-row">
+        <div class="mode-switch-wrapper">
+          <ModeSwitch v-model="bookingMode" @update:model-value="onModeChange" />
+        </div>
+        <button class="undo-btn" @click="resetState" title="撤销">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="1 4 1 10 7 10" />
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+          </svg>
+        </button>
       </div>
 
       <!-- Amount Display -->
@@ -504,19 +512,47 @@ watch(
   overflow: hidden;
 }
 
+/* ── Mode Switch Row (centered switch + undo) ── */
+.mode-switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+
+.mode-switch-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.undo-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 8px;
+  color: var(--color-secondary-text);
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+}
+
+.undo-btn:active {
+  background: rgba(0, 0, 0, 0.06);
+}
+
 .booking-content {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
   padding-bottom: 280px;
   -webkit-overflow-scrolling: touch;
-}
-
-/* ── Mode Switch ── */
-.mode-switch-wrapper {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 12px;
 }
 
 /* ── Amount Display ── */
