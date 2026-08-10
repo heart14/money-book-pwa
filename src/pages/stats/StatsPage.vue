@@ -126,31 +126,7 @@
         </div>
       </div>
 
-      <!-- Large Expenses -->
-    <div class="chart-card large-expense-card">
-      <div class="chart-title-row">
-        <span class="chart-title">大额支出</span>
-        <button
-          class="hide-toggle"
-          :class="{ active: hideCarHousing }"
-          @click="hideCarHousing = !hideCarHousing"
-        >屏蔽车贷房贷</button>
-      </div>
-      <div v-if="largeExpenses.length === 0" class="empty-text">暂无大额支出</div>
-      <div
-        v-for="(item, index) in largeExpenses"
-        :key="item.id"
-        class="large-row"
-      >
-        <span class="large-rank">{{ index + 1 }}</span>
-        <span class="large-icon"><TwemojiIcon :emoji="item.icon" /></span>
-        <div class="large-info">
-          <span class="large-title">{{ item.title }}</span>
-          <span class="large-date">{{ item.shortDate }}</span>
-        </div>
-        <span class="large-amount">{{ formatCurrency(item.amount) }}</span>
-      </div>
-    </div>
+
 
     <!-- High Frequency Expenses -->
     <div class="chart-card freq-card">
@@ -171,6 +147,32 @@
           <span class="freq-amount">{{ formatCurrency(item.amount) }}</span>
           <span class="freq-avg">均{{ formatCurrency(item.avgAmount) }}</span>
         </div>
+      </div>
+    </div>
+
+      <!-- Large Expenses -->
+    <div class="chart-card large-expense-card">
+      <div class="chart-title-row">
+        <span class="chart-title">大额支出</span>
+        <button
+          class="hide-toggle"
+          :class="{ active: hideCarHousing }"
+          @click="hideCarHousing = !hideCarHousing"
+        >屏蔽车贷房贷</button>
+      </div>
+      <div v-if="largeExpenses.length === 0" class="empty-text">暂无数据</div>
+      <div
+        v-for="(item, index) in largeExpenses"
+        :key="item.id"
+        class="large-row"
+      >
+        <span class="large-rank">{{ index + 1 }}</span>
+        <span class="large-icon"><TwemojiIcon :emoji="item.icon" /></span>
+        <div class="large-info">
+          <span class="large-title">{{ item.title }}</span>
+          <span class="large-date">{{ item.shortDate }}</span>
+        </div>
+        <span class="large-amount">{{ formatCurrency(item.amount) }}</span>
       </div>
     </div>
 
