@@ -93,7 +93,7 @@ function handleComplete() {
   bottom: 0;
   z-index: 901;
   background: var(--color-disabled-bg);
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: max(env(safe-area-inset-bottom), 32px);
   user-select: none;
   animation: slideUp 0.25s ease-out;
 }
