@@ -144,7 +144,7 @@ watch(() => props.resetKey, () => {
   align-items: center;
   padding: 0 36px;
   padding-top: max(env(safe-area-inset-top, 0px) + 48px, 80px);
-  padding-bottom: max(env(safe-area-inset-bottom, 0px) + 24px, 32px);
+  padding-bottom: max(env(safe-area-inset-bottom, 0px) + 48px, 80px);
 }
 
 /* ── Header ── */
@@ -198,20 +198,22 @@ watch(() => props.resetKey, () => {
 }
 
 .pin-dot {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: transparent;
   border: 2.5px solid var(--color-placeholder);
-  transition: background 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
-              border-color 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
-              transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: background 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              border-color 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .pin-dot.filled {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  transform: scale(1.2);
+  transform: scale(1.15);
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.35);
 }
 
 .pin-error {
@@ -257,14 +259,14 @@ watch(() => props.resetKey, () => {
 .pin-keyboard {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
+  gap: 16px;
   width: 100%;
   max-width: 300px;
 }
 
 .pin-key {
   aspect-ratio: 1;
-  max-height: 72px;
+  max-height: 84px;
   border: none;
   border-radius: 50%;
   background: var(--color-card);
@@ -276,22 +278,26 @@ watch(() => props.resetKey, () => {
   justify-content: center;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
-  transition: background 0.15s, transform 0.1s;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 0 0 0.5px rgba(0, 0, 0, 0.02);
+  transition: background 0.2s,
+              transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.2s;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07),
+              0 0 0 0.5px rgba(0, 0, 0, 0.02);
   user-select: none;
   -webkit-user-select: none;
 }
 
 .pin-key:active {
   background: var(--color-disabled-bg);
-  transform: scale(0.90);
+  transform: scale(0.92);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .pin-key-label {
-  font-size: 32px;
-  font-weight: 500;
+  font-size: 34px;
+  font-weight: 600;
   color: var(--color-text);
-  letter-spacing: 0.5px;
+  letter-spacing: 0;
   line-height: 1;
 }
 
@@ -312,7 +318,7 @@ watch(() => props.resetKey, () => {
 
 /* ── Dark mode refinements ── */
 :root.dark .pin-key {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 0 0 0.5px rgba(255, 255, 255, 0.04);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(255, 255, 255, 0.05);
 }
 
 :root.dark .pin-lock-badge {
