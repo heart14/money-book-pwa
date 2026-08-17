@@ -40,15 +40,19 @@
               v-for="key in keys"
               :key="key"
               class="pin-key"
+              :class="{ 'pin-key--pressed': pressedKey === key }"
               @click="onKeyPress(key)"
+              @pointerdown="onPointerDown(key)"
+              @pointerup="onPointerUp"
+              @pointerleave="onPointerUp"
             >
               <span class="pin-key-label">{{ key }}</span>
             </button>
             <div class="pin-key pin-key--blank" />
-            <button class="pin-key" @click="onKeyPress(0)">
+            <button class="pin-key" :class="{ 'pin-key--pressed': pressedKey === 0 }" @click="onKeyPress(0)" @pointerdown="onPointerDown(0)" @pointerup="onPointerUp" @pointerleave="onPointerUp">
               <span class="pin-key-label">0</span>
             </button>
-            <button class="pin-key pin-key--backspace" @click="onBackspace">
+            <button class="pin-key pin-key--backspace" :class="{ 'pin-key--pressed': pressedKey === -1 }" @click="onBackspace" @pointerdown="onPointerDown(-1)" @pointerup="onPointerUp" @pointerleave="onPointerUp">
               <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M19 5H9l-6 7 6 7h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z" />
                 <line x1="16" y1="10" x2="12" y2="14" />
@@ -80,7 +84,16 @@ const emit = defineEmits<{
 const pinValue = ref('')
 const pinLength = ref(0)
 const shaking = ref(false)
+const pressedKey = ref<number | null>(null)
 const keys = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+function onPointerDown(key: number) {
+  pressedKey.value = key
+}
+
+function onPointerUp() {
+  pressedKey.value = null
+}
 
 function clearPin() {
   pinValue.value = ''
@@ -287,7 +300,8 @@ watch(() => props.resetKey, () => {
   -webkit-user-select: none;
 }
 
-.pin-key:active {
+.pin-key:active,
+.pin-key--pressed {
   background: var(--color-disabled-bg);
   transform: scale(0.92);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -312,7 +326,8 @@ watch(() => props.resetKey, () => {
   color: var(--color-secondary-text);
 }
 
-.pin-key--backspace:active {
+.pin-key--backspace:active,
+.pin-key--backspace.pin-key--pressed {
   color: var(--color-text);
 }
 
