@@ -43,6 +43,8 @@ export interface RecurringRule {
   dayOfMonth: number
   enabled: boolean
   lastExecuted: string | null
+  /** 到期时是否自动记入账本（无需逐条确认） */
+  autoApply?: boolean
 }
 
 export interface QuickTemplate {

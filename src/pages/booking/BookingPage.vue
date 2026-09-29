@@ -14,6 +14,25 @@
         </button>
       </div>
 
+      <!-- Recurring due rules card -->
+      <div v-if="dueRules.length > 0" class="recurring-section">
+        <div class="recurring-label">周期待入账</div>
+        <div class="recurring-cards">
+          <div v-for="rule in dueRules" :key="rule.id" class="recurring-card">
+            <div class="recurring-card-main">
+              <span class="recurring-type" :class="'recurring-type--' + rule.type">{{ rule.type === 'expense' ? '支出' : '收入' }}</span>
+              <span class="recurring-icon"><TwemojiIcon :emoji="ruleCategoryIcon(rule)" /></span>
+              <span class="recurring-name">{{ ruleDisplayName(rule) }}</span>
+              <span class="recurring-amount">{{ formatShortCurrency(rule.amount) }}</span>
+            </div>
+            <div class="recurring-card-actions">
+              <button class="recurring-btn recurring-btn--ghost" @click="skipDue(rule)">跳过</button>
+              <button class="recurring-btn recurring-btn--primary" @click="prefillRule(rule)">记一笔</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Amount Display -->
       <div class="amount-display" :class="amountSizeClass" @click="keyboardVisible = true">{{ displayAmount }}</div>
 
@@ -162,7 +181,8 @@ import CategoryPicker from '@/components/booking/CategoryPicker.vue'
 import { useQuickTemplateStore } from '@/stores/quickTemplateStore'
 import PromptDialog from '@/components/common/PromptDialog.vue'
 import { formatShortCurrency, toDateString } from '@/utils/format'
-import type { QuickTemplate } from '@/types'
+import { dueRules, loadDueRules, skipRule } from '@/services/recurringService'
+import type { QuickTemplate, RecurringRule } from '@/types'
 import TwemojiIcon from '@/components/common/TwemojiIcon.vue'
 import DatePickerSheet from '@/components/common/DatePickerSheet.vue'
 import TimePickerSheet from '@/components/common/TimePickerSheet.vue'
@@ -230,6 +250,7 @@ function onVisibilityChange() {
 onMounted(() => {
   startSecondsTimer()
   document.addEventListener('visibilitychange', onVisibilityChange)
+  loadDueRules()
 })
 
 onUnmounted(() => {
@@ -375,6 +396,12 @@ async function handleConfirm() {
 
   try {
     await transactionStore.addTransaction(tx)
+    // 若由周期规则预填而来，落账后标记该规则本月已执行
+    if (pendingRuleId.value != null) {
+      const dueRule = dueRules.value.find(r => r.id === pendingRuleId.value)
+      if (dueRule) await skipRule(dueRule)
+      pendingRuleId.value = null
+    }
     uiStore.hideBookingHint()
     const typeLabel = bookingMode.value === 'expense' ? '支出' : bookingMode.value === 'income' ? '收入' : '转账'
     showToast(`${typeLabel}已记录 · ${displayAmount.value}`)
@@ -405,6 +432,54 @@ function applyTemplate(tpl: QuickTemplate) {
   tags.value = [...tpl.tags]
   note.value = tpl.note
   keyboardVisible.value = false
+}
+
+// ── Recurring Rule display helpers ──
+function ruleCategoryIcon(rule: RecurringRule): string {
+  if (!rule.categoryId) return '🗂️'
+  return categoryStore.categories.find(c => c.id === rule.categoryId)?.icon || '🗂️'
+}
+
+function ruleCategoryName(rule: RecurringRule): string {
+  if (!rule.categoryId) return ''
+  return categoryStore.categories.find(c => c.id === rule.categoryId)?.name || ''
+}
+
+function ruleDisplayName(rule: RecurringRule): string {
+  return rule.title || ruleCategoryName(rule) || '未命名规则'
+}
+
+// ── Recurring Rule actions ──
+const pendingRuleId = ref<number | null>(null)
+
+function prefillRule(rule: RecurringRule) {
+  const cat = categoryStore.categories.find(c => c.id === rule.categoryId)
+  if (rule.categoryId && !cat) {
+    showToast('该分类已不存在')
+    return
+  }
+  bookingMode.value = rule.type
+  uiStore.setMode(rule.type)
+  const yuan = rule.amount / 100
+  inputValue.value = yuan.toFixed(2).replace(/\.?0+$/, '') || '0'
+  selectedCategoryId.value = rule.categoryId
+  title.value = rule.title
+  tags.value = rule.tags ? [...rule.tags] : []
+  note.value = rule.note
+  keyboardVisible.value = false
+  pendingRuleId.value = rule.id ?? null
+  // 滚动回表单内容区，让用户看到预填结果
+  document.querySelector('.booking-content')?.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+async function skipDue(rule: RecurringRule) {
+  try {
+    await skipRule(rule)
+    showToast('已跳过本月')
+  } catch (e) {
+    console.error('skip recurring rule failed', e)
+    showToast('操作失败')
+  }
 }
 
 const promptVisible = ref(false)
@@ -553,6 +628,91 @@ watch(
   padding: 16px;
   padding-bottom: 280px;
   -webkit-overflow-scrolling: touch;
+}
+
+/* ── Recurring Due Rules ── */
+.recurring-section {
+  margin-bottom: 12px;
+}
+.recurring-label {
+  font-size: var(--fs-ui, 13px);
+  font-weight: 500;
+  color: var(--color-secondary-text);
+  margin-bottom: 6px;
+}
+.recurring-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.recurring-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--glass-highlight), var(--color-card);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+.recurring-card-main {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.recurring-type {
+  font-size: var(--fs-small);
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--color-bg);
+  color: var(--color-secondary-text);
+  flex-shrink: 0;
+}
+.recurring-type--expense { color: var(--color-destructive); }
+.recurring-type--income { color: var(--color-success); }
+.recurring-icon { font-size: 15px; line-height: 1; flex-shrink: 0; }
+.recurring-name {
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.recurring-amount {
+  font-size: var(--fs-ui);
+  font-weight: 600;
+  color: var(--color-secondary-text);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.recurring-card-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.recurring-btn {
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 14px;
+  border: none;
+  font-size: var(--fs-small);
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s;
+}
+.recurring-btn:active { opacity: 0.7; }
+.recurring-btn--ghost {
+  background: var(--color-bg);
+  color: var(--color-secondary-text);
+}
+.recurring-btn--primary {
+  background: var(--color-primary);
+  color: #fff;
 }
 
 /* ── Amount Display ── */

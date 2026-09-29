@@ -72,6 +72,14 @@
         <label class="form-label">备注</label>
         <input v-model="form.note" class="form-input" placeholder="备注（可选）" maxlength="200" />
       </div>
+      <div class="form-group form-check-row">
+        <label class="form-label form-check-label">自动入账</label>
+        <label class="check-toggle">
+          <input type="checkbox" v-model="form.autoApply" />
+          <span class="check-slider"></span>
+        </label>
+      </div>
+      <p class="form-hint">开启后，规则到期时自动记入账本，无需逐条确认；关闭则在记账页提醒后手动确认。</p>
       <template #actions>
         <button class="btn-cancel" @click="showModal = false">取消</button>
         <button class="btn-primary" :disabled="!canSave" @click="handleSave">保存</button>
@@ -153,7 +161,7 @@ async function toggleRule(rule: RecurringRule) {
 // ── Add / Edit Modal ──
 const showModal = ref(false)
 const editingRule = ref<RecurringRule | null>(null)
-const form = reactive({ type: 'expense' as 'expense' | 'income', amountYuan: 0, dayOfMonth: 1, title: '', categoryId: 0, note: '' })
+const form = reactive({ type: 'expense' as 'expense' | 'income', amountYuan: 0, dayOfMonth: 1, title: '', categoryId: 0, note: '', autoApply: false })
 const canSave = computed(() => form.amountYuan > 0 && form.dayOfMonth >= 1 && form.dayOfMonth <= 31)
 
 const availableCategories = computed(() => {
@@ -162,7 +170,7 @@ const availableCategories = computed(() => {
 
 function openAdd() {
   editingRule.value = null
-  form.type = 'expense'; form.amountYuan = 0; form.dayOfMonth = 1; form.title = ''; form.categoryId = 0; form.note = ''
+  form.type = 'expense'; form.amountYuan = 0; form.dayOfMonth = 1; form.title = ''; form.categoryId = 0; form.note = ''; form.autoApply = false
   showModal.value = true
 }
 
@@ -174,6 +182,7 @@ function openEdit(rule: RecurringRule) {
   form.title = rule.title
   form.categoryId = rule.categoryId || 0
   form.note = rule.note
+  form.autoApply = !!rule.autoApply
   showModal.value = true
 }
 
@@ -189,6 +198,7 @@ async function handleSave() {
     dayOfMonth: form.dayOfMonth,
     enabled: true,
     lastExecuted: null,
+    autoApply: form.autoApply,
   }
   if (editingRule.value?.id) {
     await db.recurringRules.update(editingRule.value.id, data)
@@ -281,6 +291,15 @@ async function handleDelete() {
 .modal-actions { display: flex; gap: 12px; justify-content: center; }
 .form-group { margin-bottom: 16px; }
 .form-label { display: block; font-size: var(--fs-body); font-weight: 500; color: var(--color-secondary-text); margin-bottom: 6px; }
+.form-check-row { display: flex; align-items: center; justify-content: space-between; }
+.form-check-label { margin-bottom: 0; }
+.form-hint { font-size: var(--fs-small); color: var(--color-secondary-text); margin: -8px 0 16px; line-height: 1.5; }
+.check-toggle { position: relative; display: inline-block; width: 44px; height: 26px; flex-shrink: 0; }
+.check-toggle input { opacity: 0; width: 0; height: 0; }
+.check-slider { position: absolute; cursor: pointer; inset: 0; background: var(--color-disabled-bg); border-radius: 13px; transition: 0.2s; }
+.check-slider::before { content: ''; position: absolute; width: 22px; height: 22px; left: 2px; bottom: 2px; background: var(--color-surface); border-radius: 50%; transition: 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+.check-toggle input:checked + .check-slider { background: var(--color-primary); }
+.check-toggle input:checked + .check-slider::before { transform: translateX(18px); }
 .form-input { width: 100%; height: 40px; border-radius: 10px; border: 1px solid var(--color-separator); background: var(--color-input-bg); padding: 0 12px; font-size: var(--fs-title); color: var(--color-text); outline: none; box-sizing: border-box; font-family: inherit; }
 .form-input:focus { border-color: var(--color-primary); }
 .btn-cancel { flex: 1; height: 44px; border-radius: 10px; border: none; background: var(--color-bg); color: var(--color-text); font-size: var(--fs-amount); font-weight: 500; cursor: pointer; font-family: inherit; }
