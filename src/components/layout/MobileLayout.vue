@@ -21,7 +21,7 @@ import TabBar from './TabBar.vue'
 .mobile-content {
   flex: 1;
   overflow-y: auto;
-  padding-bottom: 56px;
+  padding-bottom: calc(56px + env(safe-area-inset-bottom));
   padding-top: env(safe-area-inset-top);
   -webkit-overflow-scrolling: touch;
 }
