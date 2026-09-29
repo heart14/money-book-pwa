@@ -34,9 +34,9 @@ defineEmits<{
 .mode-switch {
   display: inline-flex;
   background: var(--color-disabled-bg);
-  border-radius: 20px;
-  padding: 3px;
-  gap: 2px;
+  border-radius: 21px;
+  padding: 5px;
+  gap: 3px;
 }
 
 .mode-btn {
