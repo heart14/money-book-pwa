@@ -148,9 +148,11 @@ onUnmounted(() => {
 
 <style scoped>
 .chart-card {
-  background: var(--color-card);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: var(--glass-highlight), var(--color-card);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
   border-radius: 14px;
   padding: 16px;
 }

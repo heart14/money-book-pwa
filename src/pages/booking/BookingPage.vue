@@ -622,9 +622,9 @@ watch(
   gap: 8px;
   padding: 10px 14px;
   border-radius: 10px;
-  background: var(--color-card);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: var(--glass-highlight), var(--color-card);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
 }
 
 .tag-chip {
@@ -687,9 +687,9 @@ watch(
   padding: 10px 14px;
   border: none;
   border-radius: 10px;
-  background: var(--color-card);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: var(--glass-highlight), var(--color-card);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   font-family: inherit;
   font-size: var(--fs-body);
   color: var(--color-text);
@@ -773,9 +773,9 @@ watch(
   padding: 6px 12px;
   border: none;
   border-radius: 20px;
-  background: var(--color-card);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: var(--glass-highlight), var(--color-card);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   font-size: var(--fs-ui);
   color: var(--color-text, #1c1c1e);
   cursor: pointer;

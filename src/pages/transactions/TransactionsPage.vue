@@ -821,7 +821,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 <style scoped>
 .transactions-page {
   padding: 0;
-  background: var(--color-bg);
+  background: transparent;
   min-height: 100%;
   padding-bottom: 64px;
 }
@@ -879,9 +879,11 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
   align-items: center;
   justify-content: center;
   height: 40px;
-  background: var(--color-card);
-  backdrop-filter: blur(10px);
-  border-radius: 10px;
+  background: var(--glass-highlight), var(--color-card);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
   padding: 0 12px;
 }
 
@@ -929,13 +931,13 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
   align-items: center;
   gap: 6px;
   height: 36px;
-  background: var(--color-card);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: var(--glass-highlight), var(--color-card);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   border-radius: 10px;
   padding: 0 8px 0 4px;
   position: relative;
-  border: 1px solid var(--color-separator);
+  border: 1px solid var(--glass-border);
 }
 
 .search-input {
@@ -1016,9 +1018,10 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
   top: calc(100% + 6px);
   left: 16px;
   min-width: 120px;
-  background: var(--color-card);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: var(--glass-highlight), var(--color-card);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
   border-radius: 10px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.12);
   padding: 4px;
@@ -1077,15 +1080,21 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
   padding: 0;
 }
 
-/* Day groups */
+/* Day groups — unified glass card containing transparent rows */
 .day-group {
   margin: 8px 12px;
-  background: var(--color-card);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: var(--glass-highlight), var(--color-card);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--glass-shadow);
+}
+
+/* 最后一行不与圆角边相撞 */
+.day-group .transaction-item:last-child {
+  border-bottom: none;
 }
 
 .day-header {

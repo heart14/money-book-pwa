@@ -64,18 +64,16 @@ const displayAmount = computed(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 14px;
-  background: var(--color-card);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  margin-bottom: 6px;
+  padding: 14px 16px;
+  background: transparent;
+  border-bottom: 1px solid var(--color-separator);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: opacity 0.15s;
+  transition: background 0.15s;
 }
 
 .transaction-item:active {
-  opacity: 0.75;
+  background: var(--color-press);
 }
 
 .item-col {

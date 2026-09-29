@@ -117,28 +117,31 @@ function handleBookingSave() {
 <style scoped>
 .tab-bar {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 80px;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  left: 12px;
+  right: 12px;
+  height: 78px;
   display: flex;
   align-items: flex-end;
   justify-content: space-around;
-  background: var(--color-bg);
-  padding: 6px 0 8px;
-  padding-bottom: calc(23px + env(safe-area-inset-bottom));
+  background: var(--glass-highlight), var(--color-tabbar-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
+  border-radius: 36px;
+  box-shadow: var(--glass-shadow), 0 18px 40px -18px rgba(40, 50, 100, 0.45);
+  padding: 6px 10px 10px;
   z-index: 100;
 }
 
-/* Non-full-width top separator */
+/* 顶部内高光：悬浮胶囊的上缘收光（贴合圆角） */
 .tab-bar::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 16px;
-  right: 16px;
-  height: 1px;
-  background: var(--color-separator);
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(120% 90% at 50% 0%, rgba(255, 255, 255, 0.18), transparent 55%);
 }
 
 .tab-item {
@@ -177,10 +180,12 @@ function handleBookingSave() {
 }
 
 .booking-btn {
+  position: relative;
   width: 58px;
   height: 58px;
   border-radius: 50%;
   border: none;
+  overflow: hidden;
   background: linear-gradient(135deg, #007aff, #00a2ff);
   display: flex;
   align-items: center;
@@ -190,6 +195,16 @@ function handleBookingSave() {
   box-shadow: 0 4px 12px rgba(0, 122, 255, 0.4);
   -webkit-tap-highlight-color: transparent;
   transition: transform 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.booking-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent 42%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
 }
 
 .booking-btn:active {
@@ -215,6 +230,12 @@ function handleBookingSave() {
   background: var(--color-placeholder);
   box-shadow: none;
   pointer-events: none;
+}
+
+/* 深色下禁用态仍须置灰（需提升特定性，否则会被深色绿色渐变覆盖） */
+:root.dark :deep(.booking-btn--save.disabled) {
+  background: var(--color-placeholder);
+  box-shadow: none;
 }
 
 .booking-label {

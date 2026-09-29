@@ -159,7 +159,7 @@ async function handleDeleteRegistryOnly() {
 
 /* Modal */
 .modal-overlay { position: fixed; inset: 0; background: var(--color-overlay); z-index: 1000; display: flex; align-items: center; justify-content: center; }
-.modal-content { width: 300px; background: var(--color-surface); border-radius: 16px; padding: 24px; }
+.modal-content { width: 300px; background: var(--glass-highlight), var(--color-sheet-bg); backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)); -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); border-radius: 16px; padding: 24px; }
 .modal-desc { font-size: var(--fs-body); color: var(--color-text); text-align: center; margin-bottom: 8px; }
 .modal-hint { font-size: var(--fs-small); color: var(--color-secondary-text); }
 .modal-actions-col { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }

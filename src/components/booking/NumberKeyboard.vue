@@ -114,8 +114,10 @@ function handleComplete() {
 }
 
 .key {
-  border: none;
-  background: var(--color-surface);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-highlight), var(--color-card);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   color: var(--color-text);
   font-size: 22px;
   font-weight: 500;

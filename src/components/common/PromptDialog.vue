@@ -78,9 +78,11 @@ function onCancel() {
 
 .prompt-dialog {
   width: 280px;
-  background: var(--color-card, rgba(255,255,255,0.95));
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: var(--glass-highlight), var(--color-sheet-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
   border-radius: var(--radius-lg, 14px);
   padding: 24px;
   animation: fadeIn 0.2s ease;

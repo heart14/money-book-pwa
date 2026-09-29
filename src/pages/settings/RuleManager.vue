@@ -224,7 +224,7 @@ async function handleDelete() {
 
 /* Delete confirm overlay */
 .modal-overlay { position: fixed; inset: 0; background: var(--color-overlay); z-index: 1000; display: flex; align-items: center; justify-content: center; }
-.modal-content { width: 280px; background: var(--color-surface); border-radius: 16px; padding: 24px; margin: auto; }
+.modal-content { width: 280px; background: var(--glass-highlight), var(--color-sheet-bg); backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)); -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); border-radius: 16px; padding: 24px; margin: auto; }
 .modal-desc { font-size: var(--fs-body); color: var(--color-text); text-align: center; margin-bottom: 16px; }
 .modal-actions { display: flex; gap: 12px; justify-content: center; }
 .form-group { margin-bottom: 16px; }

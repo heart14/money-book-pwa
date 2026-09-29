@@ -43,7 +43,11 @@ defineEmits<{
 .sheet {
   width: 100%;
   max-width: 480px;
-  background: var(--color-surface);
+  background: var(--glass-highlight), var(--color-sheet-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
+  border-bottom: none;
   border-radius: 16px 16px 0 0;
   animation: slideUp 0.3s ease;
   max-height: 85vh;

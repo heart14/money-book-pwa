@@ -339,11 +339,14 @@ if (!hasPin.value) {
 
 /* ── Section Card ── */
 .section-card {
-  background: var(--color-surface);
+  background: var(--glass-highlight), var(--color-card);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
   padding: 20px 16px;
   margin-bottom: 16px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--glass-shadow);
 }
 
 /* ── PIN Input ── */

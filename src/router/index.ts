@@ -29,6 +29,12 @@ const router = createRouter({
       name: 'settings',
       component: () => import('@/pages/settings/SettingsPage.vue'),
     },
+    {
+      // 独立预览：iOS26 液态玻璃视觉 demo（自包含，不并入业务）
+      path: '/glass',
+      name: 'glass',
+      component: () => import('@/pages/glass/GlassDemoPage.vue'),
+    },
   ],
 })
 

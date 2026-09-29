@@ -15,10 +15,12 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useUiStore } from '@/stores/uiStore'
 import { hashPIN, getStoredPINHash } from '@/utils/crypto'
+import { useLiquidSheen } from '@/composables/useLiquidSheen'
 import MobileLayout from '@/components/layout/MobileLayout.vue'
 import PinDialog from '@/components/common/PinDialog.vue'
 
 const uiStore = useUiStore()
+useLiquidSheen()
 
 // ── Theme management ──
 function resolveTheme(): 'light' | 'dark' {

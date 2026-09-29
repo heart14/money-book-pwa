@@ -192,7 +192,7 @@ async function handleConfirmDelete() {
 <style scoped>
 .accounts-page {
   padding: 16px;
-  background: var(--color-bg);
+  background: transparent;
   min-height: 100%;
   padding-bottom: 80px;
 }
@@ -257,9 +257,10 @@ async function handleConfirmDelete() {
 
 /* ── Accounts List ── */
 .accounts-list {
-  background: var(--color-card);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: var(--glass-highlight), var(--color-card);
+  backdrop-filter: blur(var(--glass-blur-weak)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur-weak)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
   border-radius: 14px;
   overflow: hidden;
 }

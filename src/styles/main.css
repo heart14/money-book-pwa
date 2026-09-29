@@ -1,9 +1,28 @@
 :root {
   /* ── 页面基础色 ── */
   --color-bg: #f2f2f6;
-  --color-card: rgba(255, 255, 255, 0.85);
+  --color-card: rgba(255, 255, 255, 0.55);
   --color-surface: #ffffff;
-  --color-tabbar-bg: rgba(255, 255, 255, 0.9);
+  --color-tabbar-bg: rgba(255, 255, 255, 0.6);
+  --color-sheet-bg: rgba(255, 255, 255, 0.72);
+
+  /* ── Liquid Glass 环境背景（卡片 blur 的折射源，浅色） ── */
+  --color-app-bg:
+    radial-gradient(60% 50% at 15% 10%, rgba(96, 165, 250, 0.42), transparent 62%),
+    radial-gradient(50% 42% at 85% 16%, rgba(244, 114, 182, 0.36), transparent 60%),
+    radial-gradient(70% 60% at 18% 85%, rgba(129, 140, 248, 0.40), transparent 66%),
+    radial-gradient(55% 55% at 85% 78%, rgba(94, 234, 212, 0.38), transparent 62%),
+    linear-gradient(160deg, #dbeafe 0%, #fde8f4 38%, #ece4ff 66%, #ccf5f1 100%);
+
+  /* ── Liquid Glass 玻璃描边 / 高光 / 阴影 / 模糊 ── */
+  --glass-blur: 20px;
+  --glass-blur-weak: 12px;
+  --glass-saturate: 180%;
+  --glass-border: rgba(255, 255, 255, 0.55);
+  --glass-highlight: radial-gradient(120% 80% at 50% 0%, rgba(255, 255, 255, 0.5), transparent 55%);
+  --glass-shadow: 0 8px 28px -10px rgba(70, 80, 150, 0.35),
+                  0 1px 1px rgba(255, 255, 255, 0.7) inset,
+                  0 0 0 0.5px rgba(120, 140, 220, 0.06);
 
   /* ── 文字色 ── */
   --color-text: #1c1c1e;
@@ -58,9 +77,25 @@
 /* ── 深色主题 ── */
 :root.dark {
   --color-bg: #000000;
-  --color-card: rgba(30, 30, 32, 0.9);
+  --color-card: rgba(38, 38, 46, 0.72);
   --color-surface: #1c1c1e;
-  --color-tabbar-bg: rgba(20, 20, 22, 0.95);
+  --color-tabbar-bg: rgba(24, 24, 28, 0.62);
+  --color-sheet-bg: rgba(30, 30, 40, 0.82);
+
+  /* ── Liquid Glass 环境背景（深色：降低饱和度、更暗） ── */
+  --color-app-bg:
+    radial-gradient(60% 50% at 15% 10%, rgba(59, 130, 246, 0.36), transparent 62%),
+    radial-gradient(50% 42% at 85% 16%, rgba(236, 72, 153, 0.26), transparent 60%),
+    radial-gradient(70% 60% at 18% 85%, rgba(129, 112, 245, 0.32), transparent 66%),
+    radial-gradient(55% 55% at 85% 78%, rgba(45, 212, 191, 0.26), transparent 62%),
+    linear-gradient(160deg, #0f0f18 0%, #1a1222 38%, #131128 66%, #0c191a 100%);
+
+  /* ── Liquid Glass 玻璃令牌（深色） ── */
+  --glass-border: rgba(255, 255, 255, 0.16);
+  --glass-highlight: radial-gradient(120% 80% at 50% 0%, rgba(255, 255, 255, 0.16), transparent 55%);
+  --glass-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.6),
+                  0 1px 1px rgba(255, 255, 255, 0.18) inset,
+                  0 0 0 0.5px rgba(255, 255, 255, 0.04);
 
   --color-text: #ffffff;
   --color-secondary-text: #98989e;
@@ -102,16 +137,28 @@ body {
   background-color: var(--color-bg);
   color: var(--color-text);
   transition: background-color 0.2s, color 0.2s;
+  position: relative;
+}
+
+/* 环境渐变固定背景层：作为所有玻璃卡 backdrop-filter 的折射来源。
+   不用 background-attachment（iOS Safari 支持不稳定），改独立 fixed 层 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--color-app-bg);
 }
 
 #app {
+  position: relative;
+  z-index: 1;
   height: 100%;
-  background: var(--color-bg);
-  transition: background-color 0.2s;
+  background: transparent;
 }
 
 /* Global transitions for theme-aware elements */
-.glass-card,
 .chart-card,
 .section-card,
 .page,
@@ -153,7 +200,7 @@ body {
 /* Page base style */
 .page {
   padding: 16px;
-  padding-bottom: 80px;
+  padding-bottom: calc(116px + env(safe-area-inset-bottom));
   min-height: 100%;
 }
 
@@ -179,10 +226,12 @@ html {
 
 /* Shared glass card mixin */
 .glass-card {
-  background: var(--color-card);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: var(--glass-highlight), var(--color-card);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   border-radius: 14px;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
 }
 
 /* Page header style */
@@ -212,4 +261,73 @@ html {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* ════════════════════════════════════════════════════════════
+   Liquid Glass 光效层（批次 C）
+   ════════════════════════════════════════════════════════════ */
+
+/* 全局镜面高光：跟随指针的"光线掠过玻璃"层。
+   由 useLiquidSheen 动态注入位置变量，仅一层，固定于视口 */
+.liquid-sheen {
+  position: fixed;
+  inset: 0;
+  z-index: 9990;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+  background: radial-gradient(
+    420px circle at var(--sx, 50%) var(--sy, -20%),
+    rgba(255, 255, 255, 0.55),
+    rgba(255, 255, 255, 0) 46%
+  );
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  will-change: opacity, background;
+}
+
+.liquid-sheen.is-active { opacity: 1; }
+
+/* 深色下更克制，防止过曝 */
+:root.dark .liquid-sheen {
+  background: radial-gradient(
+    420px circle at var(--sx, 50%) var(--sy, -20%),
+    rgba(255, 255, 255, 0.22),
+    rgba(255, 255, 255, 0) 46%
+  );
+  mix-blend-mode: overlay;
+}
+
+/* 按下时的内聚冷光脉冲（作用于玻璃卡，改善按压反馈） */
+.glass-card {
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s,
+              box-shadow 0.15s, transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.glass-card:active {
+  transform: scale(0.985);
+  box-shadow: var(--glass-shadow), 0 0 0 1px var(--glass-border) inset,
+              0 0 18px rgba(255, 255, 255, 0.45) inset;
+}
+
+/* 不支持 backdrop-filter 的旧浏览器：把玻璃令牌降为近实色，
+   保证内容在彩色环境上仍清晰可读，并关闭动态高光 */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .liquid-sheen { opacity: 0 !important; display: none; }
+  :root {
+    --color-card: rgba(255, 255, 255, 0.94);
+    --color-sheet-bg: rgba(255, 255, 255, 0.97);
+    --color-tabbar-bg: #f4f4f7;
+    --glass-border: rgba(60, 60, 67, 0.1);
+    --glass-highlight: none;
+  }
+  :root.dark {
+    --color-card: #1c1c1f;
+    --color-sheet-bg: #1c1c1f;
+    --color-tabbar-bg: #161618;
+  }
+}
+
+/* 减少动态效果：彻底关闭高光与缩放反馈 */
+@media (prefers-reduced-motion: reduce) {
+  .liquid-sheen { opacity: 0 !important; display: none; }
+  .glass-card:active { transform: none; }
 }

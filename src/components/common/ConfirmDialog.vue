@@ -70,7 +70,11 @@ function onCancel() {
 
 .confirm-content {
   width: 280px;
-  background: var(--color-surface);
+  background: var(--glass-highlight), var(--color-sheet-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
   border-radius: 16px;
   padding: 24px;
 }

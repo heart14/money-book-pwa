@@ -61,7 +61,7 @@ defineEmits<{
   height: 36px;
   padding: 0 14px;
   border-radius: 18px;
-  border: none;
+  border: 1px solid var(--glass-border);
   font-size: var(--fs-ui);
   font-weight: 500;
   cursor: pointer;

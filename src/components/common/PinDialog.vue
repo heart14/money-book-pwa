@@ -142,11 +142,11 @@ watch(() => props.resetKey, () => {
 .pin-overlay {
   position: fixed;
   inset: 0;
-  background: var(--color-bg);
+  background: var(--color-app-bg);
   display: flex;
   align-items: stretch;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9999;
 }
 
 .pin-shell {
@@ -280,11 +280,11 @@ watch(() => props.resetKey, () => {
 .pin-key {
   aspect-ratio: 1;
   max-height: 84px;
-  border: none;
+  border: 1px solid var(--glass-border);
   border-radius: 50%;
-  background: var(--color-card);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: var(--glass-highlight), var(--color-card);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -295,7 +295,7 @@ watch(() => props.resetKey, () => {
               transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
               box-shadow 0.2s;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07),
-              0 0 0 0.5px rgba(0, 0, 0, 0.02);
+              0 1px 1px rgba(255, 255, 255, 0.5) inset;
   user-select: none;
   -webkit-user-select: none;
 }
