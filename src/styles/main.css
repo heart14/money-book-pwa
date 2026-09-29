@@ -203,7 +203,10 @@ body::before {
 .page {
   padding: 16px;
   padding-bottom: calc(116px + env(safe-area-inset-bottom));
+  /* min-height 用视口高度单位而非 100%（% 相对 router-view，其高度为 auto 会失效），
+     确保页面内容不足一屏时仍至少占满整屏，避免底部露出背景形成空白条 */
   min-height: 100%;
+  min-height: 100dvh;
 }
 
 /* iOS-style tap highlight */
