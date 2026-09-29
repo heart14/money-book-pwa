@@ -8,13 +8,15 @@
       <div v-if="rules.length === 0" class="empty-hint">暂无周期规则</div>
       <div v-for="rule in rules" :key="rule.id" class="rule-item">
         <div class="rule-info">
-          <div class="rule-title-row">
+          <div class="rule-meta-row">
             <span class="rule-type" :class="'rule-type--' + rule.type">{{ typeLabel(rule.type) }}</span>
-            <span class="rule-cat-icon"><TwemojiIcon :emoji="getCategoryIcon(rule)" /></span>
-            <span v-if="rule.title" class="rule-title">{{ rule.title }}</span>
+            <span class="rule-cat-icon" :class="{ muted: hasTitle(rule) }"><TwemojiIcon :emoji="getCategoryIcon(rule)" /></span>
+            <span class="rule-meta">每月{{ rule.dayOfMonth }}日</span>
           </div>
-          <span class="rule-amount">{{ formatCurrency(rule.amount) }}</span>
-          <span class="rule-meta">每月{{ rule.dayOfMonth }}日</span>
+          <div class="rule-main-row">
+            <span class="rule-name">{{ displayName(rule) }}</span>
+            <span class="rule-amount">{{ formatCurrency(rule.amount) }}</span>
+          </div>
         </div>
         <div class="rule-actions">
           <label class="toggle">
@@ -127,6 +129,19 @@ function getCategoryIcon(rule: RecurringRule): string {
   return cat?.icon || '🗂️'
 }
 
+function getCategoryName(rule: RecurringRule): string {
+  if (!rule.categoryId) return ''
+  return categoryStore.categories.find((c) => c.id === rule.categoryId)?.name || ''
+}
+
+function hasTitle(rule: RecurringRule): boolean {
+  return !!rule.title
+}
+
+function displayName(rule: RecurringRule): string {
+  return rule.title || getCategoryName(rule)
+}
+
 // ── Toggle ──
 async function toggleRule(rule: RecurringRule) {
   if (rule.id) {
@@ -230,12 +245,14 @@ async function handleDelete() {
 
 .rule-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
 .rule-info { display: flex; flex-direction: column; gap: 2px; }
-.rule-type { font-size: var(--fs-small); padding: 1px 6px; border-radius: 4px; background: var(--color-bg); color: var(--color-secondary-text); }
-.rule-title-row { display: flex; align-items: center; gap: 6px; }
+.rule-type { font-size: var(--fs-small); padding: 1px 6px; border-radius: 4px; background: var(--color-bg); color: var(--color-secondary-text); flex-shrink: 0; }
+.rule-meta-row { display: flex; align-items: center; gap: 6px; }
 .rule-cat-icon { font-size: 14px; line-height: 1; flex-shrink: 0; }
-.rule-title { font-size: var(--fs-small); color: var(--color-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.rule-amount { font-size: var(--fs-amount); font-weight: 600; color: var(--color-text); margin-top: 2px; }
+.rule-cat-icon.muted { opacity: 0.6; }
 .rule-meta { font-size: var(--fs-small); color: var(--color-secondary-text); }
+.rule-main-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 2px; min-width: 0; }
+.rule-name { font-size: var(--fs-body); color: var(--color-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rule-amount { font-size: var(--fs-amount); font-weight: 600; color: var(--color-text); flex-shrink: 0; }
 
 .rule-actions { display: flex; align-items: center; gap: 6px; }
 
