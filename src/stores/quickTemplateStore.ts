@@ -25,7 +25,8 @@ export const useQuickTemplateStore = defineStore('quickTemplates', () => {
     const maxSort = all.reduce((max, t) => Math.max(max, t.sort), 0)
     tpl.sort = maxSort + 1
 
-    await db.quickTemplates.add(tpl as QuickTemplate)
+    // QuickTemplate.id 可选，Omit<...,'id'> 与 QuickTemplate 结构兼容，无需断言
+    await db.quickTemplates.add(tpl)
     return { success: true }
   }
 

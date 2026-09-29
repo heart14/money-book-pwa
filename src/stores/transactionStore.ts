@@ -49,7 +49,8 @@ export const useTransactionStore = defineStore('transactions', () => {
   }
 
   async function addTransaction(tx: Omit<Transaction, 'id'>): Promise<number> {
-    const id = await db.transactions.add(tx as Transaction)
+    // Transaction.id 可选，Omit<...,'id'> 与 Transaction 结构兼容，无需断言
+    const id = await db.transactions.add(tx)
     // Sync tags to the tags table (fire-and-forget for perf, but ensure it runs)
     if (tx.tags && tx.tags.length > 0) {
       ensureTagsExist(tx.tags)
@@ -59,7 +60,7 @@ export const useTransactionStore = defineStore('transactions', () => {
   }
 
   async function updateTransaction(id: number, updates: Partial<Transaction>): Promise<void> {
-    await db.transactions.update(id, updates as any)
+    await db.transactions.update(id, updates)
     // Sync tags if the update includes them
     if (updates.tags && updates.tags.length > 0) {
       ensureTagsExist(updates.tags)
@@ -92,7 +93,7 @@ export const useTransactionStore = defineStore('transactions', () => {
       if (rule.tags && rule.tags.length > 0) {
         await ensureTagsExist(rule.tags, trx.table<Tag, number>('tags'))
       }
-      await trx.table('transactions').add(raw as Transaction)
+      await trx.table('transactions').add(raw)
       if (rule.id != null) {
         await trx.table('recurringRules').update(rule.id, { lastExecuted: executedMonth })
       }
@@ -117,5 +118,7 @@ export const useTransactionStore = defineStore('transactions', () => {
     deleteTransaction,
     applyRecurringRule,
     getByDateRange,
+    // 供分类删除等跨 store 场景在直接写库后手动通知明细页刷新
+    bumpVersion,
   }
 })
