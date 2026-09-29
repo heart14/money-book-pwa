@@ -13,9 +13,6 @@
     radial-gradient(70% 60% at 18% 85%, rgba(129, 140, 248, 0.40), transparent 66%),
     radial-gradient(55% 55% at 85% 78%, rgba(94, 234, 212, 0.38), transparent 62%),
     linear-gradient(160deg, #dbeafe 0%, #fde8f4 38%, #ece4ff 66%, #ccf5f1 100%);
-  /* 与渐变底部对齐的实色兜底：iOS 在安全区/超滚动画布上不绘制 background-image，
-     仅绘制 background-color，此色保证底部安全区不是白色 */
-  --color-app-bg-solid: #ccf5f1;
 
   /* ── Liquid Glass 玻璃描边 / 高光 / 阴影 / 模糊 ── */
   --glass-blur: 20px;
@@ -92,7 +89,6 @@
     radial-gradient(70% 60% at 18% 85%, rgba(129, 112, 245, 0.32), transparent 66%),
     radial-gradient(55% 55% at 85% 78%, rgba(45, 212, 191, 0.26), transparent 62%),
     linear-gradient(160deg, #0f0f18 0%, #1a1222 38%, #131128 66%, #0c191a 100%);
-  --color-app-bg-solid: #0c191a;
 
   /* ── Liquid Glass 玻璃令牌（深色） ── */
   --glass-border: rgba(255, 255, 255, 0.16);
@@ -137,12 +133,8 @@ html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* 环境渐变放根元素画布，覆盖状态栏与底部安全区（viewport-fit=cover）。
-     同时提供 background-color 实色兜底——iOS 安全区画布只绘制颜色不绘制渐变，
-     用实色渐变底部色避免露出白色 */
-  background-color: var(--color-app-bg-solid);
-  background-image: var(--color-app-bg);
-  background-size: cover;
+  /* 环境渐变放根元素画布：覆盖整屏（含状态栏 + 底部安全区 + viewport-fit=cover 扩展区），且不随滚动 */
+  background: var(--color-app-bg);
   color: var(--color-text);
   transition: background-color 0.3s, color 0.2s;
 }
