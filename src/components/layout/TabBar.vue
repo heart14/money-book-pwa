@@ -117,7 +117,7 @@ function handleBookingSave() {
 <style scoped>
 .tab-bar {
   position: fixed;
-  bottom: max(env(safe-area-inset-bottom), 10px);
+  bottom: calc(12px + env(safe-area-inset-bottom));
   left: 12px;
   right: 12px;
   height: 78px;
