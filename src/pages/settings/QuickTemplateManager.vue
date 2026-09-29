@@ -17,16 +17,18 @@
 
       <div v-else class="qt-list">
         <div
-          v-for="tpl in store.templates"
+          v-for="(tpl, idx) in store.templates"
           :key="tpl.id"
           class="qt-row"
+          draggable="true"
+          :class="{ 'drag-over': dragOverIdx === idx }"
+          @dragstart="onDragStart($event, idx)"
+          @dragover.prevent="onDragOver(idx)"
+          @dragleave="onDragLeave"
+          @drop.prevent="onDrop($event, idx)"
+          @dragend="onDragEnd"
         >
-          <button class="qt-move-btn" @click="moveUp(tpl)" :disabled="isFirst(tpl)">
-            <span class="qt-move-arrow">↑</span>
-          </button>
-          <button class="qt-move-btn" @click="moveDown(tpl)" :disabled="isLast(tpl)">
-            <span class="qt-move-arrow">↓</span>
-          </button>
+          <span class="qt-drag-handle"><span class="qt-drag-handle-icon">⠿</span></span>
           <div class="qt-row-content" @click="startEdit(tpl)">
             <span class="qt-row-icon"><TwemojiIcon :emoji="getCategoryIcon(tpl)" /></span>
             <span class="qt-row-name">{{ tpl.name }}</span>
@@ -153,43 +155,36 @@ const availableCategories = computed(() => {
   return categoryStore.categories.filter(c => c.parentId !== null && c.type === editForm.type)
 })
 
-// ── Sort ──
-function isFirst(tpl: QuickTemplate) {
-  const list = store.templates
-  return list.length > 0 && list[0].id === tpl.id
-}
+// ── Drag & Drop Sort ──
+const dragIdx = ref<number | null>(null)
+const dragOverIdx = ref<number | null>(null)
 
-function isLast(tpl: QuickTemplate) {
-  const list = store.templates
-  return list.length > 0 && list[list.length - 1].id === tpl.id
-}
-
-async function moveUp(tpl: QuickTemplate) {
-  try {
-    const list = store.templates
-    const idx = list.findIndex(t => t.id === tpl.id)
-    if (idx <= 0) return
-    const prev = list[idx - 1]
-    await store.update(tpl.id!, { sort: prev.sort })
-    await store.update(prev.id!, { sort: tpl.sort })
-  } catch (e) {
-    console.error('move up failed', e)
-    showToast('排序失败')
+function onDragStart(e: DragEvent, idx: number) {
+  dragIdx.value = idx
+  if (e.dataTransfer) {
+    e.dataTransfer.effectAllowed = 'move'
+    e.dataTransfer.setData('text/plain', String(idx))
   }
 }
 
-async function moveDown(tpl: QuickTemplate) {
+function onDragOver(idx: number) { dragOverIdx.value = idx }
+function onDragLeave() { dragOverIdx.value = null }
+function onDragEnd() { dragIdx.value = null; dragOverIdx.value = null }
+
+async function onDrop(_e: DragEvent, dropIdx: number) {
+  const fromIdx = dragIdx.value
+  if (fromIdx == null || fromIdx === dropIdx) return
+  const list = [...store.templates]
+  const [moved] = list.splice(fromIdx, 1)
+  list.splice(dropIdx, 0, moved)
   try {
-    const list = store.templates
-    const idx = list.findIndex(t => t.id === tpl.id)
-    if (idx < 0 || idx >= list.length - 1) return
-    const next = list[idx + 1]
-    await store.update(tpl.id!, { sort: next.sort })
-    await store.update(next.id!, { sort: tpl.sort })
+    await store.reorder(list.map(t => t.id!))
   } catch (e) {
-    console.error('move down failed', e)
+    console.error('reorder failed', e)
     showToast('排序失败')
   }
+  dragIdx.value = null
+  dragOverIdx.value = null
 }
 
 // ── Icon helper ──
@@ -361,28 +356,31 @@ function showToast(msg: string) {
   border-bottom: none;
 }
 
-.qt-move-btn {
-  width: 24px;
-  height: 24px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
+.qt-row.drag-over { background: rgba(0, 122, 255, 0.08); }
+
+.qt-drag-handle {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-placeholder);
+  cursor: grab;
+  flex-shrink: 0;
+  padding: 0 2px;
+  margin: -10px 0;
+  height: 100%;
   -webkit-tap-highlight-color: transparent;
-  padding: 0;
+  touch-action: none;
 }
 
-.qt-move-btn:disabled {
-  opacity: 0.3;
-}
-
-.qt-move-arrow {
-  font-size: 14px;
+.qt-drag-handle-icon {
+  font-size: 16px;
+  color: var(--color-placeholder);
+  user-select: none;
   line-height: 1;
+  padding: 16px 10px;
+  border-radius: 8px;
 }
+
+.qt-drag-handle-icon:active { background: var(--color-press); }
 
 .qt-row-content {
   flex: 1;
