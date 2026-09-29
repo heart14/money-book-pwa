@@ -60,7 +60,6 @@
           <div v-if="uiStore.bookingHintVisible" class="save-hint">点击这里保存</div>
         </Transition>
       </div>
-      <span class="tab-label booking-label">{{ isBooking ? '保存' : '记账' }}</span>
     </div>
 
     <!-- 账户 -->
@@ -120,7 +119,7 @@ function handleBookingSave() {
   bottom: calc(12px + env(safe-area-inset-bottom));
   left: 12px;
   right: 12px;
-  height: 78px;
+  height: 68px;
   display: flex;
   align-items: flex-end;
   justify-content: space-around;
@@ -170,13 +169,17 @@ function handleBookingSave() {
   position: relative;
   width: 24%;
   top: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
 .booking-btn-wrap {
   position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 .booking-btn {
@@ -190,7 +193,7 @@ function handleBookingSave() {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 6px;
+  margin: 0 auto;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0, 122, 255, 0.4);
   -webkit-tap-highlight-color: transparent;
@@ -236,10 +239,6 @@ function handleBookingSave() {
 :root.dark :deep(.booking-btn--save.disabled) {
   background: var(--color-placeholder);
   box-shadow: none;
-}
-
-.booking-label {
-  font-weight: 700;
 }
 
 /* Save hint bubble */

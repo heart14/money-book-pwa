@@ -50,10 +50,10 @@
   --color-white: #ffffff;
 
   /* ── 圆角 ── */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 14px;
-  --radius-xl: 16px;
+  --radius-sm: 18px;
+  --radius-md: 20px;
+  --radius-lg: 20px;
+  --radius-xl: 20px;
 
   /* ── 阴影 ── */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
