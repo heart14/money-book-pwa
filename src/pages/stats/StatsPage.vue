@@ -602,8 +602,11 @@ function rankLabel(index: number): string {
 .stats-page {
   padding: 16px;
   background: transparent;
+  /* min-height 用视口高度单位（% 相对 auto 高度父级会失效）：
+     内容不足一屏时也撑满整屏，避免底部露出背景空白 */
   min-height: 100%;
-  padding-bottom: 80px;
+  min-height: 100svh;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
 }
 
 .page-header {

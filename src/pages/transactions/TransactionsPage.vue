@@ -822,8 +822,11 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 .transactions-page {
   padding: 0;
   background: transparent;
+  /* min-height 用视口高度单位（% 相对 auto 高度父级会失效）：
+     内容不足一屏时也撑满整屏，避免底部露出背景空白 */
   min-height: 100%;
-  padding-bottom: 64px;
+  min-height: 100svh;
+  padding-bottom: calc(64px + env(safe-area-inset-bottom));
 }
 
 .page-header {
