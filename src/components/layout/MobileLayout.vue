@@ -16,6 +16,9 @@ import TabBar from './TabBar.vue'
   display: flex;
   flex-direction: column;
   height: 100%;
+  /* iOS standalone + translucent + viewport-fit=cover：用动态视口高度，
+     确保容器高度 = 实际可视区(含上下安全区)，避免文档体被撑高导致底部露出留白 */
+  height: 100dvh;
 }
 
 .mobile-content {
