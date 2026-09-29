@@ -21,8 +21,8 @@ export default defineConfig({
       manifest: {
         name: '钱书',
         short_name: '钱书',
-        theme_color: '#ffffff',
-        background_color: '#ffffff',
+        theme_color: '#e2e7fb',
+        background_color: '#e2e7fb',
         display: 'standalone',
         start_url: '/',
         scope: '/',

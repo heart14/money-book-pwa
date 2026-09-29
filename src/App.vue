@@ -34,7 +34,7 @@ function applyTheme() {
   const isDark = resolveTheme() === 'dark'
   document.documentElement.classList.toggle('dark', isDark)
   const meta = document.querySelector('meta[name="theme-color"]')
-  if (meta) meta.setAttribute('content', isDark ? '#0c191a' : '#e2e7fb')
+  if (meta) meta.setAttribute('content', isDark ? '#0f0f18' : '#dbeafe')
 }
 
 function applyFontSize() {
