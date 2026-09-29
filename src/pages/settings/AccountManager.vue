@@ -18,7 +18,7 @@
         @drop.prevent="onDrop($event, idx)"
         @dragend="onDragEnd"
       >
-        <span class="drag-handle">⠿</span>
+        <span class="drag-handle"><span class="drag-handle-icon">⠿</span></span>
         <span class="account-icon"><TwemojiIcon :emoji="acc.icon" /></span>
         <div class="account-info">
           <span class="account-name">{{ acc.name }}</span>
@@ -238,7 +238,27 @@ async function handleDelete() {
   padding: 8px 4px;
 }
 .account-item.drag-over { background: rgba(0, 122, 255, 0.08); }
-.drag-handle { font-size: 16px; color: var(--color-placeholder); cursor: grab; user-select: none; line-height: 1; padding: 2px; flex-shrink: 0; }
+.drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  flex-shrink: 0;
+  padding: 0 2px;
+  margin: -8px 0;
+  height: 100%;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+}
+.drag-handle-icon {
+  font-size: 16px;
+  color: var(--color-placeholder);
+  user-select: none;
+  line-height: 1;
+  padding: 14px 10px;
+  border-radius: 8px;
+}
+.drag-handle-icon:active { background: var(--color-press); }
 .account-icon { font-size: 16px; }
 .account-info { flex: 1; display: flex; flex-direction: column; gap: 1px; }
 .account-name { font-size: var(--fs-body); color: var(--color-text); }
