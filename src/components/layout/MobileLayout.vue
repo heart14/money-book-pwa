@@ -22,7 +22,6 @@ import TabBar from './TabBar.vue'
   flex: 1;
   overflow-y: auto;
   padding-bottom: 56px;
-  padding-top: env(safe-area-inset-top);
   -webkit-overflow-scrolling: touch;
 }
 </style>

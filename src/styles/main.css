@@ -11,11 +11,8 @@
     radial-gradient(60% 50% at 15% 10%, rgba(96, 165, 250, 0.42), transparent 62%),
     radial-gradient(50% 42% at 85% 16%, rgba(244, 114, 182, 0.36), transparent 60%),
     radial-gradient(70% 60% at 18% 85%, rgba(129, 140, 248, 0.40), transparent 66%),
-    radial-gradient(55% 55% at 85% 78%, rgba(94, 234, 212, 0.20), transparent 62%),
-    linear-gradient(160deg, #dbeafe 0%, #fde8f4 38%, #ece4ff 66%, #e2e7fb 100%);
-  /* 边缘纯色兜底（状态栏/底部安全区）：iOS 安全区画布只绘制 background-color、
-     不绘制渐变。此色取渐变底部收尾色，保证安全区与应用渐变无缝统一、不露白 */
-  --color-app-bg-solid: #e2e7fb;
+    radial-gradient(55% 55% at 85% 78%, rgba(94, 234, 212, 0.38), transparent 62%),
+    linear-gradient(160deg, #dbeafe 0%, #fde8f4 38%, #ece4ff 66%, #ccf5f1 100%);
 
   /* ── Liquid Glass 玻璃描边 / 高光 / 阴影 / 模糊 ── */
   --glass-blur: 20px;
@@ -92,7 +89,6 @@
     radial-gradient(70% 60% at 18% 85%, rgba(129, 112, 245, 0.32), transparent 66%),
     radial-gradient(55% 55% at 85% 78%, rgba(45, 212, 191, 0.26), transparent 62%),
     linear-gradient(160deg, #0f0f18 0%, #1a1222 38%, #131128 66%, #0c191a 100%);
-  --color-app-bg-solid: #0c191a;
 
   /* ── Liquid Glass 玻璃令牌（深色） ── */
   --glass-border: rgba(255, 255, 255, 0.16);
@@ -138,7 +134,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--color-app-bg-solid);
+  background-color: var(--color-bg);
   color: var(--color-text);
   transition: background-color 0.2s, color 0.2s;
   position: relative;
