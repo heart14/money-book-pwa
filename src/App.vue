@@ -33,8 +33,9 @@ function resolveTheme(): 'light' | 'dark' {
 function applyTheme() {
   const isDark = resolveTheme() === 'dark'
   document.documentElement.classList.toggle('dark', isDark)
+  // 与 main.css 环境渐变顶部取色一致，让状态栏与玻璃背景过渡统一
   const meta = document.querySelector('meta[name="theme-color"]')
-  if (meta) meta.setAttribute('content', isDark ? '#000000' : '#f2f2f6')
+  if (meta) meta.setAttribute('content', isDark ? '#0f0f18' : '#dbeafe')
 }
 
 function applyFontSize() {
