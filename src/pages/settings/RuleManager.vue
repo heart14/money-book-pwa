@@ -8,7 +8,11 @@
       <div v-if="rules.length === 0" class="empty-hint">暂无周期规则</div>
       <div v-for="rule in rules" :key="rule.id" class="rule-item">
         <div class="rule-info">
-          <span class="rule-type" :class="'rule-type--' + rule.type">{{ typeLabel(rule.type) }}</span>
+          <div class="rule-title-row">
+            <span class="rule-type" :class="'rule-type--' + rule.type">{{ typeLabel(rule.type) }}</span>
+            <span class="rule-cat-icon"><TwemojiIcon :emoji="getCategoryIcon(rule)" /></span>
+            <span v-if="rule.title" class="rule-title">{{ rule.title }}</span>
+          </div>
           <span class="rule-amount">{{ formatCurrency(rule.amount) }}</span>
           <span class="rule-meta">每月{{ rule.dayOfMonth }}日</span>
         </div>
@@ -50,6 +54,19 @@
         <input v-model.number="form.dayOfMonth" class="form-input" type="number" min="1" max="31" placeholder="1" />
       </div>
       <div class="form-group">
+        <label class="form-label">标题（可选）</label>
+        <input v-model="form.title" class="form-input" placeholder="标题" maxlength="100" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">分类</label>
+        <select v-model.number="form.categoryId" class="form-input">
+          <option :value="0">请选择</option>
+          <option v-for="cat in availableCategories" :key="cat.id" :value="cat.id">
+            {{ cat.icon }} {{ cat.name }}
+          </option>
+        </select>
+      </div>
+      <div class="form-group">
         <label class="form-label">备注</label>
         <input v-model="form.note" class="form-input" placeholder="备注（可选）" maxlength="200" />
       </div>
@@ -78,9 +95,12 @@
 import { ref, reactive, computed, watchEffect } from 'vue'
 import { db } from '@/db'
 import { formatCurrency } from '@/utils/format'
+import { useCategoryStore } from '@/stores/categoryStore'
 import type { RecurringRule } from '@/types'
 import CommonBottomSheet from '@/components/common/CommonBottomSheet.vue'
 import TwemojiIcon from '@/components/common/TwemojiIcon.vue'
+
+const categoryStore = useCategoryStore()
 
 const expanded = ref(false)
 
@@ -101,6 +121,12 @@ function typeLabel(type: string): string {
   return type === 'expense' ? '支出' : '收入'
 }
 
+function getCategoryIcon(rule: RecurringRule): string {
+  if (!rule.categoryId) return '🗂️'
+  const cat = categoryStore.categories.find((c) => c.id === rule.categoryId)
+  return cat?.icon || '🗂️'
+}
+
 // ── Toggle ──
 async function toggleRule(rule: RecurringRule) {
   if (rule.id) {
@@ -112,12 +138,16 @@ async function toggleRule(rule: RecurringRule) {
 // ── Add / Edit Modal ──
 const showModal = ref(false)
 const editingRule = ref<RecurringRule | null>(null)
-const form = reactive({ type: 'expense' as 'expense' | 'income', amountYuan: 0, dayOfMonth: 1, note: '' })
+const form = reactive({ type: 'expense' as 'expense' | 'income', amountYuan: 0, dayOfMonth: 1, title: '', categoryId: 0, note: '' })
 const canSave = computed(() => form.amountYuan > 0 && form.dayOfMonth >= 1 && form.dayOfMonth <= 31)
+
+const availableCategories = computed(() => {
+  return categoryStore.categories.filter((c) => c.parentId !== null && c.type === form.type)
+})
 
 function openAdd() {
   editingRule.value = null
-  form.type = 'expense'; form.amountYuan = 0; form.dayOfMonth = 1; form.note = ''
+  form.type = 'expense'; form.amountYuan = 0; form.dayOfMonth = 1; form.title = ''; form.categoryId = 0; form.note = ''
   showModal.value = true
 }
 
@@ -126,6 +156,8 @@ function openEdit(rule: RecurringRule) {
   form.type = rule.type
   form.amountYuan = rule.amount / 100
   form.dayOfMonth = rule.dayOfMonth
+  form.title = rule.title
+  form.categoryId = rule.categoryId || 0
   form.note = rule.note
   showModal.value = true
 }
@@ -134,9 +166,9 @@ async function handleSave() {
   const amount = Math.round(form.amountYuan * 100)
   const data: Omit<RecurringRule, 'id'> = {
     type: form.type,
-    title: form.note,
+    title: form.title,
     amount,
-    categoryId: null,
+    categoryId: form.categoryId > 0 ? form.categoryId : null,
     tags: [],
     note: form.note,
     dayOfMonth: form.dayOfMonth,
@@ -199,7 +231,10 @@ async function handleDelete() {
 .rule-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
 .rule-info { display: flex; flex-direction: column; gap: 2px; }
 .rule-type { font-size: var(--fs-small); padding: 1px 6px; border-radius: 4px; background: var(--color-bg); color: var(--color-secondary-text); }
-.rule-amount { font-size: var(--fs-amount); font-weight: 600; color: var(--color-text); }
+.rule-title-row { display: flex; align-items: center; gap: 6px; }
+.rule-cat-icon { font-size: 14px; line-height: 1; flex-shrink: 0; }
+.rule-title { font-size: var(--fs-small); color: var(--color-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rule-amount { font-size: var(--fs-amount); font-weight: 600; color: var(--color-text); margin-top: 2px; }
 .rule-meta { font-size: var(--fs-small); color: var(--color-secondary-text); }
 
 .rule-actions { display: flex; align-items: center; gap: 6px; }
