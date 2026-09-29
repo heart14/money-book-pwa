@@ -1,6 +1,6 @@
 <template>
   <div class="mobile-layout">
-    <main ref="contentRef" class="mobile-content">
+    <main class="mobile-content">
       <router-view />
     </main>
     <TabBar />
@@ -8,29 +8,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
 import TabBar from './TabBar.vue'
-
-// 主滚动容器
-const contentRef = ref<HTMLElement | null>(null)
 
 /**
  * iOS standalone + 透明状态栏 + viewport-fit=cover 下，应用从后台回到前台时，
- * 布局/视觉视口在首帧会暂时错位（report 的 svh/dvh 偏小），
- * 导致页面底部露出一段空白，需手动滑动触发重排才会贴合。
- * 这里在回前台时强制触发一次重排（读 offsetHeight 强制同步布局），
- * 把“手动滑一下才能恢复”的动作自动化，抹平这一瞬态差异。
+ * 视觉/布局视口在首帧可能暂时未就绪，导致排版错位（例如底部露出空白）。
+ * 这里在回前台时强制触发一次文档重排（读 offsetHeight 同步布局），
+ * 让浏览器立即按实际可视区重算，抹平瞬态差异。
  */
 function forceReflow() {
   const tick = () => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        const el = contentRef.value
-        if (!el) return
-        // 强制同步布局，让浏览器重新计算容器与视口尺寸
-        void el.offsetHeight
-        // scrollTop 若已越界则回正到有效范围，保持视觉贴合
-        el.scrollTop = el.scrollTop
+        void document.documentElement.offsetHeight
+        window.scrollTo(window.scrollX, window.scrollY)
       })
     })
   }
@@ -54,20 +46,18 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* 采用 body(html) 原生滚动而非内滚动容器：
+   - 与 PullToRefresh(依赖 window.scrollY===0 判断页顶) 天然兼容；
+   - 页面随内容自然变长，由 window 负责滚动，
+     避免“内滚动容器高度被视口单位锁定、iOS 回前台首帧视口错位”导致底部留白/顶部被推出。
+   用 min-height 而非 height：页面至少占满一屏，内容多则自然向下延伸。 */
 .mobile-layout {
-  display: flex;
-  flex-direction: column;
-  /* 100svh 为静态“小视口高度”：standalone 无浏览器侧工具栏时恒定 = 整屏(含安全区)。
-     相比 100dvh，不会在“回前台”首帧报一个偏小的瞬时值（那是底部空白、需滑动才贴合的根源） */
-  height: 100%;
-  height: 100svh;
+  min-height: 100%;
+  min-height: 100svh;
 }
 
 .mobile-content {
-  flex: 1;
-  overflow-y: auto;
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: 56px;
-  -webkit-overflow-scrolling: touch;
 }
 </style>

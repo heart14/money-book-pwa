@@ -156,7 +156,9 @@ body::before {
 #app {
   position: relative;
   z-index: 1;
-  height: 100%;
+  /* 改用 min-height：允许内容将应用撑开一屏以上，由 body(html) 原生滚动，
+     避免 height 锁定 + 内滚动容器在 iOS 回前台时视口错位、底部留白的问题 */
+  min-height: 100%;
   background: transparent;
 }
 
