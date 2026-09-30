@@ -179,7 +179,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { db } from '@/db'
 import { useTransactionStore } from '@/stores/transactionStore'
 import { useCategoryStore } from '@/stores/categoryStore'
@@ -236,8 +236,16 @@ const dateFrom = ref('')
 const dateTo = ref('')
 const isRangeFilter = ref(false)
 
+/** 校验 YYYY-MM-DD 日期字符串 */
+function isValidDateStr(s: unknown): s is string {
+  return typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s)
+}
+
 // ── Initialize search from route query tag param ──
 const route = useRoute()
+const router = useRouter()
+// from/to 均合法且 from<=to 才启用范围筛选
+const hasValidRange = isValidDateStr(route.query.from) && isValidDateStr(route.query.to) && route.query.from <= route.query.to
 if (route.query.tag && typeof route.query.tag === 'string') {
   searchQuery.value = route.query.tag
   searchOpen.value = true
@@ -256,8 +264,8 @@ if (route.query.categoryId && typeof route.query.categoryId === 'string') {
     selectedCategoryId.value = id
   }
 }
-// ── Initialize month filter from route query yearMonth param ──
-if (route.query.yearMonth && typeof route.query.yearMonth === 'string') {
+// ── Initialize month filter from route query yearMonth param（from/to 有效时优先范围模式，屏蔽本年月） ──
+if (!hasValidRange && route.query.yearMonth && typeof route.query.yearMonth === 'string') {
   const parts = route.query.yearMonth.split('-')
   if (parts.length === 2) {
     const y = parseInt(parts[0], 10)
@@ -272,9 +280,10 @@ if (route.query.yearMonth && typeof route.query.yearMonth === 'string') {
 }
 
 // ── Initialize range filter from route query from/to (统计页年/自选钻取) ──
-if (route.query.from && route.query.to && typeof route.query.from === 'string' && typeof route.query.to === 'string') {
-  dateFrom.value = route.query.from
-  dateTo.value = route.query.to
+// 仅当 from/to 均为合法日期且 from<=to 时才启用，非法值静默忽略并回退全量
+if (hasValidRange) {
+  dateFrom.value = route.query.from as string
+  dateTo.value = route.query.to as string
   isRangeFilter.value = true
   dateFilterActive.value = true
   showDatePicker.value = true
@@ -494,7 +503,8 @@ watch(
 watch(
   () => [route.query.from, route.query.to],
   ([from, to]) => {
-    if (typeof from === 'string' && typeof to === 'string') {
+    // 仅当 from/to 均合法且 from<=to 时才应用范围，非法值静默忽略
+    if (isValidDateStr(from) && isValidDateStr(to) && from <= to) {
       dateFrom.value = from
       dateTo.value = to
       isRangeFilter.value = true
@@ -793,6 +803,8 @@ function shiftRange(delta: number) {
   const m = d.getMonth() + 1
   dateFrom.value = `${y}-${String(m).padStart(2, '0')}-01`
   dateTo.value = `${y}-${String(m).padStart(2, '0')}-${String(new Date(y, m, 0).getDate()).padStart(2, '0')}`
+  // 同步 URL query（replace 不推历史栈），保证可复现
+  router.replace({ query: { ...route.query, from: dateFrom.value, to: dateTo.value } })
 }
 
 function prevMonth() {
