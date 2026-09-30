@@ -134,8 +134,7 @@
         <div
           v-for="(item, index) in expenseRanking"
           :key="item.categoryId + '-' + rankingLevel"
-          class="ranking-row"
-          :class="{ clickable: timeMode === 'month' }"
+          class="ranking-row clickable"
           @click="navigateToCategory(item)"
         >
           <span class="ranking-badge" :style="{ background: rankColor(index) }">{{ rankLabel(index) }}</span>
@@ -155,8 +154,7 @@
       <div
         v-for="(item, index) in highFrequencyExpenses"
         :key="item.categoryId"
-        class="freq-row"
-        :class="{ clickable: timeMode === 'month' }"
+        class="freq-row clickable"
         @click="navigateToCategory(item)"
       >
         <span class="freq-rank">{{ index + 1 }}</span>
@@ -626,10 +624,9 @@ function navigateToTag(tagName: string) {
 }
 
 function navigateToCategory(item: { categoryId: number }) {
-  // 仅月模式支持跳转
-  if (timeMode.value !== 'month') return
-  const ym = `${currentDate.value.getFullYear()}-${String(currentDate.value.getMonth() + 1).padStart(2, '0')}`
-  router.push({ name: 'transactions', query: { categoryId: String(item.categoryId), yearMonth: ym } })
+  // 月/年/自选均支持跳转，带本期日期范围 to from/to 参数到明细页
+  const r = dateRange.value
+  router.push({ name: 'transactions', query: { categoryId: String(item.categoryId), from: r.start, to: r.end } })
 }
 
 /** 需要屏蔽的二级分类 ID（车贷房贷相关） */

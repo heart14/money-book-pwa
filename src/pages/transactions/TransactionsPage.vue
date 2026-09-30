@@ -28,7 +28,8 @@
           <button class="date-nav-btn" @click="prevMonth">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6" /></svg>
           </button>
-          <span class="date-filter-label">{{ filterYear }}年{{ filterMonth }}月</span>
+          <span class="date-filter-label" v-if="isRangeFilter">{{ dateFrom.slice(5) }} ~ {{ dateTo.slice(5) }} {{ dateFrom.slice(0,4) }}年</span>
+          <span class="date-filter-label" v-else>{{ filterYear }}年{{ filterMonth }}月</span>
           <button class="date-nav-btn" @click="nextMonth">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2.5" stroke-linecap="round"><polyline points="9 6 15 12 9 18" /></svg>
           </button>
@@ -230,6 +231,10 @@ const now = new Date()
 const filterYear = ref(now.getFullYear())
 const filterMonth = ref(now.getMonth() + 1)
 const dateFilterActive = ref(false)
+// 范围筛选（月/年/自选跳转钻取）：仅当 URL 携带 from/to 时启用
+const dateFrom = ref('')
+const dateTo = ref('')
+const isRangeFilter = ref(false)
 
 // ── Initialize search from route query tag param ──
 const route = useRoute()
@@ -264,6 +269,15 @@ if (route.query.yearMonth && typeof route.query.yearMonth === 'string') {
       showDatePicker.value = true
     }
   }
+}
+
+// ── Initialize range filter from route query from/to (统计页年/自选钻取) ──
+if (route.query.from && route.query.to && typeof route.query.from === 'string' && typeof route.query.to === 'string') {
+  dateFrom.value = route.query.from
+  dateTo.value = route.query.to
+  isRangeFilter.value = true
+  dateFilterActive.value = true
+  showDatePicker.value = true
 }
 
 // ── Cursor pagination ──
@@ -322,8 +336,9 @@ async function loadPage() {
     let query: ReturnType<typeof db.transactions.orderBy>
 
     if (dateFilterActive.value) {
-      const start = toDateString(new Date(filterYear.value, filterMonth.value - 1, 1))
-      const end = toDateString(new Date(filterYear.value, filterMonth.value, 0))
+      // 范围筛选（年/自选钻取）直接用 from/to，单月则按月算
+      const start = isRangeFilter.value ? dateFrom.value : toDateString(new Date(filterYear.value, filterMonth.value - 1, 1))
+      const end = isRangeFilter.value ? dateTo.value : toDateString(new Date(filterYear.value, filterMonth.value, 0))
 
       if (cursorDate !== null && cursorId !== null) {
         query = db.transactions
@@ -402,7 +417,7 @@ async function resetPagination() {
 
 // ── 日期筛选变更 → 重置分页（防抖）──
 let filterWatchTimer: ReturnType<typeof setTimeout> | null = null
-watch([dateFilterActive, filterYear, filterMonth], () => {
+watch([dateFilterActive, filterYear, filterMonth, isRangeFilter, dateFrom, dateTo], () => {
   if (filterWatchTimer) clearTimeout(filterWatchTimer)
   filterWatchTimer = setTimeout(() => {
     resetPagination()
@@ -466,10 +481,25 @@ watch(
         if (!isNaN(y) && !isNaN(m) && m >= 1 && m <= 12) {
           filterYear.value = y
           filterMonth.value = m
+          isRangeFilter.value = false
           dateFilterActive.value = true
           showDatePicker.value = true
         }
       }
+    }
+  },
+)
+
+// ── 路由 query 变更（统计页年/自选钻取，from/to 日期范围） ──
+watch(
+  () => [route.query.from, route.query.to],
+  ([from, to]) => {
+    if (typeof from === 'string' && typeof to === 'string') {
+      dateFrom.value = from
+      dateTo.value = to
+      isRangeFilter.value = true
+      dateFilterActive.value = true
+      showDatePicker.value = true
     }
   },
 )
@@ -747,8 +777,30 @@ function formatPure(amount: number): string {
 }
 
 // ── 日期导航 ──
+/** 范围模式的月数跨度（整数） */
+function rangeMonthSpan(): number {
+  const [fy, fm] = dateFrom.value.split('-').map(Number)
+  const [ty, tm] = dateTo.value.split('-').map(Number)
+  return (ty - fy) * 12 + (tm - fm) + 1
+}
+
+/** 范围模式：区间整体前后平移 span 个月（delta 为 -1/1） */
+function shiftRange(delta: number) {
+  const span = rangeMonthSpan()
+  const [fy, fm] = dateFrom.value.split('-').map(Number)
+  const d = new Date(fy, fm - 1 + delta * span)
+  const y = d.getFullYear()
+  const m = d.getMonth() + 1
+  dateFrom.value = `${y}-${String(m).padStart(2, '0')}-01`
+  dateTo.value = `${y}-${String(m).padStart(2, '0')}-${String(new Date(y, m, 0).getDate()).padStart(2, '0')}`
+}
+
 function prevMonth() {
   dateFilterActive.value = true
+  if (isRangeFilter.value) {
+    shiftRange(-1)
+    return
+  }
   if (filterMonth.value === 1) {
     filterMonth.value = 12
     filterYear.value--
@@ -759,6 +811,10 @@ function prevMonth() {
 
 function nextMonth() {
   dateFilterActive.value = true
+  if (isRangeFilter.value) {
+    shiftRange(1)
+    return
+  }
   if (filterMonth.value === 12) {
     filterMonth.value = 1
     filterYear.value++
@@ -769,6 +825,9 @@ function nextMonth() {
 
 function clearDateFilter() {
   dateFilterActive.value = false
+  isRangeFilter.value = false
+  dateFrom.value = ''
+  dateTo.value = ''
   filterYear.value = now.getFullYear()
   filterMonth.value = now.getMonth() + 1
 }
