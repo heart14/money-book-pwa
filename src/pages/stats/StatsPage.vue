@@ -527,8 +527,8 @@ const lineOption = computed(() => {
   }
 })
 
-// Pie colors
-const pieColors = ['#ff3b30', '#ff9500', '#ffcc00', '#34c759', '#007aff', '#8e8e93', '#af52de', '#ff2d55']
+// 统一图表色板：前 3 项为排行榜前三渐变，其余为饼图补充色
+const chartColors = ['#ff3b30', '#ff9500', '#ffcc00', '#34c759', '#007aff', '#8e8e93', '#af52de', '#ff2d55']
 
 const pieOption = computed(() => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -536,7 +536,7 @@ const pieOption = computed(() => {
   const items = categoryAggregation.value.slice(0, 6).map((item, idx) => ({
     name: item.name,
     value: Math.round(item.amount / 100),
-    itemStyle: { color: pieColors[idx % pieColors.length] },
+    itemStyle: { color: chartColors[idx % chartColors.length] },
   }))
 
   return {
@@ -716,10 +716,8 @@ const highFrequencyExpenses = computed(() => {
     }))
 })
 
-const rankColors = ['#ff3b30', '#ff9500', '#ffcc00']
-
 function rankColor(index: number): string {
-  return rankColors[index] || '#8e8e93'
+  return chartColors[index] || '#8e8e93'
 }
 
 function rankLabel(index: number): string {
