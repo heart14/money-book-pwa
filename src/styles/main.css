@@ -140,6 +140,12 @@ body {
   color: var(--color-text);
   transition: background-color 0.2s, color 0.2s;
   position: relative;
+  /* 禁止浏览器/系统左右边缘滑动触发 history 前进/后退(edge swipe navigation)。
+     与下方的 html 规则叠加，确保 body 作为滚动根时同样被覆盖。
+     PWA 无论是浏览器打开还是添加到主屏幕(standalone)运行，此方案均生效：
+     - iOS standalone 本身无此手势，作为保险；
+     - Android Chrome standalone 由 overscroll-behavior-x 禁用该手势。 */
+  overscroll-behavior-x: none;
 }
 
 /* 环境渐变固定背景层：作为所有玻璃卡 backdrop-filter 的折射来源。
@@ -220,6 +226,10 @@ body::before {
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
+  /* 禁止浏览器/系统在屏幕左右边缘滑动时触发的“历史前进/后退”手势导航
+     (edge swipe navigation)，避免它通过 history 栈非法切换 Tab 页面。
+     记账页内部“收入/支出/转账”的滑动切换是应用自身手势(DOM 层)，不受此影响。 */
+  overscroll-behavior-x: none;
 }
 
 /* Hide scrollbar but allow scrolling */
