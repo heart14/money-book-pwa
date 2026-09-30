@@ -238,7 +238,7 @@ function cssVar(name: string): string {
 
 type RankLevel = 'parent' | 'child'
 
-const rankingLevel = ref<RankLevel>('parent')
+const rankingLevel = ref<RankLevel>('child')
 const timeMode = ref<'month' | 'year' | 'custom'>('month')
 const trendType = ref<'expense' | 'income'>('expense')
 const currentDate = ref(new Date())
