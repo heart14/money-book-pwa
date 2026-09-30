@@ -141,8 +141,16 @@ watch(() => props.resetKey, () => {
 /* ── Overlay ── */
 .pin-overlay {
   position: fixed;
-  inset: 0;
-  background: var(--color-app-bg);
+  /* 用 min-height 而非 inset:0/height 锁定：iOS standalone 下 fixed 层高度
+     受布局视口约束，回前台或键盘收放时 DVH 跳变会让固定高度底部留白。
+     改用 min-height + 100svh（静态整屏高）自适应视口，避免底部露出空白 */
+  top: 0;
+  left: 0;
+  right: 0;
+  min-height: 100%;
+  min-height: 100svh;
+  /* 环境渐变 + 纯色兜底（与 body 一致）：即便边缘未完整覆盖，露出的也是渐变底色 */
+  background: var(--color-app-bg) var(--color-bg);
   display: flex;
   align-items: stretch;
   justify-content: center;
@@ -151,6 +159,8 @@ watch(() => props.resetKey, () => {
 
 .pin-shell {
   flex: 1;
+  min-height: 100%;
+  min-height: 100svh;
   max-width: 420px;
   display: flex;
   flex-direction: column;
