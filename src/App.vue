@@ -9,9 +9,6 @@
   />
   <!-- 正常 App 内容, 仅解锁后可见 -->
   <MobileLayout v-if="uiStore.unlocked" />
-
-  <!-- 敏感数据遮盖层: 常驻保活, 切后台时盖住真实内容防应用快照泄露 -->
-  <div class="privacy-cover" :class="{ on: coverOn }" />
 </template>
 
 <script setup lang="ts">
@@ -98,24 +95,16 @@ function onPinClose() {
   // PIN 锁定层不允许关闭, 忽略即可
 }
 
-const coverOn = ref(false)
-
 function onVisibilityChange() {
   if (document.hidden) {
-    // 切后台 → 盖上遮盖层, 让系统任务切换器快照拍到干净背景而非账目数据
-    coverOn.value = true
     uiStore.unlocked = false
+  } else if (getStoredPINHash()) {
+    // 回到前台且有 PIN → 立即弹出 PIN 弹窗
+    pinError.value = ''
+    pinResetVersion.value++
+    showPinLock.value = true
   } else {
-    // 回到前台 → 立即揭开, 让 PIN 弹窗 / 解锁内容正常显示
-    coverOn.value = false
-    if (getStoredPINHash()) {
-      // 回到前台且有 PIN → 立即弹出 PIN 弹窗
-      pinError.value = ''
-      pinResetVersion.value++
-      showPinLock.value = true
-    } else {
-      uiStore.unlocked = true
-    }
+    uiStore.unlocked = true
   }
 }
 
@@ -127,20 +116,3 @@ onUnmounted(() => {
   document.removeEventListener('visibilitychange', onVisibilityChange)
 })
 </script>
-
-<style scoped>
-/* ── 敏感数据遮盖层: 常驻保活, 切后台防应用快照泄露 ── */
-.privacy-cover {
-  position: fixed;
-  inset: 0;
-  z-index: 2147483647;   /* 最高层级, 盖过 TabBar / PIN 弹窗 / 任何浮层 */
-  background: var(--color-app-bg) var(--color-bg);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.15s ease;
-}
-.privacy-cover.on {
-  opacity: 1;
-  pointer-events: auto;
-}
-</style>
