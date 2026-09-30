@@ -311,12 +311,54 @@ function nextPeriod() {
   currentDate.value = d
 }
 
-const totalIncome = computed(() =>
-  transactions.value.filter((tx) => tx.type === 'income').reduce((sum, tx) => sum + tx.amount, 0),
-)
-const totalExpense = computed(() =>
-  transactions.value.filter((tx) => tx.type === 'expense').reduce((sum, tx) => sum + tx.amount, 0),
-)
+/**
+ * 本期单次遍历聚合：一次性产出收入/支出合计、父分类聚合、标签聚合，
+ * 避免同一份 transactions 被多个 computed 重复遍历。
+ */
+const periodBase = computed(() => {
+  let income = 0
+  let expense = 0
+  const catMap = new Map<number, { name: string; icon: string; amount: number; categoryId: number }>()
+  const tagMap = new Map<string, number>()
+  const catById = new Map(categoryStore.categories.map((c) => [c.id, c]))
+
+  for (const tx of transactions.value) {
+    if (tx.type === 'income') {
+      income += tx.amount
+      continue
+    }
+    if (tx.type !== 'expense') continue
+    expense += tx.amount
+
+    // 父分类聚合（向上归并到父分类）
+    if (tx.categoryId) {
+      const cat = catById.get(tx.categoryId)
+      if (cat) {
+        const parent = cat.parentId ? (catById.get(cat.parentId) ?? cat) : cat
+        if (parent?.id != null) {
+          const entry = catMap.get(parent.id) ?? { name: parent.name, icon: parent.icon, amount: 0, categoryId: parent.id }
+          entry.amount += tx.amount
+          catMap.set(parent.id, entry)
+        }
+      }
+    }
+
+    // 标签聚合
+    for (const tag of tx.tags) {
+      tagMap.set(tag, (tagMap.get(tag) || 0) + tx.amount)
+    }
+  }
+
+  const categoryAggregation = Array.from(catMap.values()).sort((a, b) => b.amount - a.amount)
+  const tagAggregation = Array.from(tagMap.entries())
+    .map(([name, amount]) => ({ name, amount }))
+    .sort((a, b) => b.amount - a.amount)
+
+  return { income, expense, categoryAggregation, tagAggregation }
+})
+
+const totalIncome = computed(() => periodBase.value.income)
+const totalExpense = computed(() => periodBase.value.expense)
 
 // ---------- 环比 / 同比 对比区间 ----------
 
@@ -387,18 +429,30 @@ const yoyTransactions = useLiveQuery<Transaction[]>(() => {
   return db.transactions.where('date').between(r.start, r.end, true, true).reverse().toArray()
 }, [])
 
-const prevIncome = computed(() =>
-  prevTransactions.value.filter((tx) => tx.type === 'income').reduce((sum, tx) => sum + tx.amount, 0),
-)
-const prevExpense = computed(() =>
-  prevTransactions.value.filter((tx) => tx.type === 'expense').reduce((sum, tx) => sum + tx.amount, 0),
-)
-const yoyIncome = computed(() =>
-  yoyTransactions.value.filter((tx) => tx.type === 'income').reduce((sum, tx) => sum + tx.amount, 0),
-)
-const yoyExpense = computed(() =>
-  yoyTransactions.value.filter((tx) => tx.type === 'expense').reduce((sum, tx) => sum + tx.amount, 0),
-)
+// 环比、同比合计：各自单次遍历同时求得收入/支出，避免两次 filter+reduce
+const prevTotals = computed(() => {
+  let income = 0
+  let expense = 0
+  for (const tx of prevTransactions.value) {
+    if (tx.type === 'income') income += tx.amount
+    else if (tx.type === 'expense') expense += tx.amount
+  }
+  return { income, expense }
+})
+const yoyTotals = computed(() => {
+  let income = 0
+  let expense = 0
+  for (const tx of yoyTransactions.value) {
+    if (tx.type === 'income') income += tx.amount
+    else if (tx.type === 'expense') expense += tx.amount
+  }
+  return { income, expense }
+})
+
+const prevIncome = computed(() => prevTotals.value.income)
+const prevExpense = computed(() => prevTotals.value.expense)
+const yoyIncome = computed(() => yoyTotals.value.income)
+const yoyExpense = computed(() => yoyTotals.value.expense)
 
 /** 百分比变化，prev 为 0 或空返回 null（展示占位） */
 function pctChange(cur: number, prev: number): number | null {
@@ -582,17 +636,7 @@ function aggregateByCategory(txList: Transaction[], level: RankLevel): { name: s
   return Array.from(map.values()).sort((a, b) => b.amount - a.amount)
 }
 
-function aggregateByTag(txList: Transaction[]): { name: string; amount: number }[] {
-  const map = new Map<string, number>()
-  for (const tx of txList.filter((t) => t.type === 'expense')) {
-    for (const tag of tx.tags) {
-      map.set(tag, (map.get(tag) || 0) + tx.amount)
-    }
-  }
-  return Array.from(map.entries()).map(([name, amount]) => ({ name, amount })).sort((a, b) => b.amount - a.amount)
-}
-
-const categoryAggregation = computed(() => aggregateByCategory(transactions.value, 'parent'))
+const categoryAggregation = computed(() => periodBase.value.categoryAggregation)
 
 const totalExpenseForPercent = computed(() => categoryAggregation.value.reduce((sum, item) => sum + item.amount, 0))
 
@@ -607,7 +651,7 @@ const expenseRanking = computed(() => {
   }))
 })
 
-const tagAggregation = computed(() => aggregateByTag(transactions.value))
+const tagAggregation = computed(() => periodBase.value.tagAggregation)
 
 const tagTotalAmount = computed(() =>
   tagAggregation.value.reduce((sum, t) => sum + t.amount, 0),
