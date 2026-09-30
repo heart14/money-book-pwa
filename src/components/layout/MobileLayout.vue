@@ -34,14 +34,61 @@ function onVisibility() {
   if (!document.hidden) forceReflow()
 }
 
+/* ── 拦截浏览器/系统的“边缘滑动前进/后退”(edge swipe navigation) ──
+   用户从屏幕左/右边缘横向滑动时，Chrome/Edge/Safari 会在系统层面接管手势，
+   触发 history.back()/history.forward()。因为本应用用 HTML5 History 路由
+   (createWebHistory)，每次 TabBar router.push() 都会往 history 栈压入记录，
+   于是左右滑动直接从浏览器层面“滑着切换 Tab 页面”，绕过底部导航栏。
+   overscroll-behavior-x 在部分移动 WebView/Chrome 上并不约束该历史导航手势，
+   故在文档根部对手势做兜底：仅当触摸起点落在屏幕左/右边缘带、且手势呈横向
+   主导时 preventDefault，阻断浏览器接管。它不影响页面自身垂直滚动，也不影响
+   各应用自定义手势（touchend 照常派发，记账页的滑动切换用的是 DOM 手势）。 */
+const EDGE_ZONE = 22                       // 距屏幕左/右边缘 22px 视为边缘手势
+const MIN_SWIPE = 24                       // 触发拦截的最小横向位移
+let startX = 0
+let startY = 0
+let armed = false
+
+function onTouchStart(e: TouchEvent) {
+  const t = e.touches[0]
+  if (!t) return
+  const nearEdge = t.clientX <= EDGE_ZONE || window.innerWidth - t.clientX <= EDGE_ZONE
+  // 边缘开启拦截，但纵向晃动不算；中部滑动（记账页模式切换等）完全放行
+  if (nearEdge) {
+    startX = t.clientX
+    startY = t.clientY
+    armed = true
+  } else {
+    armed = false
+  }
+}
+
+function onTouchMove(e: TouchEvent) {
+  if (!armed) return
+  const t = e.touches[0]
+  if (!t) return
+  const dx = t.clientX - startX
+  const dy = Math.abs(t.clientY - startY)
+  // 仅横向主导（横向位移明显大于纵向）才视作“历史滑动”倾向
+  if (Math.abs(dx) > MIN_SWIPE && Math.abs(dx) > dy * 1.5) {
+    e.preventDefault() // 阻止浏览器接管该手势触发前进/后退
+    armed = false      // 一次性拦截，之后放行后续移动
+  }
+}
+
 onMounted(() => {
   document.addEventListener('visibilitychange', onVisibility)
   window.addEventListener('pageshow', onVisibility)
+  // 需在非 passive 模式下监听 touchmove 才能调用 preventDefault
+  document.addEventListener('touchstart', onTouchStart, { passive: true })
+  document.addEventListener('touchmove', onTouchMove, { passive: false })
 })
 
 onUnmounted(() => {
   document.removeEventListener('visibilitychange', onVisibility)
   window.removeEventListener('pageshow', onVisibility)
+  document.removeEventListener('touchstart', onTouchStart)
+  document.removeEventListener('touchmove', onTouchMove)
 })
 </script>
 

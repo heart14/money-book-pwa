@@ -731,17 +731,19 @@ const tagTotalAmount = computed(() =>
 const router = useRouter()
 
 function navigateToTag(tagName: string) {
+  // 跳到顶层 Tab（明细）用 replace，不往 history 栈压入记录，
+  // 避免“左右边缘滑动前进/后退”能在顶层 Tab 间来回切换。
   if (tagName) {
-    router.push({ name: 'transactions', query: { tag: tagName, searchField: 'tag' } })
+    router.replace({ name: 'transactions', query: { tag: tagName, searchField: 'tag' } })
   } else {
-    router.push({ name: 'transactions' })
+    router.replace({ name: 'transactions' })
   }
 }
 
 function navigateToCategory(item: { categoryId: number }) {
-  // 月/年/自选均支持跳转，带本期日期范围 to from/to 参数到明细页
+  // 月/年/自选均支持跳转，带本期日期范围 to from/to 参数到明细页（同理用 replace）
   const r = dateRange.value
-  router.push({ name: 'transactions', query: { categoryId: String(item.categoryId), from: r.start, to: r.end } })
+  router.replace({ name: 'transactions', query: { categoryId: String(item.categoryId), from: r.start, to: r.end } })
 }
 
 /** 需要屏蔽的二级分类 ID（车贷房贷相关） */

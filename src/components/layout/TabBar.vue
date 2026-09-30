@@ -104,7 +104,10 @@ const currentRoute = computed(() => route.name as string)
 const isBooking = computed(() => currentRoute.value === 'booking')
 
 function navigate(name: string) {
-  router.push({ name })
+  // 顶层 Tab 之间使用 replace 而非 push：这样浏览器 history 栈里始终只保留
+  // 一条 Tab 记录，从根本上杜绝“左右边缘滑动前进/后退”在 Tab 间来回切换。
+  // 页面切换统一由底部导航栏控制（符合应用交互设计），返回键则直接退出应用。
+  router.replace({ name })
 }
 
 function handleBookingSave() {
