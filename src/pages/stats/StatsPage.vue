@@ -6,6 +6,11 @@
       <div class="mode-toggle">
         <button
           class="mode-btn"
+          :class="{ active: timeMode === 'week' }"
+          @click="timeMode = 'week'"
+        >周</button>
+        <button
+          class="mode-btn"
           :class="{ active: timeMode === 'month' }"
           @click="timeMode = 'month'"
         >月</button>
@@ -66,7 +71,7 @@
             <span class="compare-val" :class="trendClass(totalIncome, prevIncome)">{{ compareLabel(totalIncome, prevIncome) }}</span>
           </span>
           <span v-if="yoyRange" class="compare-item">
-            <span class="compare-label">同比去年</span>
+            <span class="compare-label">{{ yoyCompareLabel }}</span>
             <span class="compare-val" :class="trendClass(totalIncome, yoyIncome)">{{ compareLabel(totalIncome, yoyIncome) }}</span>
           </span>
         </div>
@@ -80,7 +85,7 @@
             <span class="compare-val" :class="trendClass(totalExpense, prevExpense)">{{ compareLabel(totalExpense, prevExpense) }}</span>
           </span>
           <span v-if="yoyRange" class="compare-item">
-            <span class="compare-label">同比去年</span>
+            <span class="compare-label">{{ yoyCompareLabel }}</span>
             <span class="compare-val" :class="trendClass(totalExpense, yoyExpense)">{{ compareLabel(totalExpense, yoyExpense) }}</span>
           </span>
         </div>
@@ -237,7 +242,7 @@ function cssVar(name: string): string {
 type RankLevel = 'parent' | 'child'
 
 const rankingLevel = ref<RankLevel>('child')
-const timeMode = ref<'month' | 'year' | 'custom'>('month')
+const timeMode = ref<'month' | 'year' | 'week' | 'custom'>('month')
 const trendType = ref<'expense' | 'income'>('expense')
 const currentDate = ref(new Date())
 const hideCarHousing = ref(false)
@@ -254,6 +259,13 @@ const periodLabel = computed(() => {
   const y = currentDate.value.getFullYear()
   const m = currentDate.value.getMonth() + 1
   if (timeMode.value === 'year') return `${y}年`
+  if (timeMode.value === 'week') {
+    // 所在周的周一，作为标题基准（如 9-28 所在周）
+    const rStart = shiftWeek(currentDate.value, 0)
+    const w = rStart.getDate()
+    const ym = rStart.getMonth() + 1
+    return `${rStart.getFullYear()}年${ym}月${w}日周`
+  }
   return `${y}年${m}月`
 })
 
@@ -268,6 +280,25 @@ function startOfYear(d: Date): Date {
 }
 function endOfYear(d: Date): Date {
   return new Date(d.getFullYear(), 11, 31)
+}
+
+/**
+ * 周模式（周一为一周起点）：返回 date 所在周的周一，offsetWeeks 支持前后整周偏移。
+ * 处理跨月/跨年：基于 setDate 运算，new Date(y, m, d±n) 自动进位。
+ */
+function shiftWeek(date: Date, offsetWeeks: number): Date {
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+  const day = d.getDay() || 7 // getDay(): 0 周日 → 映射为 7，使周一起算
+  d.setDate(d.getDate() - day + 1 + offsetWeeks * 7)
+  return d
+}
+
+/** 返回 date 所在周的 {周一(start), 周日(end)} */
+function weekRange(d: Date): { start: Date; end: Date } {
+  const start = shiftWeek(d, 0)
+  const end = new Date(start)
+  end.setDate(end.getDate() + 6)
+  return { start, end }
 }
 function toDateStr(d: Date): string {
   const y = d.getFullYear()
@@ -285,6 +316,10 @@ const dateRange = computed(() => {
     const end = new Date(customRange.endYear, customRange.endMonth, 0)
     return { start: toDateStr(start), end: toDateStr(end) }
   }
+  if (timeMode.value === 'week') {
+    const r = weekRange(currentDate.value)
+    return { start: toDateStr(r.start), end: toDateStr(r.end) }
+  }
   return { start: toDateStr(startOfMonth(currentDate.value)), end: toDateStr(endOfMonth(currentDate.value)) }
 })
 
@@ -300,6 +335,7 @@ const transactions = useLiveQuery<Transaction[]>(() =>
 function prevPeriod() {
   const d = new Date(currentDate.value)
   if (timeMode.value === 'year') { d.setFullYear(d.getFullYear() - 1) }
+  else if (timeMode.value === 'week') { return currentDate.value = shiftWeek(currentDate.value, -1) }
   else { d.setMonth(d.getMonth() - 1) }
   currentDate.value = d
 }
@@ -307,6 +343,7 @@ function prevPeriod() {
 function nextPeriod() {
   const d = new Date(currentDate.value)
   if (timeMode.value === 'year') { d.setFullYear(d.getFullYear() + 1) }
+  else if (timeMode.value === 'week') { return currentDate.value = shiftWeek(currentDate.value, 1) }
   else { d.setMonth(d.getMonth() + 1) }
   currentDate.value = d
 }
@@ -394,6 +431,10 @@ const prevRange = computed(() => {
     const end = new Date(endYm.year, endYm.month, 0)
     return { start: toDateStr(start), end: toDateStr(end) }
   }
+  if (timeMode.value === 'week') {
+    const r = weekRange(shiftWeek(currentDate.value, -1))
+    return { start: toDateStr(r.start), end: toDateStr(r.end) }
+  }
   // month
   const prev = shiftYM(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1, -1)
   return { start: toDateStr(new Date(prev.year, prev.month - 1, 1)), end: toDateStr(new Date(prev.year, prev.month, 0)) }
@@ -409,6 +450,12 @@ const yoyRange = computed(() => {
     const start = new Date(customRange.startYear - 1, customRange.startMonth - 1, 1)
     const end = new Date(customRange.endYear - 1, customRange.endMonth, 0)
     return { start: toDateStr(start), end: toDateStr(end) }
+  }
+  if (timeMode.value === 'week') {
+    // 同比 = 去年当前日期的所在完整自然周（对齐周一起算）
+    const sameWeekLastYear = new Date(currentDate.value.getFullYear() - 1, currentDate.value.getMonth(), currentDate.value.getDate())
+    const r = weekRange(sameWeekLastYear)
+    return { start: toDateStr(r.start), end: toDateStr(r.end) }
   }
   // month
   const y = currentDate.value.getFullYear()
@@ -478,8 +525,12 @@ function trendClass(cur: number, prev: number): string {
 const prevCompareLabel = computed(() => {
   if (timeMode.value === 'year') return '环比上年'
   if (timeMode.value === 'custom') return '环比上一区间'
+  if (timeMode.value === 'week') return '环比上周'
   return '环比上月'
 })
+
+/** 同比标签（周模式语义更具体） */
+const yoyCompareLabel = computed(() => (timeMode.value === 'week' ? '同比去年同周' : '同比去年'))
 
 const lineOption = computed(() => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -521,6 +572,26 @@ const lineOption = computed(() => {
     categories = allDates.map(d => {
       const p = d.split('-')
       return `${parseInt(p[1])}月${parseInt(p[2])}日`
+    })
+    values = allDates.map(d => +((dailyMap.get(d) || 0) / 100).toFixed(2))
+  } else if (timeMode.value === 'week') {
+    // Week: 周一~周日，7 个点（跨月周照常显示）
+    const { start } = weekRange(currentDate.value)
+    const allDates: string[] = []
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(start)
+      d.setDate(d.getDate() + i)
+      allDates.push(toDateStr(d))
+    }
+    const dailyMap = new Map<string, number>()
+    for (const tx of transactions.value) {
+      if (tx.type !== txType) continue
+      dailyMap.set(tx.date, (dailyMap.get(tx.date) || 0) + tx.amount)
+    }
+    const WEEK = ['一', '二', '三', '四', '五', '六', '日']
+    categories = allDates.map(d => {
+      const p = d.split('-')
+      return `周${WEEK[(new Date(d + 'T00:00:00').getDay() || 7) - 1]}·${parseInt(p[2])}`
     })
     values = allDates.map(d => +((dailyMap.get(d) || 0) / 100).toFixed(2))
   } else {
