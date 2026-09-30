@@ -60,10 +60,30 @@
       <div class="overview-card income">
         <div class="overview-label">收入</div>
         <div class="overview-amount">{{ formatCurrency(totalIncome) }}</div>
+        <div class="overview-compare">
+          <span class="compare-item">
+            <span class="compare-label">{{ prevCompareLabel }}</span>
+            <span class="compare-val" :class="trendClass(totalIncome, prevIncome)">{{ compareLabel(totalIncome, prevIncome) }}</span>
+          </span>
+          <span v-if="yoyRange" class="compare-item">
+            <span class="compare-label">同比去年</span>
+            <span class="compare-val" :class="trendClass(totalIncome, yoyIncome)">{{ compareLabel(totalIncome, yoyIncome) }}</span>
+          </span>
+        </div>
       </div>
       <div class="overview-card expense">
         <div class="overview-label">支出</div>
         <div class="overview-amount">{{ formatCurrency(totalExpense) }}</div>
+        <div class="overview-compare">
+          <span class="compare-item">
+            <span class="compare-label">{{ prevCompareLabel }}</span>
+            <span class="compare-val" :class="trendClass(totalExpense, prevExpense)">{{ compareLabel(totalExpense, prevExpense) }}</span>
+          </span>
+          <span v-if="yoyRange" class="compare-item">
+            <span class="compare-label">同比去年</span>
+            <span class="compare-val" :class="trendClass(totalExpense, yoyExpense)">{{ compareLabel(totalExpense, yoyExpense) }}</span>
+          </span>
+        </div>
       </div>
     </div>
 
@@ -299,6 +319,115 @@ const totalIncome = computed(() =>
 const totalExpense = computed(() =>
   transactions.value.filter((tx) => tx.type === 'expense').reduce((sum, tx) => sum + tx.amount, 0),
 )
+
+// ---------- 环比 / 同比 对比区间 ----------
+
+/** 自选模式跨越的月数（本期长度），月=1、年=12 */
+const customSpanMonths = computed(() => {
+  if (timeMode.value === 'month') return 1
+  if (timeMode.value === 'year') return 12
+  return (customRange.endYear - customRange.startYear) * 12 + (customRange.endMonth - customRange.startMonth) + 1
+})
+
+/** 把一个年月平移 delta 个月，返回 {year, month} */
+function shiftYM(year: number, month: number, delta: number): { year: number; month: number } {
+  const d = new Date(year, month - 1 + delta)
+  return { year: d.getFullYear(), month: d.getMonth() + 1 }
+}
+
+/**
+ * 环比区间：与本期长度完全相同的「紧邻上一段」。
+ * 月→上月整月；年→上年整年；自选→整体前移 N 个月。
+ */
+const prevRange = computed(() => {
+  if (timeMode.value === 'year') {
+    return {
+      start: toDateStr(startOfYear(new Date(currentDate.value.getFullYear() - 1, 0))),
+      end: toDateStr(endOfYear(new Date(currentDate.value.getFullYear() - 1, 0))),
+    }
+  }
+  if (timeMode.value === 'custom') {
+    const span = customSpanMonths.value
+    const prevStart = shiftYM(customRange.startYear, customRange.startMonth, -span)
+    const endYm = shiftYM(prevStart.year, prevStart.month, span - 1)
+    const start = new Date(prevStart.year, prevStart.month - 1, 1)
+    const end = new Date(endYm.year, endYm.month, 0)
+    return { start: toDateStr(start), end: toDateStr(end) }
+  }
+  // month
+  const prev = shiftYM(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1, -1)
+  return { start: toDateStr(new Date(prev.year, prev.month - 1, 1)), end: toDateStr(new Date(prev.year, prev.month, 0)) }
+})
+
+/**
+ * 同比区间：去年同一期。仅月/自选有意义（长度固定为整数月）。
+ * 年模式本身即年粒度，返回 null（不展示同比）。
+ */
+const yoyRange = computed(() => {
+  if (timeMode.value === 'year') return null
+  if (timeMode.value === 'custom') {
+    const start = new Date(customRange.startYear - 1, customRange.startMonth - 1, 1)
+    const end = new Date(customRange.endYear - 1, customRange.endMonth, 0)
+    return { start: toDateStr(start), end: toDateStr(end) }
+  }
+  // month
+  const y = currentDate.value.getFullYear()
+  const m = currentDate.value.getMonth() + 1
+  return { start: toDateStr(new Date(y - 1, m - 1, 1)), end: toDateStr(new Date(y - 1, m, 0)) }
+})
+
+/** 环比交易（仅当区间有效且非空时展示箭头） */
+const prevTransactions = useLiveQuery<Transaction[]>(() => {
+  const r = prevRange.value
+  return db.transactions.where('date').between(r.start, r.end, true, true).reverse().toArray()
+}, [])
+
+/** 同比交易 */
+const yoyTransactions = useLiveQuery<Transaction[]>(() => {
+  const r = yoyRange.value
+  if (!r) return Promise.resolve([])
+  return db.transactions.where('date').between(r.start, r.end, true, true).reverse().toArray()
+}, [])
+
+const prevIncome = computed(() =>
+  prevTransactions.value.filter((tx) => tx.type === 'income').reduce((sum, tx) => sum + tx.amount, 0),
+)
+const prevExpense = computed(() =>
+  prevTransactions.value.filter((tx) => tx.type === 'expense').reduce((sum, tx) => sum + tx.amount, 0),
+)
+const yoyIncome = computed(() =>
+  yoyTransactions.value.filter((tx) => tx.type === 'income').reduce((sum, tx) => sum + tx.amount, 0),
+)
+const yoyExpense = computed(() =>
+  yoyTransactions.value.filter((tx) => tx.type === 'expense').reduce((sum, tx) => sum + tx.amount, 0),
+)
+
+/** 百分比变化，prev 为 0 或空返回 null（展示占位） */
+function pctChange(cur: number, prev: number): number | null {
+  if (!prev) return cur > 0 ? 100 : null
+  return Math.round(((cur - prev) / prev) * 100)
+}
+
+/** 本期的环比/同比标签文字，供模板直接渲染 */
+function compareLabel(cur: number, prev: number): string {
+  const pct = pctChange(cur, prev)
+  if (pct === null) return '—'
+  return `${pct > 0 ? '▲' : '▼'} ${Math.abs(pct)}%`
+}
+
+/** 对比箭头配色：上涨红色、下跌绿色、无变化/空数据灰色 */
+function trendClass(cur: number, prev: number): string {
+  const pct = pctChange(cur, prev)
+  if (pct === null || pct === 0) return 'flat'
+  return pct > 0 ? 'up' : 'down'
+}
+
+/** 环比标签文案，随模式变化 */
+const prevCompareLabel = computed(() => {
+  if (timeMode.value === 'year') return '环比上年'
+  if (timeMode.value === 'custom') return '环比上一区间'
+  return '环比上月'
+})
 
 const lineOption = computed(() => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -738,6 +867,35 @@ function rankLabel(index: number): string {
   color: #fff;
   font-variant-numeric: tabular-nums;
 }
+
+.overview-compare {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-top: 5px;
+  align-items: center;
+}
+
+.compare-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+}
+
+.compare-label {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.compare-val {
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.compare-val.up { color: #ffcc00; }
+.compare-val.down { color: #a4f2c8; }
+.compare-val.flat { color: rgba(255, 255, 255, 0.55); }
 
 /* Chart Cards */
 .chart-card {
