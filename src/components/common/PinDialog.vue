@@ -48,8 +48,7 @@
             >
               <span class="pin-key-label">{{ key }}</span>
             </button>
-            <div class="pin-key pin-key--blank" />
-            <button class="pin-key" :class="{ 'pin-key--pressed': pressedKey === 0 }" @click="onKeyPress(0)" @pointerdown="onPointerDown(0)" @pointerup="onPointerUp" @pointerleave="onPointerUp">
+            <button class="pin-key pin-key--zero" :class="{ 'pin-key--pressed': pressedKey === 0 }" @click="onKeyPress(0)" @pointerdown="onPointerDown(0)" @pointerup="onPointerUp" @pointerleave="onPointerUp">
               <span class="pin-key-label">0</span>
             </button>
             <button class="pin-key pin-key--backspace" :class="{ 'pin-key--pressed': pressedKey === -1 }" @click="onBackspace" @pointerdown="onPointerDown(-1)" @pointerup="onPointerUp" @pointerleave="onPointerUp">
@@ -278,6 +277,7 @@ watch(() => props.resetKey, () => {
 }
 
 .pin-key {
+  position: relative;
   aspect-ratio: 1;
   max-height: 84px;
   border: 1px solid var(--glass-border);
@@ -291,20 +291,33 @@ watch(() => props.resetKey, () => {
   justify-content: center;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
-  transition: background 0.2s,
-              transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
-              box-shadow 0.2s;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07),
-              0 1px 1px rgba(255, 255, 255, 0.5) inset;
   user-select: none;
   -webkit-user-select: none;
+  /* 悬浮立体投影 + 内侧边缘高光（玻璃厚度感）—— 克制低饱和，避免过亮 */
+  box-shadow:
+    0 8px 18px -10px rgba(40, 60, 120, 0.28),
+    0 3px 6px -3px rgba(0, 0, 0, 0.06),
+    0 0 0 0.5px rgba(255, 255, 255, 0.3) inset,
+    0 1px 0 rgba(255, 255, 255, 0.18) inset;
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.25s ease,
+              filter 0.2s ease;
 }
 
-.pin-key:active,
-.pin-key--pressed {
-  background: var(--color-disabled-bg);
-  transform: scale(0.92);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+/* 顶部弧形高光：贴合圆形，玻璃受光面（减淡） */
+.pin-key::before {
+  content: '';
+  position: absolute;
+  top: 7%;
+  left: 14%;
+  right: 14%;
+  height: 34%;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0) 92%);
+  filter: blur(1px);
+  opacity: 0.7;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.25s ease;
 }
 
 .pin-key-label {
@@ -315,14 +328,34 @@ watch(() => props.resetKey, () => {
   line-height: 1;
 }
 
-.pin-key--blank {
-  background: transparent;
-  box-shadow: none;
-  cursor: default;
-  pointer-events: none;
+.pin-key:active,
+.pin-key--pressed {
+  /* 真实下沉：缩小并压下，投影收缩、高光微微上移增强受光 */
+  transform: scale(0.9) translateY(1px);
+  filter: brightness(0.97);
+  box-shadow:
+    0 2px 6px -3px rgba(40, 60, 120, 0.22),
+    0 1px 2px -1px rgba(0, 0, 0, 0.08),
+    0 0 0 0.5px rgba(255, 255, 255, 0.2) inset,
+    0 1px 0 rgba(255, 255, 255, 0.12) inset;
+  transition: transform 0.16s cubic-bezier(0.34, 0.9, 0.64, 1),
+              box-shadow 0.16s ease;
+}
+
+.pin-key:active::before,
+.pin-key--pressed::before {
+  opacity: 1;
+  transform: scale(1.04) translateY(-1px);
+}
+
+.pin-key--zero {
+  /* 第四行居中 */
+  grid-column: 2;
 }
 
 .pin-key--backspace {
+  /* 第四行右列（右下角），左下留空，无占位元素 */
+  grid-column: 3;
   color: var(--color-secondary-text);
 }
 
@@ -333,7 +366,23 @@ watch(() => props.resetKey, () => {
 
 /* ── Dark mode refinements ── */
 :root.dark .pin-key {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(255, 255, 255, 0.05);
+  box-shadow:
+    0 10px 22px -12px rgba(0, 0, 0, 0.6),
+    0 0 0 0.5px rgba(255, 255, 255, 0.08) inset,
+    0 1px 0 rgba(255, 255, 255, 0.12) inset;
+}
+
+:root.dark .pin-key:active,
+:root.dark .pin-key--pressed {
+  box-shadow:
+    0 2px 6px -3px rgba(0, 0, 0, 0.5),
+    0 0 0 0.5px rgba(255, 255, 255, 0.05) inset,
+    0 1px 0 rgba(255, 255, 255, 0.08) inset;
+}
+
+:root.dark .pin-key::before {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 92%);
+  opacity: 0.6;
 }
 
 :root.dark .pin-lock-badge {
