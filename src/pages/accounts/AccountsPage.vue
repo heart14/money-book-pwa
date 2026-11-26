@@ -198,25 +198,25 @@ async function handleConfirmDelete() {
 
 /* ── 沉浸式头部 ── */
 .ac-head { display: flex; align-items: center; justify-content: space-between; padding: 20px 2px 8px; }
-.ac-title { font-size: 28px; font-weight: 800; letter-spacing: -0.03em; color: var(--ink); }
+.ac-title { font-size: var(--fs-page-title); font-weight: 800; letter-spacing: -0.03em; color: var(--ink); }
 .ac-action { width: 38px; height: 38px; border: none; background: none; color: var(--ink); display: flex; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background 0.15s; }
 .ac-action:active { background: var(--act-bg); }
 
 /* ── 净资产开篇 ── */
 .ac-net { padding: 18px; border-radius: var(--radius-big); margin-bottom: 26px; }
-.ac-net-label { font-size: 13px; color: var(--ink2); font-weight: 600; letter-spacing: 0.3px; }
-.ac-net-value { font-size: 52px; font-weight: 800; letter-spacing: -0.04em; margin-top: 10px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.ac-net-label { font-size: var(--fs-ui); color: var(--ink2); font-weight: 600; letter-spacing: 0.3px; }
+.ac-net-value { font-size: var(--fs-amount-xl); font-weight: 800; letter-spacing: -0.04em; margin-top: 10px; color: var(--ink); font-variant-numeric: tabular-nums; }
 
 /* ── 玻璃账户卡列表 ── */
-.ac-empty { padding: 40px 0; text-align: center; font-size: 14px; color: var(--ink3); }
+.ac-empty { padding: 40px 0; text-align: center; font-size: var(--fs-body); color: var(--ink3); }
 .ac-list { display: flex; flex-direction: column; gap: 14px; }
 .ac-row { display: flex; align-items: center; gap: 13px; padding: 16px; border-radius: var(--radius-big); cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .ac-row:active { background: var(--act-bg); }
-.ac-icon { font-size: 20px; width: 32px; flex-shrink: 0; display: grid; place-items: center; }
+.ac-icon { font-size: var(--fs-hero); width: 32px; flex-shrink: 0; display: grid; place-items: center; }
 .ac-mid { flex: 1; min-width: 0; }
-.ac-name { display: block; font-size: 15px; font-weight: 600; color: var(--ink); }
-.ac-sub { display: block; font-size: 11px; color: var(--ink3); margin-top: 2px; }
-.ac-amt { font-size: 15px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; flex-shrink: 0; }
+.ac-name { display: block; font-size: var(--fs-title); font-weight: 600; color: var(--ink); }
+.ac-sub { display: block; font-size: var(--fs-small); color: var(--ink3); margin-top: 2px; }
+.ac-amt { font-size: var(--fs-title); font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; flex-shrink: 0; }
 .ac-del { width: 32px; height: 32px; border: none; background: none; color: var(--exp); display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 8px; flex-shrink: 0; -webkit-tap-highlight-color: transparent; }
 .ac-del:active { background: rgba(213, 80, 60, 0.1); }
 

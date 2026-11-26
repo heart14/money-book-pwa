@@ -891,7 +891,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 
 /* ── 沉浸式头部 ── */
 .tx-head { display: flex; align-items: center; justify-content: space-between; padding: 20px 2px 8px; }
-.tx-title { font-size: 28px; font-weight: 800; letter-spacing: -0.03em; color: var(--ink); }
+.tx-title { font-size: var(--fs-page-title); font-weight: 800; letter-spacing: -0.03em; color: var(--ink); }
 .tx-actions { display: flex; gap: 4px; }
 .tx-action {
   width: 38px; height: 38px; border: none; background: none; color: var(--ink3);
@@ -905,8 +905,8 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 .tx-datebar { padding: 10px 2px 4px; }
 .tx-datebar-inner { display: flex; align-items: center; justify-content: center; gap: 14px; height: 42px; border-bottom: 1px solid var(--line-soft); padding-bottom: 12px; }
 .tx-date-nav { width: 30px; height: 30px; border: 1px solid var(--line); background: none; color: var(--ink2); border-radius: 999px; display: grid; place-items: center; cursor: pointer; }
-.tx-date-label { font-size: 15px; font-weight: 600; color: var(--ink); min-width: 96px; text-align: center; }
-.tx-date-clear { border: none; background: none; color: var(--ink2); font-size: 12px; font-weight: 600; cursor: pointer; padding: 4px 8px; }
+.tx-date-label { font-size: var(--fs-title); font-weight: 600; color: var(--ink); min-width: 96px; text-align: center; }
+.tx-date-clear { border: none; background: none; color: var(--ink2); font-size: var(--fs-small); font-weight: 600; cursor: pointer; padding: 4px 8px; }
 
 /* ── 搜索条 ── */
 .tx-search { padding: 8px 2px 12px; }
@@ -917,13 +917,13 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 }
 .tx-search-field { display: flex; align-items: center; gap: 4px; cursor: pointer; flex-shrink: 0; padding: 4px 6px; border-radius: 6px; -webkit-tap-highlight-color: transparent; }
 .tx-search-field:active { background: var(--act-bg); }
-.tx-search-field-label { font-size: 13px; font-weight: 500; color: var(--ink); white-space: nowrap; }
+.tx-search-field-label { font-size: var(--fs-ui); font-weight: 500; color: var(--ink); white-space: nowrap; }
 .tx-search-divider { width: 1px; height: 18px; background: var(--line); flex-shrink: 0; }
-.tx-search-input { flex: 1; min-width: 0; border: none; background: none; font-size: 15px; color: var(--ink); outline: none; font-family: inherit; }
+.tx-search-input { flex: 1; min-width: 0; border: none; background: none; font-size: var(--fs-title); color: var(--ink); outline: none; font-family: inherit; }
 .tx-search-input::placeholder { color: var(--ink3); }
-.tx-search-clear { width: 20px; height: 20px; border: none; background: var(--line); color: var(--accent-fg); border-radius: 999px; font-size: 11px; cursor: pointer; display: grid; place-items: center; flex-shrink: 0; line-height: 1; }
+.tx-search-clear { width: 20px; height: 20px; border: none; background: var(--line); color: var(--accent-fg); border-radius: 999px; font-size: var(--fs-small); cursor: pointer; display: grid; place-items: center; flex-shrink: 0; line-height: 1; }
 .tx-search-dropdown { position: absolute; top: calc(100% + 6px); left: 0; min-width: 128px; /* 玻璃浮层，背景/描边/阴影由 .glass 提供 */ border-radius: 12px; padding: 6px; z-index: 1000; }
-.tx-search-option { display: flex; align-items: center; gap: 6px; width: 100%; padding: 9px 12px; border: none; background: none; font-size: 13px; color: var(--ink); cursor: pointer; border-radius: 8px; text-align: left; font-family: inherit; white-space: nowrap; }
+.tx-search-option { display: flex; align-items: center; gap: 6px; width: 100%; padding: 9px 12px; border: none; background: none; font-size: var(--fs-ui); color: var(--ink); cursor: pointer; border-radius: 8px; text-align: left; font-family: inherit; white-space: nowrap; }
 .tx-search-option:active { background: var(--act-bg); }
 .tx-search-option.active { color: var(--ink); font-weight: 600; }
 .tx-search-check, .tx-search-check-placeholder { width: 12px; height: 12px; flex-shrink: 0; }
@@ -936,14 +936,14 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 .tx-children { padding: 10px 0 0; }
 .tx-children-scroll { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
 .tx-children-scroll::-webkit-scrollbar { display: none; }
-.tx-child-chip { display: inline-flex; padding: 6px 14px; border: 1px solid var(--line); background: none; color: var(--ink2); font-size: 13px; font-weight: 500; border-radius: 999px; cursor: pointer; white-space: nowrap; font-family: inherit; }
+.tx-child-chip { display: inline-flex; padding: 6px 14px; border: 1px solid var(--line); background: none; color: var(--ink2); font-size: var(--fs-ui); font-weight: 500; border-radius: 999px; cursor: pointer; white-space: nowrap; font-family: inherit; }
 .tx-child-chip.on { background: var(--ink); border-color: var(--ink); color: var(--accent-fg); }
 
 /* ── 连续账页 ── */
 .tx-content { padding-top: 8px; }
 /* 日分组玻璃卡：.glass 提供磨砂底/描边/阴影，这里补齐内缩与外距 */
 .tx-day { padding: 14px 16px 4px; margin-bottom: 14px; border-radius: var(--radius-big); }
-.tx-day-label { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; font-weight: 600; color: var(--ink2); padding: 0 2px 6px; }
+.tx-day-label { display: flex; justify-content: space-between; align-items: baseline; font-size: var(--fs-small); font-weight: 600; color: var(--ink2); padding: 0 2px 6px; }
 .f6 { font-weight: 600; }
 .tx-day-sum { display: inline-flex; gap: 8px; font-weight: 500; }
 .c-inc { color: var(--inc); }
@@ -956,8 +956,8 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 
 /* ── 无限滚动 ── */
 .tx-sentinel { display: flex; align-items: center; justify-content: center; padding: 20px; min-height: 48px; }
-.tx-loading { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink3); }
+.tx-loading { display: flex; align-items: center; gap: 8px; font-size: var(--fs-ui); color: var(--ink3); }
 .tx-spinner { width: 14px; height: 14px; border: 2px solid var(--line); border-top-color: var(--ink); border-radius: 50%; animation: txspin 0.6s linear infinite; }
 @keyframes txspin { to { transform: rotate(360deg); } }
-.tx-finished { font-size: 12px; color: var(--ink3); }
+.tx-finished { font-size: var(--fs-small); color: var(--ink3); }
 </style>

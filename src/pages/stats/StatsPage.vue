@@ -44,22 +44,28 @@
       </div>
     </template>
 
-    <!-- 收支 hero：本月支出大数字 + 收入副行 -->
+    <!-- 收支 hero：本期大数字 + 收入/支出可切换 + 环比同比 -->
     <div class="st-hero glass">
-      <span class="st-hero-label">本期支出</span>
-      <div class="st-hero-amount num c-exp">{{ formatCurrency(totalExpense) }}</div>
+      <div class="st-hero-head">
+        <span class="st-hero-label">本期{{ heroType === 'expense' ? '支出' : '收入' }}</span>
+        <div class="st-hero-seg">
+          <button class="st-hero-seg-btn" :class="{ on: heroType === 'expense' }" @click="heroType = 'expense'">支出</button>
+          <button class="st-hero-seg-btn" :class="{ on: heroType === 'income' }" @click="heroType = 'income'">收入</button>
+        </div>
+      </div>
+      <div class="st-hero-amount num" :class="heroType === 'expense' ? 'c-exp' : 'c-inc'">{{ formatCurrency(heroAmount) }}</div>
       <div class="st-hero-comps">
         <span class="st-hero-comp">
           <span class="st-hero-comp-label">{{ prevCompareLabel }}</span>
-          <span class="st-hero-comp-val" :class="trendClass(totalExpense, prevExpense)">{{ compareLabel(totalExpense, prevExpense) }}</span>
+          <span class="st-hero-comp-val" :class="trendClass(heroAmount, heroPrev)">{{ compareLabel(heroAmount, heroPrev) }}</span>
         </span>
         <span v-if="yoyRange" class="st-hero-comp">
           <span class="st-hero-comp-label">{{ yoyCompareLabel }}</span>
-          <span class="st-hero-comp-val" :class="trendClass(totalExpense, yoyExpense)">{{ compareLabel(totalExpense, yoyExpense) }}</span>
+          <span class="st-hero-comp-val" :class="trendClass(heroAmount, heroYoy)">{{ compareLabel(heroAmount, heroYoy) }}</span>
         </span>
       </div>
       <div class="st-hero-sub">
-        <span>期间收入 <b class="num c-inc">{{ formatCurrency(totalIncome) }}</b></span>
+        <span>期间{{ heroType === 'expense' ? '收入' : '支出' }} <b class="num" :class="heroType === 'expense' ? 'c-inc' : 'c-exp'">{{ formatCurrency(heroSubAmount) }}</b></span>
       </div>
     </div>
 
@@ -333,6 +339,13 @@ const periodBase = computed(() => {
 
 const totalIncome = computed(() => periodBase.value.income)
 const totalExpense = computed(() => periodBase.value.expense)
+
+// ---------- hero 卡片：支出/收入切换 ----------
+const heroType = ref<'expense' | 'income'>('expense')
+const heroAmount = computed(() => heroType.value === 'expense' ? totalExpense.value : totalIncome.value)
+const heroSubAmount = computed(() => heroType.value === 'expense' ? totalIncome.value : totalExpense.value)
+const heroPrev = computed(() => heroType.value === 'expense' ? prevExpense.value : prevIncome.value)
+const heroYoy = computed(() => heroType.value === 'expense' ? yoyExpense.value : yoyIncome.value)
 
 // ---------- 环比 / 同比 对比区间 ----------
 
@@ -787,9 +800,9 @@ function rankLabel(index: number): string {
 
 /* ── 沉浸式头部 ── */
 .st-head { display: flex; align-items: center; justify-content: space-between; padding: 20px 2px 8px; }
-.st-title { font-size: 28px; font-weight: 800; letter-spacing: -0.03em; color: var(--ink); }
+.st-title { font-size: var(--fs-page-title); font-weight: 800; letter-spacing: -0.03em; color: var(--ink); }
 .st-mode { display: flex; background: var(--act-bg); border-radius: 10px; padding: 3px; gap: 2px; }
-.st-mode-btn { padding: 5px 12px; border: none; background: transparent; font-size: 12px; font-weight: 500; color: var(--ink3); border-radius: 8px; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.st-mode-btn { padding: 5px 12px; border: none; background: transparent; font-size: var(--fs-small); font-weight: 500; color: var(--ink3); border-radius: 8px; cursor: pointer; transition: all 0.15s; font-family: inherit; }
 .st-mode-btn.on { background: var(--ink); color: var(--accent-fg); font-weight: 600; }
 
 /* ── 期间选择 ── */
@@ -797,38 +810,42 @@ function rankLabel(index: number): string {
 .st-period--custom { gap: 4px; flex-wrap: nowrap; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
 .st-period--custom .st-period-nav { width: 26px; height: 30px; flex-shrink: 0; }
 .st-period--custom .st-period-label { gap: 0; margin: 0 2px; min-width: auto; }
-.st-period--custom .st-period-label.sm { font-size: 14px; flex-shrink: 0; }
+.st-period--custom .st-period-label.sm { font-size: var(--fs-body); flex-shrink: 0; }
 .st-period-nav { width: 32px; height: 32px; border: 1px solid var(--line); background: none; color: var(--ink2); display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 999px; -webkit-tap-highlight-color: transparent; transition: background 0.15s; }
 .st-period-nav:active { background: var(--act-bg); }
-.st-period-label { font-size: 15px; font-weight: 600; color: var(--ink); min-width: 104px; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 2px; }
+.st-period-label { font-size: var(--fs-title); font-weight: 600; color: var(--ink); min-width: 104px; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 2px; }
 
 /* ── 收支 hero ── */
 .st-hero { padding: 20px 18px 24px; border-radius: var(--radius-big); margin: 8px 0 30px; }
-.st-hero-label { font-size: 13px; color: var(--ink2); font-weight: 600; letter-spacing: 0.3px; }
-.st-hero-amount { font-size: 58px; font-weight: 800; letter-spacing: -0.04em; margin: 8px 0 10px; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.st-hero-head { display: flex; align-items: center; justify-content: space-between; }
+.st-hero-label { font-size: var(--fs-ui); color: var(--ink2); font-weight: 600; letter-spacing: 0.3px; }
+.st-hero-seg { display: flex; background: var(--act-bg); border-radius: 8px; padding: 2px; gap: 2px; }
+.st-hero-seg-btn { padding: 3px 12px; border: none; background: transparent; font-size: var(--fs-small); font-weight: 500; color: var(--ink3); border-radius: 6px; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.st-hero-seg-btn.on { background: var(--ink); color: var(--accent-fg); font-weight: 600; }
+.st-hero-amount { font-size: var(--fs-amount-xl); font-weight: 800; letter-spacing: -0.04em; margin: 8px 0 10px; font-variant-numeric: tabular-nums; line-height: 1.1; }
 .c-inc { color: var(--inc); }
 .c-exp { color: var(--exp); }
 .st-hero-comps { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-bottom: 14px; align-items: center; }
 .st-hero-comp { display: inline-flex; align-items: baseline; gap: 5px; }
-.st-hero-comp-label { font-size: 11px; color: var(--ink3); }
-.st-hero-comp-val { font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.st-hero-comp-label { font-size: var(--fs-small); color: var(--ink3); }
+.st-hero-comp-val { font-size: var(--fs-small); font-weight: 700; font-variant-numeric: tabular-nums; }
 .st-hero-comp-val.up { color: var(--inc); }
 .st-hero-comp-val.down { color: var(--exp); }
 .st-hero-comp-val.flat { color: var(--ink3); }
-.st-hero-sub { font-size: 12px; color: var(--ink3); }
+.st-hero-sub { font-size: var(--fs-small); color: var(--ink3); }
 .st-hero-sub b { font-weight: 700; }
 
 /* ── 连续区块 ── */
 .st-block { padding: 18px; border-radius: var(--radius-big); margin-bottom: 20px; }
 .st-block-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-.st-label { font-size: 13px; font-weight: 600; color: var(--ink2); margin-bottom: 16px; display: block; }
+.st-label { font-size: var(--fs-ui); font-weight: 600; color: var(--ink2); margin-bottom: 16px; display: block; }
 .st-block-row .st-label { margin-bottom: 0; }
 .st-seg { display: flex; background: var(--act-bg); border-radius: 8px; padding: 2px; gap: 2px; }
-.st-seg-btn { padding: 3px 12px; border: none; background: transparent; font-size: 12px; font-weight: 500; color: var(--ink3); border-radius: 6px; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.st-seg-btn { padding: 3px 12px; border: none; background: transparent; font-size: var(--fs-small); font-weight: 500; color: var(--ink3); border-radius: 6px; cursor: pointer; transition: all 0.15s; font-family: inherit; }
 .st-seg-btn.on { background: var(--ink); color: var(--accent-fg); font-weight: 600; }
-.st-hide { padding: 4px 12px; border: 1px solid var(--line); background: none; font-size: 11px; font-weight: 500; color: var(--ink2); border-radius: 999px; cursor: pointer; transition: all 0.15s; font-family: inherit; white-space: nowrap; }
+.st-hide { padding: 4px 12px; border: 1px solid var(--line); background: none; font-size: var(--fs-small); font-weight: 500; color: var(--ink2); border-radius: 999px; cursor: pointer; transition: all 0.15s; font-family: inherit; white-space: nowrap; }
 .st-hide.on { background: var(--exp); border-color: var(--exp); color: var(--accent-fg); font-weight: 600; }
-.st-empty { text-align: center; padding: 30px 0; font-size: 14px; color: var(--ink3); }
+.st-empty { text-align: center; padding: 30px 0; font-size: var(--fs-body); color: var(--ink3); }
 
 /* ECharts 容器 */
 .echart-line { width: 100%; height: 160px; }
@@ -840,27 +857,27 @@ function rankLabel(index: number): string {
 .st-rank-row + .st-rank-row { border-top: 1px solid var(--line-soft); }
 .st-rank-row.clickable { cursor: pointer; }
 .st-rank-row.clickable:active { background: var(--act-bg); }
-.st-rank-badge { width: 18px; height: 18px; border-radius: 6px; color: var(--accent-fg); font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.st-rank-num { width: 18px; height: 18px; font-size: 12px; font-weight: 700; color: var(--ink2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.st-rank-icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
-.st-rank-name { flex: 1; font-size: 14px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.st-rank-pct { font-size: 11px; color: var(--ink3); width: 36px; text-align: right; flex-shrink: 0; }
-.st-rank-amt { font-size: 14px; font-weight: 700; color: var(--exp); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.st-rank-badge { width: 18px; height: 18px; border-radius: 6px; color: var(--accent-fg); font-size: var(--fs-micro); font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.st-rank-num { width: 18px; height: 18px; font-size: var(--fs-small); font-weight: 700; color: var(--ink2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.st-rank-icon { font-size: var(--fs-amount); width: 22px; text-align: center; flex-shrink: 0; }
+.st-rank-name { flex: 1; font-size: var(--fs-body); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.st-rank-pct { font-size: var(--fs-small); color: var(--ink3); width: 36px; text-align: right; flex-shrink: 0; }
+.st-rank-amt { font-size: var(--fs-body); font-weight: 700; color: var(--exp); white-space: nowrap; font-variant-numeric: tabular-nums; }
 
 /* 高频支出 */
 .st-freq { display: flex; align-items: baseline; gap: 8px; flex-shrink: 0; }
-.st-freq-count { font-size: 12px; font-weight: 600; color: var(--ink); white-space: nowrap; }
-.st-freq-amt { font-size: 13px; font-weight: 700; color: var(--exp); white-space: nowrap; font-variant-numeric: tabular-nums; }
-.st-freq-avg { font-size: 11px; color: var(--ink3); white-space: nowrap; }
+.st-freq-count { font-size: var(--fs-small); font-weight: 600; color: var(--ink); white-space: nowrap; }
+.st-freq-amt { font-size: var(--fs-ui); font-weight: 700; color: var(--exp); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.st-freq-avg { font-size: var(--fs-small); color: var(--ink3); white-space: nowrap; }
 
 /* 大额支出 */
 .st-large-info { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.st-large-title { font-size: 14px; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.st-large-date { font-size: 11px; color: var(--ink3); }
+.st-large-title { font-size: var(--fs-body); font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.st-large-date { font-size: var(--fs-small); color: var(--ink3); }
 
 /* 标签聚合 */
 .st-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-.st-tag { background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; font-size: 13px; color: var(--ink2); cursor: pointer; transition: all 0.15s; user-select: none; -webkit-tap-highlight-color: transparent; }
+.st-tag { background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; font-size: var(--fs-ui); color: var(--ink2); cursor: pointer; transition: all 0.15s; user-select: none; -webkit-tap-highlight-color: transparent; }
 .st-tag:active { opacity: 0.6; }
 .st-tag--total { background: var(--ink); border-color: var(--ink); color: var(--accent-fg); }
 .st-tag--total .st-tag-amt { color: var(--accent-fg); opacity: 0.85; }
