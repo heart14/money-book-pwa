@@ -203,9 +203,9 @@ async function handleConfirmDelete() {
 .ac-action:active { background: var(--act-bg); }
 
 /* ── 净资产开篇 ── */
-.ac-net { padding: 18px; border-radius: var(--radius-big); margin-bottom: 26px; }
+.ac-net { padding: 14px 18px; border-radius: var(--radius-big); margin-bottom: 14px; }
 .ac-net-label { font-size: var(--fs-ui); color: var(--ink2); font-weight: 600; letter-spacing: 0.3px; }
-.ac-net-value { font-size: var(--fs-amount-xl); font-weight: 800; letter-spacing: -0.04em; margin-top: 10px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.ac-net-value { font-size: var(--fs-amount-xl); font-weight: 800; letter-spacing: -0.04em; margin-top: 14px; color: var(--ink); font-variant-numeric: tabular-nums; }
 
 /* ── 玻璃账户卡列表 ── */
 .ac-empty { padding: 40px 0; text-align: center; font-size: var(--fs-body); color: var(--ink3); }

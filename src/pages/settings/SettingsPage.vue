@@ -251,7 +251,7 @@ async function handleDestroy() {
 .se-title { font-size: var(--fs-page-title); font-weight: 800; letter-spacing: -0.03em; color: var(--ink); padding: 20px 2px 6px; margin-bottom: 10px; }
 
 /* ── 抽屉式分组 ── */
-.se-group { margin-bottom: 30px; padding: 8px 16px 12px; border-radius: var(--radius-big); }
+.se-group { margin-bottom: 14px; padding: 14px 16px 14px; border-radius: var(--radius-big); }
 .se-group-label { display: block; font-size: var(--fs-small); font-weight: 600; color: var(--ink3); letter-spacing: 0.3px; margin: 0 2px 4px; }
 
 .se-rows { }
