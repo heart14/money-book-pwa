@@ -57,7 +57,7 @@ const groupTotal = computed(() => {
 
 <style scoped>
 .account-group {
-  background: var(--glass-highlight), var(--color-card);
+  background: var(--glass-tint);
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   border: 1px solid var(--glass-border);

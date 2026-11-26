@@ -115,7 +115,7 @@ function handleComplete() {
 
 .key {
   border: 1px solid var(--glass-border);
-  background: var(--glass-highlight), var(--color-card);
+  background: var(--glass-tint);
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   color: var(--color-text);

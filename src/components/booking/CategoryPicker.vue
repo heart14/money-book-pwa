@@ -137,7 +137,7 @@ watch(
   padding: 12px 0;
   border: 1px solid var(--glass-border);
   border-radius: 10px;
-  background: var(--glass-highlight), var(--color-card);
+  background: var(--glass-tint);
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow: var(--glass-shadow);
