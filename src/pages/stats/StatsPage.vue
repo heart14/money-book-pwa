@@ -47,13 +47,13 @@
     <!-- 收支 hero：本期大数字 + 收入/支出可切换 + 环比同比 -->
     <div class="st-hero glass">
       <div class="st-hero-head">
-        <span class="st-hero-label">本期{{ heroType === 'expense' ? '支出' : '收入' }}</span>
+        <span class="st-hero-label">本期{{ mode === 'expense' ? '支出' : '收入' }}</span>
         <div class="st-hero-seg">
-          <button class="st-hero-seg-btn" :class="{ on: heroType === 'expense' }" @click="heroType = 'expense'">支出</button>
-          <button class="st-hero-seg-btn" :class="{ on: heroType === 'income' }" @click="heroType = 'income'">收入</button>
+          <button class="st-hero-seg-btn" :class="{ on: mode === 'expense' }" @click="mode = 'expense'">支出</button>
+          <button class="st-hero-seg-btn" :class="{ on: mode === 'income' }" @click="mode = 'income'">收入</button>
         </div>
       </div>
-      <div class="st-hero-amount num" :class="heroType === 'expense' ? 'c-exp' : 'c-inc'">{{ formatCurrency(heroAmount) }}</div>
+      <div class="st-hero-amount num" :class="mode === 'expense' ? 'c-exp' : 'c-inc'">{{ formatCurrency(heroAmount) }}</div>
       <div class="st-hero-comps">
         <span class="st-hero-comp">
           <span class="st-hero-comp-label">{{ prevCompareLabel }}</span>
@@ -65,17 +65,17 @@
         </span>
       </div>
       <div class="st-hero-sub">
-        <span>期间{{ heroType === 'expense' ? '收入' : '支出' }} <b class="num" :class="heroType === 'expense' ? 'c-inc' : 'c-exp'">{{ formatCurrency(heroSubAmount) }}</b></span>
+        <span>期间{{ mode === 'expense' ? '收入' : '支出' }} <b class="num" :class="mode === 'expense' ? 'c-inc' : 'c-exp'">{{ formatCurrency(heroSubAmount) }}</b></span>
       </div>
     </div>
 
     <!-- 收支趋势 -->
     <section class="st-block glass">
       <div class="st-block-row">
-        <span class="st-label">收支趋势</span>
+        <span class="st-label">{{ mode === 'expense' ? '支出' : '收入' }}趋势</span>
         <div class="st-seg">
-          <button class="st-seg-btn" :class="{ on: trendType === 'income' }" @click="trendType = 'income'">收入</button>
-          <button class="st-seg-btn" :class="{ on: trendType === 'expense' }" @click="trendType = 'expense'">支出</button>
+          <button class="st-seg-btn" :class="{ on: mode === 'expense' }" @click="mode = 'expense'">支出</button>
+          <button class="st-seg-btn" :class="{ on: mode === 'income' }" @click="mode = 'income'">收入</button>
         </div>
       </div>
       <v-chart class="echart-line" :option="lineOption" autoresize />
@@ -186,7 +186,6 @@ type RankLevel = 'parent' | 'child'
 
 const rankingLevel = ref<RankLevel>('child')
 const timeMode = ref<'month' | 'year' | 'week' | 'custom'>('month')
-const trendType = ref<'expense' | 'income'>('expense')
 const currentDate = ref(new Date())
 const hideCarHousing = ref(false)
 
@@ -340,12 +339,12 @@ const periodBase = computed(() => {
 const totalIncome = computed(() => periodBase.value.income)
 const totalExpense = computed(() => periodBase.value.expense)
 
-// ---------- hero 卡片：支出/收入切换 ----------
-const heroType = ref<'expense' | 'income'>('expense')
-const heroAmount = computed(() => heroType.value === 'expense' ? totalExpense.value : totalIncome.value)
-const heroSubAmount = computed(() => heroType.value === 'expense' ? totalIncome.value : totalExpense.value)
-const heroPrev = computed(() => heroType.value === 'expense' ? prevExpense.value : prevIncome.value)
-const heroYoy = computed(() => heroType.value === 'expense' ? yoyExpense.value : yoyIncome.value)
+// ---------- 收支类型切换：hero 卡片与收支趋势卡共享同一状态 ----------
+const mode = ref<'expense' | 'income'>('expense')
+const heroAmount = computed(() => mode.value === 'expense' ? totalExpense.value : totalIncome.value)
+const heroSubAmount = computed(() => mode.value === 'expense' ? totalIncome.value : totalExpense.value)
+const heroPrev = computed(() => mode.value === 'expense' ? prevExpense.value : prevIncome.value)
+const heroYoy = computed(() => mode.value === 'expense' ? yoyExpense.value : yoyIncome.value)
 
 // ---------- 环比 / 同比 对比区间 ----------
 
@@ -485,7 +484,7 @@ const yoyCompareLabel = computed(() => (timeMode.value === 'week' ? '同比去�
 const lineOption = computed(() => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const _theme = uiStore.theme // ensure recompute on theme change
-  const txType = trendType.value
+  const txType = mode.value
   const lineColor = txType === 'expense' ? '#d5503c' : '#17a065'
   const areaColor = txType === 'expense' ? 'rgba(213,80,60,0.12)' : 'rgba(23,160,101,0.12)'
 
