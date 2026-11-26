@@ -23,7 +23,7 @@
 
     <!-- 日期筛选条（展开） -->
     <div v-if="showDatePicker" class="tx-datebar">
-      <div class="tx-datebar-inner">
+      <div class="tx-datebar-inner glass">
         <button class="tx-date-nav" @click="prevMonth">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6" /></svg>
         </button>
@@ -38,7 +38,7 @@
 
     <!-- 搜索条（展开） -->
     <div v-if="searchOpen" class="tx-search">
-      <div class="tx-search-inner">
+      <div class="tx-search-inner glass">
         <div class="tx-search-field" @click.stop="fieldSelectorOpen = !fieldSelectorOpen">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
             <circle cx="10.5" cy="10.5" r="7"></circle>
@@ -47,7 +47,7 @@
           <span class="tx-search-field-label">{{ currentSearchFieldLabel }}</span>
           <svg width="8" height="5" viewBox="0 0 8 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="flex-shrink:0;"><path d="M1 1l3 3 3-3" /></svg>
         </div>
-        <div v-if="fieldSelectorOpen" class="tx-search-dropdown">
+        <div v-if="fieldSelectorOpen" class="tx-search-dropdown glass">
           <button
             v-for="opt in searchFieldOptions"
             :key="opt.value"
@@ -105,7 +105,7 @@
       />
 
       <div v-else class="tx-list">
-        <div v-for="group in groupedTransactions" :key="group.dateStr" class="tx-day">
+        <div v-for="group in groupedTransactions" :key="group.dateStr" class="tx-day glass">
           <div class="tx-day-label">
             <span class="f6">{{ group.dateLabel }}</span>
             <span v-if="group.dayIncome > 0 || group.dayExpense > 0" class="tx-day-sum">
@@ -885,7 +885,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
   min-height: 100%;
   min-height: 100svh;
   padding: 0 24px 24px;
-  background: var(--surface);
+  background: transparent;
   padding-bottom: calc(24px + env(safe-area-inset-bottom));
 }
 
@@ -922,7 +922,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 .tx-search-input { flex: 1; min-width: 0; border: none; background: none; font-size: 15px; color: var(--ink); outline: none; font-family: inherit; }
 .tx-search-input::placeholder { color: var(--ink3); }
 .tx-search-clear { width: 20px; height: 20px; border: none; background: var(--line); color: var(--accent-fg); border-radius: 999px; font-size: 11px; cursor: pointer; display: grid; place-items: center; flex-shrink: 0; line-height: 1; }
-.tx-search-dropdown { position: absolute; top: calc(100% + 6px); left: 0; min-width: 128px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 10px 30px -12px rgba(22,24,28,0.25); padding: 6px; z-index: 1000; }
+.tx-search-dropdown { position: absolute; top: calc(100% + 6px); left: 0; min-width: 128px; /* 玻璃浮层，背景由 .glass 提供 */ border-radius: 12px; box-shadow: 0 10px 30px -12px rgba(22,24,28,0.25); padding: 6px; z-index: 1000; }
 .tx-search-option { display: flex; align-items: center; gap: 6px; width: 100%; padding: 9px 12px; border: none; background: none; font-size: 13px; color: var(--ink); cursor: pointer; border-radius: 8px; text-align: left; font-family: inherit; white-space: nowrap; }
 .tx-search-option:active { background: var(--act-bg); }
 .tx-search-option.active { color: var(--ink); font-weight: 600; }
@@ -941,7 +941,8 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 
 /* ── 连续账页 ── */
 .tx-content { padding-top: 8px; }
-.tx-day { padding-top: 18px; }
+/* 日分组玻璃卡：.glass 提供磨砂底/描边/阴影，这里补齐内缩与外距 */
+.tx-day { padding: 14px 16px 4px; margin-bottom: 14px; border-radius: var(--radius-big); }
 .tx-day-label { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; font-weight: 600; color: var(--ink2); padding: 0 2px 6px; }
 .f6 { font-weight: 600; }
 .tx-day-sum { display: inline-flex; gap: 8px; font-weight: 500; }
