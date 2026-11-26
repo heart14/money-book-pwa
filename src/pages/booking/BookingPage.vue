@@ -35,8 +35,8 @@
         <button class="bk-dt-picker" @click="timePickerOpen = true"><span class="bk-dt-tag">时间</span>{{ selectedTime }}</button>
       </div>
 
-      <!-- 分类触发区：沉浸式网格，点开底部半屏九宫格 -->
-      <section class="bk-cat-zone">
+      <!-- 分类触发区：一级横向滚动 + 就地展开二级，右下为完整可选入口 -->
+      <section class="bk-cat-zone bk-swipe-guard">
         <div class="bk-label-row">
           <span class="bk-label">选择分类</span>
           <button class="bk-open-btn" @click="sheetOpen = true">{{ selName || '展开九宫格' }}<i>›</i></button>
@@ -46,17 +46,29 @@
             v-for="p in parents"
             :key="p.id!"
             class="bk-tile"
-            :class="{ sel: selParent === p.id && selChild == null }"
-            @click="quickPick(p)"
+            :class="{ sel: selParent === p.id, expanded: expandedParent === p.id }"
+            @click="toggleParent(p)"
           >
             <span class="bk-tile-icon"><TwemojiIcon :emoji="p.icon" /></span>
             <span class="bk-tile-name">{{ p.name }}</span>
           </button>
         </div>
+        <!-- 就地展开某级的二级分类 -->
+        <Transition name="bk-expand">
+          <div v-if="expandedParent != null && expandedChildren.length" class="bk-expand-chips">
+            <button
+              v-for="c in expandedChildren"
+              :key="c.id!"
+              class="bk-expand-chip"
+              :class="{ on: selChild === c.id }"
+              @click="pickChildInline(c)"
+            >{{ c.name }}</button>
+          </div>
+        </Transition>
       </section>
 
       <!-- 标题 / 备注 / 标签 / 快记：沉浸折叠区 -->
-      <section class="bk-fields">
+      <section class="bk-fields bk-swipe-guard">
         <div class="bk-field">
           <span class="bk-field-tag">标题</span>
           <input v-model="title" class="bk-input" placeholder="给这笔记账加个标题" maxlength="100" />
@@ -242,6 +254,8 @@ onUnmounted(() => { stopSecondsTimer(); document.removeEventListener('visibility
 let startX = 0
 function onTouchStart(e: TouchEvent) { startX = e.touches[0].clientX }
 function onTouchEnd(e: TouchEvent) {
+  // 分类/字段区域内的横向手势交给该区域的横向滚动处理，不触发收支切换
+  if ((e.target as HTMLElement | null)?.closest?.('.bk-swipe-guard')) return
   const dx = e.changedTouches[0].clientX - startX
   const abs = Math.abs(dx)
   if (abs < 60) return
@@ -309,6 +323,13 @@ const childrenRows = computed<Category[]>(() => {
   const p = selParent.value
   return p == null ? [] : categoryStore.getChildren(p)
 })
+
+// ── 就地展开二级（一级横向项点击展开/收起）──
+const expandedParent = ref<number | null>(null)
+const expandedChildren = computed<Category[]>(() => {
+  const p = expandedParent.value
+  return p == null ? [] : categoryStore.getChildren(p)
+})
 const selName = computed(() => {
   const id = selectedCategoryId.value
   if (id == null) return ''
@@ -322,6 +343,22 @@ function quickPick(p: Category) {
   const kids = categoryStore.getChildren(pid)
   if (kids.length === 1) selectedCategoryId.value = kids[0].id!
   else selectedCategoryId.value = pid
+}
+function toggleParent(p: Category) {
+  const pid = p.id!
+  const kids = categoryStore.getChildren(pid)
+  // 含多个二级 → 选中该一级并就地展开其子分类；仅 0 或 1 子类 → 直接选中该级
+  if (kids.length > 1) {
+    selectedCategoryId.value = pid
+    expandedParent.value = expandedParent.value === pid ? null : pid
+    return
+  }
+  expandedParent.value = null
+  quickPick(p)
+}
+function pickChildInline(c: Category) {
+  selectedCategoryId.value = c.id!
+  expandedParent.value = null
 }
 function pickParent(p: Category) {
   quickPick(p)
@@ -550,13 +587,24 @@ watch(() => uiStore.bookingSaveTrigger, () => {
 .bk-open-btn { border: none; background: var(--act-bg); font-size: var(--fs-small); font-weight: 600; color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; gap: 2px; padding: 6px 12px; border-radius: 999px; }
 .bk-open-btn i { font-style: normal; font-size: var(--fs-body); }
 
-.bk-prev-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-.bk-tile { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 0; background: none; border: 1px solid var(--line); border-radius: 14px; cursor: pointer; transition: transform 0.12s, background 0.15s; }
+.bk-prev-grid { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.bk-prev-grid::-webkit-scrollbar { display: none; }
+.bk-tile { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 10px; min-width: 68px; background: none; border: 1px solid var(--line); border-radius: 14px; cursor: pointer; transition: transform 0.12s, background 0.15s; }
 .bk-tile:active { transform: scale(0.95); }
 .bk-tile-icon { font-size: var(--fs-hero); line-height: 1; }
-.bk-tile-name { font-size: var(--fs-small); color: var(--ink2); font-weight: 500; line-height: 1.1; }
+.bk-tile-name { font-size: var(--fs-small); color: var(--ink2); font-weight: 500; line-height: 1.1; white-space: nowrap; }
 .bk-tile.sel { background: var(--accent); border-color: var(--accent); }
 .bk-tile.sel .bk-tile-name { color: var(--accent-fg); }
+.bk-tile.expanded { border-color: var(--accent); }
+
+/* 就地展开的二级 chips */
+.bk-expand-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line-soft); }
+.bk-expand-chip { padding: 7px 15px; border: 1px solid var(--line); border-radius: 999px; background: none; font-size: var(--fs-ui); color: var(--ink2); cursor: pointer; }
+.bk-expand-chip:active { background: var(--act-bg); }
+.bk-expand-chip.on { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+
+.bk-expand-enter-active, .bk-expand-leave-active { transition: opacity 0.18s ease, transform 0.18s ease; transform-origin: top; }
+.bk-expand-enter-from, .bk-expand-leave-to { opacity: 0; transform: translateY(-6px); }
 
 /* 输入折叠区 */
 .bk-fields { margin-bottom: 24px; }
