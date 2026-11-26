@@ -45,7 +45,7 @@
     </template>
 
     <!-- 收支 hero：本月支出大数字 + 收入副行 -->
-    <div class="st-hero">
+    <div class="st-hero glass">
       <span class="st-hero-label">本期支出</span>
       <div class="st-hero-amount num c-exp">{{ formatCurrency(totalExpense) }}</div>
       <div class="st-hero-comps">
@@ -64,7 +64,7 @@
     </div>
 
     <!-- 收支趋势 -->
-    <section class="st-block">
+    <section class="st-block glass">
       <div class="st-block-row">
         <span class="st-label">收支趋势</span>
         <div class="st-seg">
@@ -76,13 +76,13 @@
     </section>
 
     <!-- 支出构成（饼图） -->
-    <section class="st-block">
+    <section class="st-block glass">
       <span class="st-label">支出构成</span>
       <v-chart class="echart-pie" :option="pieOption" autoresize />
     </section>
 
     <!-- 支出排行 -->
-    <section class="st-block">
+    <section class="st-block glass">
       <div class="st-block-row">
         <span class="st-label">支出排行</span>
         <div class="st-seg">
@@ -103,7 +103,7 @@
     </section>
 
     <!-- 高频支出 -->
-    <section class="st-block">
+    <section class="st-block glass">
       <span class="st-label">高频支出</span>
       <div v-if="highFrequencyExpenses.length === 0" class="st-empty">暂无数据</div>
       <div v-else class="st-rows">
@@ -121,7 +121,7 @@
     </section>
 
     <!-- 大额支出 -->
-    <section class="st-block">
+    <section class="st-block glass">
       <div class="st-block-row">
         <span class="st-label">大额支出</span>
         <button class="st-hide" :class="{ on: hideCarHousing }" @click="hideCarHousing = !hideCarHousing">屏蔽车贷房贷</button>
@@ -141,7 +141,7 @@
     </section>
 
     <!-- 标签聚合 -->
-    <section class="st-block">
+    <section class="st-block glass">
       <span class="st-label">标签聚合</span>
       <div v-if="tagAggregation.length === 0" class="st-empty">暂无数据</div>
       <div v-else class="st-tags">
@@ -781,7 +781,7 @@ function rankLabel(index: number): string {
   min-height: 100%;
   min-height: 100svh;
   padding: 0 24px 24px;
-  background: var(--surface);
+  background: transparent;
   padding-bottom: calc(24px + env(safe-area-inset-bottom));
 }
 
@@ -803,7 +803,7 @@ function rankLabel(index: number): string {
 .st-period-label { font-size: 15px; font-weight: 600; color: var(--ink); min-width: 104px; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 2px; }
 
 /* ── 收支 hero ── */
-.st-hero { padding: 20px 2px 34px; border-bottom: 1px solid var(--line-soft); margin: 8px 0 30px; }
+.st-hero { padding: 20px 18px 24px; border-radius: var(--radius-big); margin: 8px 0 30px; }
 .st-hero-label { font-size: 13px; color: var(--ink2); font-weight: 600; letter-spacing: 0.3px; }
 .st-hero-amount { font-size: 58px; font-weight: 800; letter-spacing: -0.04em; margin: 8px 0 10px; font-variant-numeric: tabular-nums; line-height: 1.1; }
 .c-inc { color: var(--inc); }
@@ -819,13 +819,13 @@ function rankLabel(index: number): string {
 .st-hero-sub b { font-weight: 700; }
 
 /* ── 连续区块 ── */
-.st-block { margin-bottom: 36px; }
+.st-block { padding: 18px; border-radius: var(--radius-big); margin-bottom: 20px; }
 .st-block-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
 .st-label { font-size: 13px; font-weight: 600; color: var(--ink2); margin-bottom: 16px; display: block; }
 .st-block-row .st-label { margin-bottom: 0; }
 .st-seg { display: flex; background: var(--act-bg); border-radius: 8px; padding: 2px; gap: 2px; }
 .st-seg-btn { padding: 3px 12px; border: none; background: transparent; font-size: 12px; font-weight: 500; color: var(--ink3); border-radius: 6px; cursor: pointer; transition: all 0.15s; font-family: inherit; }
-.st-seg-btn.on { background: var(--surface); color: var(--ink); font-weight: 600; }
+.st-seg-btn.on { background: var(--ink); color: var(--accent-fg); font-weight: 600; }
 .st-hide { padding: 4px 12px; border: 1px solid var(--line); background: none; font-size: 11px; font-weight: 500; color: var(--ink2); border-radius: 999px; cursor: pointer; transition: all 0.15s; font-family: inherit; white-space: nowrap; }
 .st-hide.on { background: var(--exp); border-color: var(--exp); color: var(--accent-fg); font-weight: 600; }
 .st-empty { text-align: center; padding: 30px 0; font-size: 14px; color: var(--ink3); }
