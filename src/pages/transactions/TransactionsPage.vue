@@ -942,7 +942,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 /* ── 连续账页 ── */
 .tx-content { padding-top: 8px; }
 /* 日分组玻璃卡：.glass 提供磨砂底/描边/阴影，这里补齐内缩与外距 */
-.tx-day { padding: 14px 16px 4px; margin-bottom: 14px; border-radius: var(--radius-big); }
+.tx-day { padding: 14px 16px 4px; margin-bottom: 8px; border-radius: var(--radius-big); }
 .tx-day-label { display: flex; justify-content: space-between; align-items: baseline; font-size: var(--fs-small); font-weight: 600; color: var(--ink2); padding: 0 2px 6px; }
 .f6 { font-weight: 600; }
 .tx-day-sum { display: inline-flex; gap: 8px; font-weight: 500; }
