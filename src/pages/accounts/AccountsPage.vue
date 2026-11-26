@@ -12,7 +12,7 @@
     </header>
 
     <!-- 净资产开篇 -->
-    <div class="ac-net">
+    <div class="ac-net glass">
       <span class="ac-net-label">净资产</span>
       <div class="ac-net-value num">{{ formatCurrency(accountStore.totalBalance) }}</div>
     </div>
@@ -25,7 +25,7 @@
       <div
         v-for="acc in accountStore.accounts"
         :key="acc.id"
-        class="ac-row"
+        class="ac-row glass"
         @click="openEdit(acc)"
       >
         <span class="ac-icon"><TwemojiIcon :emoji="acc.icon" /></span>
@@ -192,7 +192,7 @@ async function handleConfirmDelete() {
   min-height: 100%;
   min-height: 100svh;
   padding: 0 24px 24px;
-  background: var(--surface);
+  background: transparent;
   padding-bottom: calc(24px + env(safe-area-inset-bottom));
 }
 
@@ -203,14 +203,14 @@ async function handleConfirmDelete() {
 .ac-action:active { background: var(--act-bg); }
 
 /* ── 净资产开篇 ── */
-.ac-net { padding: 18px 2px 34px; border-bottom: 1px solid var(--line-soft); margin-bottom: 10px; }
+.ac-net { padding: 18px; border-radius: var(--radius-big); margin-bottom: 26px; }
 .ac-net-label { font-size: 13px; color: var(--ink2); font-weight: 600; letter-spacing: 0.3px; }
 .ac-net-value { font-size: 52px; font-weight: 800; letter-spacing: -0.04em; margin-top: 10px; color: var(--ink); font-variant-numeric: tabular-nums; }
 
-/* ── 连续账户列表 ── */
+/* ── 玻璃账户卡列表 ── */
 .ac-empty { padding: 40px 0; text-align: center; font-size: 14px; color: var(--ink3); }
-.ac-row { display: flex; align-items: center; gap: 13px; padding: 16px 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.ac-row + .ac-row { border-top: 1px solid var(--line-soft); }
+.ac-list { display: flex; flex-direction: column; gap: 14px; }
+.ac-row { display: flex; align-items: center; gap: 13px; padding: 16px; border-radius: var(--radius-big); cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .ac-row:active { background: var(--act-bg); }
 .ac-icon { font-size: 20px; width: 32px; flex-shrink: 0; display: grid; place-items: center; }
 .ac-mid { flex: 1; min-width: 0; }
