@@ -1,19 +1,20 @@
 import { db } from '@/db'
 
 /**
- * Export all data (categories, transactions, tags, recurring rules, quick templates)
+ * Export all data (categories, transactions, tags, recurring rules, quick templates, diaries)
  * as a JSON file download.
  */
 export async function exportData(): Promise<void> {
-  const [categories, transactions, tags, recurringRules, quickTemplates] = await Promise.all([
+  const [categories, transactions, tags, recurringRules, quickTemplates, diaries] = await Promise.all([
     db.categories.toArray(),
     db.transactions.toArray(),
     db.tags.toArray(),
     db.recurringRules.toArray(),
     db.quickTemplates.toArray(),
+    db.diaries.toArray(),
   ])
 
-  const data = { categories, transactions, tags, recurringRules, quickTemplates }
+  const data = { categories, transactions, tags, recurringRules, quickTemplates, diaries }
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
 
@@ -28,7 +29,7 @@ export async function exportData(): Promise<void> {
 
 /**
  * Import data from a JSON file.
- * Clears all 5 tables first, then bulk-adds the imported data.
+ * Clears all tables first, then bulk-adds the imported data.
  */
 export async function importData(file: File): Promise<void> {
   let text: string
@@ -50,14 +51,16 @@ export async function importData(file: File): Promise<void> {
   const tags = data.tags ?? []
   const recurringRules = data.recurringRules ?? []
   const quickTemplates = data.quickTemplates ?? []
+  const diaries = data.diaries ?? []
 
-  await db.transaction('rw', [db.categories, db.transactions, db.tags, db.recurringRules, db.quickTemplates], async () => {
+  await db.transaction('rw', [db.categories, db.transactions, db.tags, db.recurringRules, db.quickTemplates, db.diaries], async () => {
     await Promise.all([
       db.categories.clear(),
       db.transactions.clear(),
       db.tags.clear(),
       db.recurringRules.clear(),
       db.quickTemplates.clear(),
+      db.diaries.clear(),
     ])
 
     await Promise.all([
@@ -65,6 +68,7 @@ export async function importData(file: File): Promise<void> {
       db.transactions.bulkAdd(transactions),
       db.recurringRules.bulkAdd(recurringRules),
       db.quickTemplates.bulkAdd(quickTemplates),
+      db.diaries.bulkAdd(diaries),
     ])
 
     // Regenerate tags table from BOTH imported tags and transaction tags.
@@ -87,13 +91,14 @@ export async function importData(file: File): Promise<void> {
  * Destroy all data: clear all tables, delete all caches, and unregister service workers.
  */
 export async function destroyAllData(): Promise<void> {
-  await db.transaction('rw', [db.categories, db.transactions, db.tags, db.recurringRules, db.quickTemplates], async () => {
+  await db.transaction('rw', [db.categories, db.transactions, db.tags, db.recurringRules, db.quickTemplates, db.diaries], async () => {
     await Promise.all([
       db.categories.clear(),
       db.transactions.clear(),
       db.tags.clear(),
       db.recurringRules.clear(),
       db.quickTemplates.clear(),
+      db.diaries.clear(),
     ])
   })
 

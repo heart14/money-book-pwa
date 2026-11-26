@@ -39,6 +39,14 @@ export interface RecurringRule {
   autoApply?: boolean
 }
 
+export interface Diary {
+  id?: number
+  /** 日记日期（YYYY-MM-DD），一天一条 */
+  date: string
+  /** 日记正文 */
+  content: string
+}
+
 export interface QuickTemplate {
   id?: number
   /** 用户自定义名称，如"每日咖啡" */

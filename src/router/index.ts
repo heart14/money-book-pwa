@@ -20,6 +20,11 @@ const router = createRouter({
       component: () => import('@/pages/stats/StatsPage.vue'),
     },
     {
+      path: '/diary',
+      name: 'diary',
+      component: () => import('@/pages/diary/DiaryPage.vue'),
+    },
+    {
       path: '/settings',
       name: 'settings',
       component: () => import('@/pages/settings/SettingsPage.vue'),

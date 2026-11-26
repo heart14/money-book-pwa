@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie'
-import type { Category, Transaction, RecurringRule, Tag, QuickTemplate } from '@/types'
+import type { Category, Transaction, RecurringRule, Tag, QuickTemplate, Diary } from '@/types'
 
 export class MoneyBookDB extends Dexie {
   categories!: Table<Category, number>
@@ -7,6 +7,7 @@ export class MoneyBookDB extends Dexie {
   recurringRules!: Table<RecurringRule, number>
   tags!: Table<Tag, number>
   quickTemplates!: Table<QuickTemplate, number>
+  diaries!: Table<Diary, number>
 
   constructor() {
     super('moneybook')
@@ -65,6 +66,16 @@ export class MoneyBookDB extends Dexie {
       recurringRules: '++id, enabled, dayOfMonth',
       tags: '++id, &name',
       quickTemplates: '++id, type, sort',
+    })
+
+    // v7: 新增「日记」独立表（日期 + 正文），一天一条。
+    this.version(7).stores({
+      categories: '++id, type, parentId',
+      transactions: '++id, type, date, categoryId, [date+id]',
+      recurringRules: '++id, enabled, dayOfMonth',
+      tags: '++id, &name',
+      quickTemplates: '++id, type, sort',
+      diaries: '++id, date',
     })
   }
 }
