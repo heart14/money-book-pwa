@@ -104,20 +104,20 @@ async function handleDelete(id: number) {
 .di-title { font-size: var(--fs-page-title); font-weight: 800; letter-spacing: -0.03em; color: var(--ink); }
 
 .di-add {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border: none;
-  border-radius: 12px;
+  background: none;
+  color: var(--ink3);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--act-bg);
-  color: var(--ink);
+  border-radius: 12px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: background 0.15s, transform 0.12s;
+  transition: background 0.15s, color 0.15s;
 }
-.di-add:active { transform: scale(0.9); background: var(--line-soft); }
+.di-add:active { background: var(--act-bg); }
 
 /* ── 日记卡片列表 ── */
 .di-list {
