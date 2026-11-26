@@ -104,12 +104,6 @@
       </section>
     </div>
 
-    <!-- 结算栏：沉浸把手，确认入账 -->
-    <footer class="bk-commit glass" :class="{ off: !canSave }" @click="handleConfirm">
-      <span class="bk-commit-label">记入账</span>
-      <span class="num bk-commit-amt" :class="modeColor">{{ displayAmount }}</span>
-    </footer>
-
     <!-- 底部半屏分类九宫格 -->
     <Teleport to="body">
     <Transition name="rs-sheet-up">
@@ -631,21 +625,7 @@ watch(() => uiStore.bookingSaveTrigger, () => {
 .bk-tpl-add-icon { font-size: var(--fs-hero); color: var(--ink2); font-weight: 400; }
 .bk-empty-hint { font-size: var(--fs-small); color: var(--ink3); margin-bottom: 10px; }
 
-/* 结算栏 */
-.bk-commit {
-  flex-shrink: 0; display: flex; align-items: center; justify-content: space-between;
-  margin: 0 24px calc(12px + env(safe-area-inset-bottom, 0px));
-  padding: 16px 20px; border-radius: 16px; /* 玻璃底由全局 .glass 提供 */
-  color: var(--ink); cursor: pointer;
-  transition: opacity 0.15s;
-}
-.bk-commit.off { opacity: 0.45; }
-.bk-commit-label { font-size: var(--fs-title); font-weight: 700; }
-.bk-commit-amt { font-size: var(--fs-hero); font-weight: 800; }
-.bk-commit-amt.c-inc { color: var(--inc); }
-.bk-commit-amt.c-exp { color: var(--exp); }
-
-/* 半屏九宫格 */
+/* 底部半屏九宫格 */
 .bk-sheet-backdrop { position: fixed; inset: 0; background: var(--color-overlay, rgba(0,0,0,0.35)); z-index: 1100; display: flex; align-items: flex-end; }
 .bk-sheet { width: 100%; /* 背景/描边/阴影由全局 .glass 提供 */ border-radius: 22px 22px 0 0; padding: 10px 24px 28px; }
 .rs-handle { width: 36px; height: 4px; border-radius: 2px; background: var(--ink3); opacity: 0.4; margin: 0 auto 12px; }
