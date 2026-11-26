@@ -9,16 +9,6 @@
   /* ── 环境背景：单色纸感，取消多彩渐变折射源 ── */
   --color-app-bg: #f3f4f5;
 
-  /* ── 玻璃令牌已贬为"纸感"：无模糊、无高光、克制阴影 ──
-     保留变量名以兼容既有 .glass-card 布局，仅视觉效果由玻璃→纸。 ── */
-  --glass-blur: 0px;
-  --glass-blur-weak: 0px;
-  --glass-saturate: 100%;
-  --glass-border: rgba(22, 24, 28, 0.10);
-  --glass-highlight: none;
-  --glass-shadow: 0 1px 2px rgba(22, 24, 28, 0.05),
-                  0 6px 20px -12px rgba(22, 24, 28, 0.12);
-
   /* ── 文字色（墨色体系） ── */
   --color-text: #16181c;
   --color-secondary-text: #5d6570;
@@ -87,6 +77,25 @@
   --act-bg: rgba(22, 24, 28, 0.05);
   --header-h: 64px;
   --radius-big: 22px;
+
+  /* ── 真玻璃基元令牌（方向①：backdrop-filter 折射环境光） ──
+     覆盖此前「纸感贬抑」值（--glass-blur:0px / --glass-highlight:none）；
+     老 .glass-card 组件靠 --glass-blur 变真磨砂，自动落地。 */
+  --glass-blur: 22px;
+  --glass-blur-weak: 12px;
+  --glass-saturate: 180%;
+  --glass-tint: rgba(255, 255, 255, 0.5);
+  --glass-border: rgba(255, 255, 255, 0.78);
+  --glass-highlight: linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0));
+  --glass-shadow: 0 18px 36px -20px rgba(40, 60, 110, 0.45),
+                  inset 0 0 0 0.5px rgba(255, 255, 255, 0.5);
+
+  /* ── 环境光背景令牌（AmbientBackdrop 读取） ── */
+  --amb-base: linear-gradient(155deg, #e9f4f1 0%, #e6eef9 45%, #f2edf9 100%);
+  --amb-a: #bfe9dc;
+  --amb-b: #c4d7f6;
+  --amb-c: #ead7f6;
+  --amb-d: #ffe3d6;
 }
 
 /* ── 深色主题 ── */
@@ -99,15 +108,6 @@
 
   /* ── 环境背景（深色：单色墨夜，无玻璃折射） ── */
   --color-app-bg: #0f1013;
-
-  /* ── 玻璃令牌→纸感（深色） ── */
-  --glass-blur: 0px;
-  --glass-blur-weak: 0px;
-  --glass-saturate: 100%;
-  --glass-border: rgba(255, 255, 255, 0.10);
-  --glass-highlight: none;
-  --glass-shadow: 0 1px 2px rgba(0, 0, 0, 0.4),
-                  0 10px 28px -14px rgba(0, 0, 0, 0.5);
 
   --color-text: #f1f2f4;
   --color-secondary-text: #a6acb4;
@@ -147,6 +147,39 @@
   --inc: #2fc98b;
   --exp: #ff6b5c;
   --act-bg: rgba(255, 255, 255, 0.07);
+
+  /* ── 真玻璃基元令牌（深色） ── */
+  --glass-blur: 22px;
+  --glass-blur-weak: 12px;
+  --glass-saturate: 150%;
+  --glass-tint: rgba(255, 255, 255, 0.07);
+  --glass-border: rgba(255, 255, 255, 0.14);
+  --glass-highlight: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0));
+  --glass-shadow: 0 18px 36px -20px rgba(0, 0, 0, 0.7),
+                  inset 0 0 0 0.5px rgba(255, 255, 255, 0.12);
+
+  /* ── 环境光背景令牌（深色） ── */
+  --amb-base: linear-gradient(155deg, #0c1220 0%, #0a0c16 48%, #150d20 100%);
+  --amb-a: #0f4a44;
+  --amb-b: #1c2f5a;
+  --amb-c: #3a2560;
+  --amb-d: #5a2d22;
+}
+
+/* ── 真玻璃工具类（方向①承载面基元） ──
+   半透明玻璃底 + backdrop-filter 真实折射环境光 + 发丝高光描边。
+   承载面（浮层/卡片）套 .glass；轻控件套 .glass-weak（仅弱模糊，无描边底）。 */
+.glass {
+  background: var(--glass-tint);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-weak {
+  -webkit-backdrop-filter: blur(var(--glass-blur-weak)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur-weak)) saturate(var(--glass-saturate));
 }
 
 * {

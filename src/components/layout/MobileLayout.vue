@@ -1,5 +1,6 @@
 <template>
   <div class="mobile-layout">
+    <AmbientBackdrop />
     <main class="mobile-content">
       <router-view />
     </main>
@@ -9,6 +10,7 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue'
+import AmbientBackdrop from './AmbientBackdrop.vue'
 import TabBar from './TabBar.vue'
 
 /**
@@ -104,6 +106,8 @@ onUnmounted(() => {
 }
 
 .mobile-content {
+  position: relative;
+  z-index: 1;
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: 56px;
 }
