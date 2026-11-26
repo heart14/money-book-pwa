@@ -11,23 +11,25 @@
       </button>
     </header>
 
-    <!-- 内容 -->
-    <EmptyState
-      v-if="diaries.length === 0"
-      icon="📔"
-      message="还没有日记，点右上角 + 写一篇吧"
-    />
+    <!-- 列表（内部滚动区，上下边缘渐变弱化，中间高亮） -->
+    <div ref="listWrapEl" class="di-list-wrap">
+      <EmptyState
+        v-if="diaries.length === 0"
+        icon="📔"
+        message="还没有日记，点右上角 + 写一篇吧"
+      />
 
-    <div v-else class="di-list">
-      <button
-        v-for="d in diaries"
-        :key="d.id"
-        class="di-card glass"
-        @click="openEdit(d)"
-      >
-        <span class="di-card-date">{{ formatDate(d.date) }}</span>
-        <p class="di-card-content">{{ d.content }}</p>
-      </button>
+      <div v-else class="di-list">
+        <button
+          v-for="d in diaries"
+          :key="d.id"
+          class="di-card glass"
+          @click="openEdit(d)"
+        >
+          <span class="di-card-date">{{ formatDate(d.date) }}</span>
+          <p class="di-card-content">{{ d.content }}</p>
+        </button>
+      </div>
     </div>
 
     <!-- 编辑/新建 bottom sheet -->
@@ -42,13 +44,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { db } from '@/db'
 import { useLiveQuery } from '@/composables/useLiveQuery'
 import { formatDate } from '@/utils/format'
 import type { Diary } from '@/types'
 import EmptyState from '@/components/common/EmptyState.vue'
 import DiaryEditSheet from '@/components/diary/DiaryEditSheet.vue'
+
+// ── 渲染时机：等底图（AmbientBackdrop 环境渐变）与 TabBar 就位后再同步视口逻辑 ──
+const ready = ref(false)
+onMounted(() => requestAnimationFrame(() => nextTick(() => { ready.value = true })))
 
 // 按日期倒序直排（不分页：日记量小，一次全量）
 const allDiaries = useLiveQuery<Diary[]>(
@@ -82,15 +88,98 @@ async function handleSave(payload: { id?: number; date: string; content: string 
 async function handleDelete(id: number) {
   await db.diaries.delete(id)
 }
+
+// ═════════════════════════════════════════════════════════════════
+// 滚动景深：列表上下边缘渐隐、中间高亮
+// 用列表容器 mask 渐隐（贴合动态环境光底，无需匹配背景色）。
+// ═════════════════════════════════════════════════════════════════
+const listWrapEl = ref<HTMLElement | null>(null)
+
+// 视口高度阈值：≥520px 才算正常屏（触发淡出），小屏/分屏为稳妥直接全亮淡出
+const viewportH = ref(0)
+const isSmallViewport = computed(() => viewportH.value < 520)
+
+const topDim = ref(0)      // 顶部渐隐强度 0~1（scrollTop=0 时保持 0）
+const bottomDim = ref(1)   // 底部渐隐强度 0~1
+
+/** 有列表、内容超过可视区、滚动区本身能滚 时才需要渐隐 */
+function needsFade(el: HTMLElement): boolean {
+  if (diaries.value.length === 0) return false
+  return el.scrollHeight > el.clientHeight + 1
+}
+
+function update() {
+  const el = listWrapEl.value
+  if (!el || !ready.value || isSmallViewport.value) return
+  // 顶部：scrollTop 未过 8px 视为停在顶部，不淡出（最上方第一个卡片保持清晰）
+  topDim.value = el.scrollTop > 8 ? 1 : 0
+  // 底部：能滚时始终淡出
+  bottomDim.value = needsFade(el) ? 1 : 0
+  applyMask()
+}
+
+function applyMask() {
+  const el = listWrapEl.value
+  if (!el || !ready.value) return
+  // 无需景深时（小屏/空列表/不能滚）：写一整块不透明掩膜，避免回退到 CSS 默认的顶部渐隐
+  if (isSmallViewport.value || diaries.value.length === 0 || !needsFade(el)) {
+    const solid = 'linear-gradient(to bottom, #000 0, #000 100%)'
+    el.style.maskImage = solid
+    el.style.webkitMaskImage = solid
+    return
+  }
+  const top = topDim.value * 46   // px
+  const bot = bottomDim.value * 46
+  const mask = `linear-gradient(to bottom, transparent 0, #000 ${top}px, #000 calc(100% - ${bot}px), transparent 100%)`
+  el.style.maskImage = mask
+  el.style.webkitMaskImage = mask
+}
+
+const onScroll = () => {
+  // 滚动期间也要保持顶部渐显（滚离顶部即淡出首卡）
+  topDim.value = (listWrapEl.value?.scrollTop ?? 0) > 8 ? 1 : 0
+  applyMask()
+}
+
+const onVisualViewportResize = () => {
+  viewportH.value = window.visualViewport?.height ?? window.innerHeight
+  update()
+}
+
+// 列表内容变化（增删改）后重算渐变
+watch(diaries, async () => {
+  await nextTick()
+  update()
+})
+
+watch(ready, (r) => {
+  if (r) {
+    viewportH.value = window.visualViewport?.height ?? window.innerHeight
+    update()
+    const el = listWrapEl.value
+    if (el) {
+      el.addEventListener('scroll', onScroll, { passive: true })
+      window.visualViewport?.addEventListener('resize', onVisualViewportResize)
+    }
+  }
+})
+
+onUnmounted(() => {
+  const el = listWrapEl.value
+  el?.removeEventListener('scroll', onScroll)
+  window.visualViewport?.removeEventListener('resize', onVisualViewportResize)
+})
 </script>
 
 <style scoped>
+/* 应用级框架：锁定视口高度，内部滚动，header 固定、列表滚动 + 上下掩膜景深 */
 .diary-page {
-  min-height: 100%;
-  min-height: 100svh;
-  padding: 0 16px 16px;
+  height: 100%;
+  height: 100svh;
+  padding: 0 8px;
+  display: flex;
+  flex-direction: column;
   background: transparent;
-  padding-bottom: calc(24px + env(safe-area-inset-bottom));
 }
 
 /* ── 沉浸式标题 ── */
@@ -98,8 +187,8 @@ async function handleDelete(id: number) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 2px 6px;
-  margin-bottom: 10px;
+  flex-shrink: 0;
+  padding: 16px 2px 8px;
 }
 .di-title { font-size: var(--fs-page-title); font-weight: 800; letter-spacing: -0.03em; color: var(--ink); }
 
@@ -116,8 +205,21 @@ async function handleDelete(id: number) {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: background 0.15s, color 0.15s;
+  margin-right: -8px; /* 抵消页面 8px 内边距，让按钮贴齐屏幕边缘 */
 }
 .di-add:active { background: var(--act-bg); }
+
+/* ── 列表滚动区：内部滚动 + 上下边缘渐隐掩膜（中间高亮） ── */
+.di-list-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  /* 底部 26px 让最后一张卡能滚进掩膜渐隐区 */
+  padding: 0 0 26px;
+  /* 掩膜默认值：底部 46px 渐隐、顶部留出清亮区；JS 会按滚动位置改写 */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 46px, #000 calc(100% - 46px), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 46px, #000 calc(100% - 46px), transparent 100%);
+}
 
 /* ── 日记卡片列表 ── */
 .di-list {
