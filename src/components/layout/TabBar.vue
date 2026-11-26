@@ -1,5 +1,6 @@
 <template>
-  <nav class="tab-bar">
+  <!-- 真玻璃底部导航：半透明磨砂折射下方环境光，上方发丝高光描边 -->
+  <nav class="tab-bar glass">
     <!-- 明细 -->
     <button class="tab-item" :class="{ on: currentRoute === 'transactions' }" @click="navigate('transactions')">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 4px;">
@@ -109,8 +110,7 @@ function handleBookingSave() {
   display: flex;
   align-items: center;
   padding: 0 6px env(safe-area-inset-bottom, 0px);
-  background: var(--surface);
-  border-top: 1px solid var(--line-soft);
+  /* background 与发丝描边由全局 .glass 提供 */
   z-index: 100;
 }
 
