@@ -93,7 +93,7 @@
     </div>
 
     <!-- 结算栏：沉浸把手，确认入账 -->
-    <footer class="bk-commit" :class="{ off: !canSave }" @click="handleConfirm">
+    <footer class="bk-commit glass" :class="{ off: !canSave }" @click="handleConfirm">
       <span class="bk-commit-label">记入账</span>
       <span class="num bk-commit-amt" :class="modeColor">{{ displayAmount }}</span>
     </footer>
@@ -101,7 +101,7 @@
     <!-- 底部半屏分类九宫格 -->
     <Transition name="rs-sheet-up">
       <div v-if="sheetOpen" class="bk-sheet-backdrop" @click="sheetOpen = false">
-        <div class="bk-sheet" @click.stop>
+        <div class="bk-sheet glass" @click.stop>
           <div class="rs-handle" />
           <div class="bk-sheet-title">选择{{ modeLabel[mode] }}分类</div>
           <div class="bk-sheet-grid">
@@ -133,7 +133,7 @@
     <!-- 数字键盘浮层 -->
     <Transition name="rs-sheet-up">
       <div v-if="keyboardVisible" class="bk-kb" @click.self="keyboardVisible = false">
-        <div class="bk-kb-inner" @click.stop>
+        <div class="bk-kb-inner glass" @click.stop>
           <div class="rs-handle" />
           <div class="num bk-kb-preview" :class="modeColor">{{ displayAmount }}</div>
           <div class="bk-kb-grid">
@@ -503,7 +503,7 @@ watch(() => uiStore.bookingSaveTrigger, () => {
 </script>
 
 <style scoped>
-.bk { position: relative; height: 100%; display: flex; flex-direction: column; background: var(--surface); }
+.bk { position: relative; height: 100%; display: flex; flex-direction: column; background: transparent; }
 .bk-screen { flex: 1; overflow-y: auto; padding: 12px 24px 32px; -webkit-overflow-scrolling: touch; }
 
 .bk-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 8px; }
@@ -583,8 +583,8 @@ watch(() => uiStore.bookingSaveTrigger, () => {
 .bk-commit {
   flex-shrink: 0; display: flex; align-items: center; justify-content: space-between;
   margin: 0 24px calc(12px + env(safe-area-inset-bottom, 0px));
-  padding: 16px 20px; border-radius: 16px; background: var(--accent); color: var(--accent-fg); cursor: pointer;
-  box-shadow: 0 10px 30px -12px rgba(22, 24, 28, 0.4);
+  padding: 16px 20px; border-radius: 16px; /* 玻璃底由全局 .glass 提供 */
+  color: var(--ink); cursor: pointer;
   transition: opacity 0.15s;
 }
 .bk-commit.off { opacity: 0.45; }
@@ -595,7 +595,7 @@ watch(() => uiStore.bookingSaveTrigger, () => {
 
 /* 半屏九宫格 */
 .bk-sheet-backdrop { position: absolute; inset: 0; background: var(--color-overlay, rgba(0,0,0,0.35)); z-index: 12; display: flex; align-items: flex-end; }
-.bk-sheet { width: 100%; background: var(--surface); border-radius: 22px 22px 0 0; padding: 10px 24px 28px; box-shadow: 0 -10px 40px -16px rgba(0,0,0,0.3); }
+.bk-sheet { width: 100%; /* background 由全局 .glass 提供 */ border-radius: 22px 22px 0 0; padding: 10px 24px 28px; box-shadow: 0 -10px 40px -16px rgba(0,0,0,0.3); }
 .rs-handle { width: 36px; height: 4px; border-radius: 2px; background: var(--ink3); opacity: 0.4; margin: 0 auto 12px; }
 .bk-sheet-title { font-size: 16px; font-weight: 700; text-align: center; margin-bottom: 18px; color: var(--ink); }
 .bk-sheet-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
@@ -611,7 +611,7 @@ watch(() => uiStore.bookingSaveTrigger, () => {
 
 /* 键盘 */
 .bk-kb { position: absolute; inset: 0; background: var(--color-overlay, rgba(0,0,0,0.35)); z-index: 12; display: flex; align-items: flex-end; }
-.bk-kb-inner { width: 100%; background: var(--surface); border-radius: 22px 22px 0 0; padding: 10px 16px calc(16px + env(safe-area-inset-bottom, 0px)); }
+.bk-kb-inner { width: 100%; /* background 由全局 .glass 提供 */ border-radius: 22px 22px 0 0; padding: 10px 16px calc(16px + env(safe-area-inset-bottom, 0px)); }
 .bk-kb-preview { text-align: center; font-size: 44px; font-weight: 800; padding: 6px 0 14px; color: var(--ink); }
 .bk-kb-preview.c-inc { color: var(--inc); }
 .bk-kb-preview.c-exp { color: var(--exp); }
