@@ -248,11 +248,11 @@ async function handleDestroy() {
 }
 
 /* ── 沉浸式标题 ── */
-.se-title { font-size: 28px; font-weight: 800; letter-spacing: -0.03em; color: var(--ink); padding: 20px 2px 6px; margin-bottom: 10px; }
+.se-title { font-size: var(--fs-page-title); font-weight: 800; letter-spacing: -0.03em; color: var(--ink); padding: 20px 2px 6px; margin-bottom: 10px; }
 
 /* ── 抽屉式分组 ── */
 .se-group { margin-bottom: 30px; padding: 8px 16px 12px; border-radius: var(--radius-big); }
-.se-group-label { display: block; font-size: 12px; font-weight: 600; color: var(--ink3); letter-spacing: 0.3px; margin: 0 2px 4px; }
+.se-group-label { display: block; font-size: var(--fs-small); font-weight: 600; color: var(--ink3); letter-spacing: 0.3px; margin: 0 2px 4px; }
 
 .se-rows { }
 
@@ -275,10 +275,10 @@ async function handleDestroy() {
 .se-row.no-hover { cursor: default; }
 .se-row.no-hover:active { background: none; }
 
-.se-row-l { display: inline-flex; align-items: center; gap: 11px; font-size: 15px; color: var(--ink); font-weight: 600; }
+.se-row-l { display: inline-flex; align-items: center; gap: 11px; font-size: var(--fs-title); color: var(--ink); font-weight: 600; }
 .se-row-l.danger { color: var(--exp); }
-.se-row-ic { font-style: normal; font-size: 17px; line-height: 1; display: inline-flex; }
-.se-row-v { display: inline-flex; align-items: center; gap: 2px; font-size: 14px; color: var(--ink2); }
+.se-row-ic { font-style: normal; font-size: var(--fs-heading); line-height: 1; display: inline-flex; }
+.se-row-v { display: inline-flex; align-items: center; gap: 2px; font-size: var(--fs-body); color: var(--ink2); }
 .se-caret { color: var(--ink3); flex-shrink: 0; transition: transform 0.2s; }
 .se-caret.rotated { transform: rotate(180deg); }
 
@@ -286,9 +286,9 @@ async function handleDestroy() {
 .se-expand { padding: 4px 0 8px; border-top: 1px solid var(--line-soft); }
 .se-expand .se-setting + .se-setting { border-top: 1px solid var(--line-soft); }
 .se-setting { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; }
-.se-setting-label { font-size: 14px; color: var(--ink); font-weight: 500; }
+.se-setting-label { font-size: var(--fs-body); color: var(--ink); font-weight: 500; }
 .se-toggle { display: flex; background: var(--act-bg); border-radius: 8px; padding: 2px; gap: 2px; }
-.se-toggle-btn { padding: 4px 11px; border: none; background: transparent; font-size: 12px; font-weight: 500; color: var(--ink3); border-radius: 7px; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.se-toggle-btn { padding: 4px 11px; border: none; background: transparent; font-size: var(--fs-small); font-weight: 500; color: var(--ink3); border-radius: 7px; cursor: pointer; transition: all 0.15s; font-family: inherit; }
 .se-toggle-btn.on { background: var(--ink); color: var(--accent-fg); font-weight: 600; }
 
 /* Toast messages */

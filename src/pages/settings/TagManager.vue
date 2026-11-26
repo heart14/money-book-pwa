@@ -140,8 +140,8 @@ async function handleDeleteRegistryOnly() {
 .section-row:active { background: none; }
 
 .row-left { display: flex; align-items: center; gap: 11px; }
-.row-icon { font-size: 17px; line-height: 1; }
-.row-label { font-size: 15px; font-weight: 600; color: var(--ink); }
+.row-icon { font-size: var(--fs-heading); line-height: 1; }
+.row-label { font-size: var(--fs-title); font-weight: 600; color: var(--ink); }
 
 .chevron { color: var(--ink3); flex-shrink: 0; transition: transform 0.2s; }
 .chevron.rotated { transform: rotate(180deg); }

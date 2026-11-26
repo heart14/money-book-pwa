@@ -245,8 +245,8 @@ async function handleDelete() {
 .section-row:active { background: none; }
 
 .row-left { display: flex; align-items: center; gap: 11px; }
-.row-icon { font-size: 17px; line-height: 1; }
-.row-label { font-size: 15px; font-weight: 600; color: var(--ink); }
+.row-icon { font-size: var(--fs-heading); line-height: 1; }
+.row-label { font-size: var(--fs-title); font-weight: 600; color: var(--ink); }
 
 .chevron { color: var(--ink3); flex-shrink: 0; transition: transform 0.2s; }
 .chevron.rotated { transform: rotate(180deg); }
@@ -259,7 +259,7 @@ async function handleDelete() {
 .rule-info { display: flex; flex-direction: column; gap: 2px; }
 .rule-type { font-size: var(--fs-small); padding: 2px 8px; border-radius: 6px; background: var(--act-bg); color: var(--ink2); flex-shrink: 0; }
 .rule-meta-row { display: flex; align-items: center; gap: 6px; }
-.rule-cat-icon { font-size: 14px; line-height: 1; flex-shrink: 0; }
+.rule-cat-icon { font-size: var(--fs-body); line-height: 1; flex-shrink: 0; }
 .rule-cat-icon.muted { opacity: 0.6; }
 .rule-meta { font-size: var(--fs-small); color: var(--ink3); }
 .rule-main-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 2px; min-width: 0; }

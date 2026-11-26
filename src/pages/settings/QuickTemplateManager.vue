@@ -320,8 +320,8 @@ function showToast(msg: string) {
 .section-row:active { background: none; }
 
 .row-left { display: flex; align-items: center; gap: 11px; }
-.row-icon { font-size: 17px; line-height: 1; }
-.row-label { font-size: 15px; font-weight: 600; color: var(--ink); }
+.row-icon { font-size: var(--fs-heading); line-height: 1; }
+.row-label { font-size: var(--fs-title); font-weight: 600; color: var(--ink); }
 
 .chevron { color: var(--ink3); flex-shrink: 0; transition: transform 0.2s; }
 .chevron.rotated { transform: rotate(180deg); }
@@ -350,7 +350,7 @@ function showToast(msg: string) {
   touch-action: none;
 }
 .qt-drag-handle-icon {
-  font-size: 16px;
+  font-size: var(--fs-amount);
   color: var(--ink3);
   user-select: none;
   line-height: 1;
@@ -368,7 +368,7 @@ function showToast(msg: string) {
   padding: 4px 0;
   min-width: 0;
 }
-.qt-row-icon { font-size: 16px; line-height: 1; flex-shrink: 0; }
+.qt-row-icon { font-size: var(--fs-amount); line-height: 1; flex-shrink: 0; }
 .qt-row-name {
   font-size: var(--fs-body);
   font-weight: 500;
@@ -420,7 +420,7 @@ function showToast(msg: string) {
   margin-top: 10px;
 }
 .qt-add-btn:active { background: var(--act-bg); }
-.qt-add-icon { font-size: 18px; font-weight: 300; line-height: 1; }
+.qt-add-icon { font-size: var(--fs-hero); font-weight: 300; line-height: 1; }
 
 /* ── Dialog ── */
 .qt-dialog-overlay {

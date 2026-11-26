@@ -221,8 +221,8 @@ async function handleDelete() {
 .section-row:active { background: none; }
 
 .row-left { display: flex; align-items: center; gap: 11px; }
-.row-icon { font-size: 17px; line-height: 1; }
-.row-label { font-size: 15px; font-weight: 600; color: var(--ink); }
+.row-icon { font-size: var(--fs-heading); line-height: 1; }
+.row-label { font-size: var(--fs-title); font-weight: 600; color: var(--ink); }
 
 .chevron { color: var(--ink3); flex-shrink: 0; transition: transform 0.2s; }
 .chevron.rotated { transform: rotate(180deg); }
@@ -251,7 +251,7 @@ async function handleDelete() {
   touch-action: none;
 }
 .drag-handle-icon {
-  font-size: 16px;
+  font-size: var(--fs-amount);
   color: var(--ink3);
   user-select: none;
   line-height: 1;
@@ -259,7 +259,7 @@ async function handleDelete() {
   border-radius: 8px;
 }
 .drag-handle-icon:active { background: var(--act-bg); }
-.account-icon { font-size: 17px; }
+.account-icon { font-size: var(--fs-heading); }
 .account-info { flex: 1; display: flex; flex-direction: column; gap: 1px; }
 .account-name { font-size: var(--fs-body); font-weight: 500; color: var(--ink); }
 .account-balance { font-size: var(--fs-small); color: var(--ink3); font-variant-numeric: tabular-nums; }
