@@ -2,134 +2,105 @@
   <div class="page settings-page">
     <!-- ── Main Settings View ── -->
     <template v-if="currentView === 'main'">
-      <!-- Header -->
-      <div class="page-header">
-        <span class="page-title">设置</span>
-      </div>
+      <!-- 沉浸式标题 -->
+      <header class="se-title">设置</header>
 
-      <!-- ── 1. Security ── -->
-      <div class="section">
-        <div class="section-header">安全</div>
-        <div class="section-card">
-          <button class="section-row" @click="currentView = 'security'">
-            <div class="row-left">
-              <span class="row-icon"><TwemojiIcon emoji="🔒" /></span>
-              <span class="row-label">PIN 码锁</span>
-            </div>
-            <div class="row-right">
-              <span class="row-status">{{ hasPin ? '已开启' : '已关闭' }}</span>
-              <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c7c7cc" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6" /></svg>
-            </div>
+      <!-- ── 1. 安全 ── -->
+      <section class="se-group">
+        <span class="se-group-label">安全</span>
+        <div class="se-rows">
+          <button class="se-row" @click="currentView = 'security'">
+            <span class="se-row-l"><i class="se-row-ic"><TwemojiIcon emoji="🔒" /></i>PIN 码锁</span>
+            <span class="se-row-v">{{ hasPin ? '已开启' : '已关闭' }}
+              <svg class="se-caret" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6" /></svg>
+            </span>
           </button>
         </div>
-      </div>
+      </section>
 
-      <!-- ── 2. Appearance ── -->
-      <div class="section">
-        <div class="section-header">外观</div>
-        <div class="section-card">
-          <button class="section-row" @click="showAppearance = !showAppearance">
-            <div class="row-left">
-              <span class="row-icon"><TwemojiIcon emoji="🎨" /></span>
-              <span class="row-label">显示与主题</span>
-            </div>
-            <svg class="chevron" :class="{ rotated: showAppearance }" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c7c7cc" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9" /></svg>
+      <!-- ── 2. 外观 ── -->
+      <section class="se-group">
+        <span class="se-group-label">外观</span>
+        <div class="se-rows">
+          <button class="se-row" @click="showAppearance = !showAppearance">
+            <span class="se-row-l"><i class="se-row-ic"><TwemojiIcon emoji="🎨" /></i>显示与主题</span>
+            <svg class="se-caret" :class="{ rotated: showAppearance }" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9" /></svg>
           </button>
-          <div v-if="showAppearance" class="expanded-content">
-            <div class="setting-row">
-              <span class="setting-label">深色模式</span>
-              <div class="theme-toggle">
-                <button
-                  class="theme-btn"
-                  :class="{ active: uiStore.theme === 'system' }"
-                  @click="uiStore.setTheme('system')"
-                >自动</button>
-                <button
-                  class="theme-btn"
-                  :class="{ active: uiStore.theme === 'light' }"
-                  @click="uiStore.setTheme('light')"
-                >浅色</button>
-                <button
-                  class="theme-btn"
-                  :class="{ active: uiStore.theme === 'dark' }"
-                  @click="uiStore.setTheme('dark')"
-                >深色</button>
+          <div v-if="showAppearance" class="se-expand">
+            <div class="se-setting">
+              <span class="se-setting-label">深色模式</span>
+              <div class="se-toggle">
+                <button class="se-toggle-btn" :class="{ on: uiStore.theme === 'system' }" @click="uiStore.setTheme('system')">自动</button>
+                <button class="se-toggle-btn" :class="{ on: uiStore.theme === 'light' }" @click="uiStore.setTheme('light')">浅色</button>
+                <button class="se-toggle-btn" :class="{ on: uiStore.theme === 'dark' }" @click="uiStore.setTheme('dark')">深色</button>
               </div>
             </div>
-            <div class="setting-row">
-              <span class="setting-label">文字大小</span>
-              <div class="theme-toggle">
-                <button
-                  v-for="opt in fontSizeOptions" :key="opt.value"
-                  class="theme-btn" :class="{ active: uiStore.fontSize === opt.value }"
-                  @click="uiStore.setFontSize(opt.value)"
-                >{{ opt.label }}</button>
+            <div class="se-setting">
+              <span class="se-setting-label">文字大小</span>
+              <div class="se-toggle">
+                <button v-for="opt in fontSizeOptions" :key="opt.value" class="se-toggle-btn" :class="{ on: uiStore.fontSize === opt.value }" @click="uiStore.setFontSize(opt.value)">{{ opt.label }}</button>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- ── 3. Data Management ── -->
-      <div class="section">
-        <div class="section-header">数据管理</div>
-        <div class="section-card">
-          <button class="section-row" @click="handleExport">
-            <div class="row-left"><span class="row-icon"><TwemojiIcon emoji="📤" /></span><span class="row-label">导出备份</span></div>
-            <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c7c7cc" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6" /></svg>
+      <!-- ── 3. 数据管理 ── -->
+      <section class="se-group">
+        <span class="se-group-label">数据管理</span>
+        <div class="se-rows">
+          <button class="se-row" @click="handleExport">
+            <span class="se-row-l"><i class="se-row-ic"><TwemojiIcon emoji="📤" /></i>导出备份</span>
+            <svg class="se-caret" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6" /></svg>
           </button>
-          <div class="separator"></div>
-          <button class="section-row" @click="triggerImport">
-            <div class="row-left"><span class="row-icon"><TwemojiIcon emoji="📥" /></span><span class="row-label">导入数据</span></div>
-            <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c7c7cc" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6" /></svg>
+          <button class="se-row" @click="triggerImport">
+            <span class="se-row-l"><i class="se-row-ic"><TwemojiIcon emoji="📥" /></i>导入数据</span>
+            <svg class="se-caret" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6" /></svg>
           </button>
           <input ref="fileInputRef" type="file" accept=".json" style="display:none" @change="onFileSelected" />
-          <div class="separator"></div>
-          <button class="section-row" @click="showDestroyConfirm1 = true">
-            <div class="row-left"><span class="row-icon"><TwemojiIcon emoji="🗑️" /></span><span class="row-label row-label--danger">彻底销毁数据</span></div>
-            <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c7c7cc" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6" /></svg>
+          <button class="se-row" @click="showDestroyConfirm1 = true">
+            <span class="se-row-l danger"><i class="se-row-ic"><TwemojiIcon emoji="🗑️" /></i>彻底销毁数据</span>
+            <svg class="se-caret" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6" /></svg>
           </button>
         </div>
-      </div>
+      </section>
 
-      <!-- ── 3. Account Management ── -->
-      <div class="section">
-        <div class="section-header">账户管理</div>
-        <div class="section-card">
+      <!-- ── 4. 账户管理 ── -->
+      <section class="se-group">
+        <span class="se-group-label">账户管理</span>
+        <div class="se-rows">
           <AccountManager />
         </div>
-      </div>
+      </section>
 
-      <!-- ── 4. Categories & Tags ── -->
-      <div class="section">
-        <div class="section-header">分类与标签</div>
-        <div class="section-card">
+      <!-- ── 5. 分类与标签 ── -->
+      <section class="se-group">
+        <span class="se-group-label">分类与标签</span>
+        <div class="se-rows">
           <CategoryManager />
-          <div class="separator"></div>
           <TagManager />
         </div>
-      </div>
+      </section>
 
-      <!-- ── 5. Template Management ── -->
-      <div class="section">
-        <div class="section-header">模板管理</div>
-        <div class="section-card">
+      <!-- ── 6. 模板管理 ── -->
+      <section class="se-group">
+        <span class="se-group-label">模板管理</span>
+        <div class="se-rows">
           <RuleManager />
-          <div class="separator"></div>
           <QuickTemplateManager />
         </div>
-      </div>
+      </section>
 
-      <!-- ── 6. About ── -->
-      <div class="section">
-        <div class="section-header">关于</div>
-        <div class="section-card">
-          <div class="section-row no-hover">
-            <div class="row-left"><span class="row-icon"><TwemojiIcon emoji="ℹ️" /></span><span class="row-label">关于钱书</span></div>
-            <span class="row-value">v1.0.0</span>
+      <!-- ── 7. 关于 ── -->
+      <section class="se-group">
+        <span class="se-group-label">关于</span>
+        <div class="se-rows">
+          <div class="se-row no-hover">
+            <span class="se-row-l"><i class="se-row-ic"><TwemojiIcon emoji="ℹ️" /></i>关于钱书</span>
+            <span class="se-row-v">v1.0.0</span>
           </div>
         </div>
-      </div>
+      </section>
 
       <!-- ── Data Management Dialogs ── -->
       <ConfirmDialog
@@ -269,114 +240,56 @@ async function handleDestroy() {
 
 <style scoped>
 .settings-page {
-  padding: 16px;
-  background: transparent;
-  /* min-height 用视口高度单位（% 相对 auto 高度父级会失效）：
-     内容不足一屏时也撑满整屏，避免底部露出背景空白 */
   min-height: 100%;
   min-height: 100svh;
-  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  padding: 0 24px 24px;
+  background: var(--surface);
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
 }
 
-.page-header { display: flex; align-items: center; margin-bottom: 16px; }
-.page-title { font-size: var(--fs-page-title); font-weight: 700; color: var(--color-text); }
+/* ── 沉浸式标题 ── */
+.se-title { font-size: 28px; font-weight: 800; letter-spacing: -0.03em; color: var(--ink); padding: 20px 2px 6px; margin-bottom: 10px; }
 
-.section { margin-bottom: 20px; }
+/* ── 抽屉式分组 ── */
+.se-group { margin-bottom: 30px; }
+.se-group-label { display: block; font-size: 12px; font-weight: 600; color: var(--ink3); letter-spacing: 0.3px; margin: 0 2px 4px; }
 
-.section-header {
-  font-size: var(--fs-small);
-  font-weight: 600;
-  color: var(--color-secondary-text);
-  padding: 0 4px;
-  margin-bottom: 6px;
-}
+.se-rows { }
 
-.section-card {
-  background: var(--glass-highlight), var(--color-card);
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  border: 1px solid var(--glass-border);
-  border-radius: 14px;
-  overflow: hidden;
-}
-
-.section-row {
+.se-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 12px 14px;
+  padding: 16px 0;
   border: none;
   background: none;
   font-family: inherit;
-  font-size: var(--fs-title);
-  color: var(--color-text);
+  text-align: left;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  text-align: left;
   transition: background 0.1s;
 }
+.se-row + .se-row { border-top: 1px solid var(--line-soft); }
+.se-row:active { background: none; }
+.se-row.no-hover { cursor: default; }
+.se-row.no-hover:active { background: none; }
 
-.section-row:active { background: var(--color-press); }
-.section-row.no-hover { cursor: default; }
-.section-row.no-hover:active { background: none; }
+.se-row-l { display: inline-flex; align-items: center; gap: 11px; font-size: 15px; color: var(--ink); font-weight: 600; }
+.se-row-l.danger { color: var(--exp); }
+.se-row-ic { font-style: normal; font-size: 17px; line-height: 1; display: inline-flex; }
+.se-row-v { display: inline-flex; align-items: center; gap: 2px; font-size: 14px; color: var(--ink2); }
+.se-caret { color: var(--ink3); flex-shrink: 0; transition: transform 0.2s; }
+.se-caret.rotated { transform: rotate(180deg); }
 
-.row-left { display: flex; align-items: center; gap: 10px; }
-.row-icon { font-size: 18px; line-height: 1; }
-.row-label { font-size: var(--fs-title); color: var(--color-text); }
-.row-label--danger { color: var(--color-destructive); }
-.row-right { display: flex; align-items: center; gap: 6px; }
-.row-status { font-size: var(--fs-ui); color: var(--color-secondary-text); }
-.row-value { font-size: var(--fs-ui); color: var(--color-secondary-text); }
-.row-label--dev { font-size: var(--fs-ui); color: var(--color-secondary-text); }
-.section-row--dev:active { background: var(--color-press); }
-
-.setting-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 14px;
-  width: 100%;
-}
-
-.setting-label {
-  font-size: var(--fs-title);
-  color: var(--color-text);
-}
-
-.chevron { color: var(--color-placeholder); flex-shrink: 0; transition: transform 0.2s; }
-.chevron.rotated { transform: rotate(180deg); }
-
-.expanded-content { padding: 4px 14px 12px; }
-
-.separator { height: 1px; background: var(--color-separator); margin: 0 14px; }
-
-.theme-toggle {
-  display: flex;
-  background: var(--color-bg);
-  border-radius: 8px;
-  padding: 2px;
-  gap: 2px;
-}
-
-.theme-btn {
-  padding: 4px 10px;
-  border: none;
-  background: transparent;
-  font-size: var(--fs-small);
-  font-weight: 500;
-  color: var(--color-secondary-text);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.15s;
-  font-family: inherit;
-}
-
-.theme-btn.active {
-  background: var(--color-surface);
-  color: var(--color-primary);
-  font-weight: 600;
-}
+/* 展开区 */
+.se-expand { padding: 4px 0 8px; border-top: 1px solid var(--line-soft); }
+.se-expand .se-setting + .se-setting { border-top: 1px solid var(--line-soft); }
+.se-setting { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; }
+.se-setting-label { font-size: 14px; color: var(--ink); font-weight: 500; }
+.se-toggle { display: flex; background: var(--act-bg); border-radius: 8px; padding: 2px; gap: 2px; }
+.se-toggle-btn { padding: 4px 11px; border: none; background: transparent; font-size: 12px; font-weight: 500; color: var(--ink3); border-radius: 7px; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.se-toggle-btn.on { background: var(--surface); color: var(--ink); font-weight: 600; }
 
 /* Toast messages */
 .data-msg {
@@ -394,8 +307,8 @@ async function handleDestroy() {
   max-width: 80%;
   text-align: center;
 }
-.data-msg.success { background: var(--color-success); color: #fff; }
-.data-msg.error { background: var(--color-destructive); color: #fff; }
+.data-msg.success { background: var(--inc); color: var(--accent-fg); }
+.data-msg.error { background: var(--exp); color: var(--accent-fg); }
 
 @keyframes dataMsgIn {
   from { opacity: 0; transform: translateX(-50%) translateY(16px); }

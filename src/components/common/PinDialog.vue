@@ -171,12 +171,12 @@ watch(() => props.resetKey, () => {
   width: 60px;
   height: 60px;
   border-radius: 18px;
-  background: linear-gradient(135deg, var(--color-primary) 0%, #0056b3 100%);
+  background: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
-  box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3);
+  color: var(--color-on-primary);
+  box-shadow: 0 4px 16px rgba(22, 24, 28, 0.25);
   margin-bottom: 2px;
   transition: box-shadow 0.3s;
 }
@@ -225,7 +225,7 @@ watch(() => props.resetKey, () => {
   background: var(--color-primary);
   border-color: var(--color-primary);
   transform: scale(1.15);
-  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.35);
+  box-shadow: 0 2px 8px rgba(22, 24, 28, 0.25);
 }
 
 .pin-error {
@@ -293,9 +293,9 @@ watch(() => props.resetKey, () => {
   touch-action: manipulation;
   user-select: none;
   -webkit-user-select: none;
-  /* 悬浮立体投影 + 内侧边缘高光（玻璃厚度感）—— 克制低饱和，避免过亮 */
+  /* 悬浮投影 + 内侧边缘高光（纸感克制，低饱和） */
   box-shadow:
-    0 8px 18px -10px rgba(40, 60, 120, 0.28),
+    0 8px 18px -10px rgba(22, 24, 28, 0.18),
     0 3px 6px -3px rgba(0, 0, 0, 0.06),
     0 0 0 0.5px rgba(255, 255, 255, 0.3) inset,
     0 1px 0 rgba(255, 255, 255, 0.18) inset;
@@ -330,11 +330,11 @@ watch(() => props.resetKey, () => {
 
 .pin-key:active,
 .pin-key--pressed {
-  /* 真实下沉：缩小并压下，投影收缩、高光微微上移增强受光 */
+  /* 下沉：缩小并压下，投影收缩 */
   transform: scale(0.9) translateY(1px);
   filter: brightness(0.97);
   box-shadow:
-    0 2px 6px -3px rgba(40, 60, 120, 0.22),
+    0 2px 6px -3px rgba(22, 24, 28, 0.14),
     0 1px 2px -1px rgba(0, 0, 0, 0.08),
     0 0 0 0.5px rgba(255, 255, 255, 0.2) inset,
     0 1px 0 rgba(255, 255, 255, 0.12) inset;
@@ -386,7 +386,7 @@ watch(() => props.resetKey, () => {
 }
 
 :root.dark .pin-lock-badge {
-  box-shadow: 0 4px 20px rgba(10, 132, 255, 0.35);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 /* ── Entrance transition ── */

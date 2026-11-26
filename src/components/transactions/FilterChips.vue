@@ -42,7 +42,7 @@ defineEmits<{
 .filter-chips {
   display: flex;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 8px 0;
   overflow-x: auto;
   white-space: nowrap;
   -webkit-overflow-scrolling: touch;
@@ -61,26 +61,27 @@ defineEmits<{
   height: 36px;
   padding: 0 14px;
   border-radius: 18px;
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--line);
   font-size: var(--fs-ui);
   font-weight: 500;
   cursor: pointer;
-  background: var(--color-card);
-  color: var(--color-text);
+  background: transparent;
+  color: var(--ink2);
   -webkit-tap-highlight-color: transparent;
   transition: all 0.15s;
   font-family: inherit;
 }
 
 .chip.active {
-  background: var(--color-primary);
-  color: #fff;
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--accent-fg);
   font-weight: 500;
 }
 
 .chip.contextual {
-  background: var(--color-card);
-  color: var(--color-primary);
+  background: transparent;
+  color: var(--ink);
   font-weight: 600;
 }
 

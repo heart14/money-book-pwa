@@ -64,16 +64,15 @@ const displayAmount = computed(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 16px;
+  padding: 15px 0;
   background: transparent;
-  border-bottom: 1px solid var(--color-separator);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: background 0.15s;
 }
 
 .transaction-item:active {
-  background: var(--color-press);
+  background: var(--act-bg);
 }
 
 .item-col {
@@ -87,7 +86,7 @@ const displayAmount = computed(() => {
 .item-icon {
   width: 36px;
   height: 36px;
-  background: var(--color-input-bg);
+  background: var(--act-bg);
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -103,7 +102,7 @@ const displayAmount = computed(() => {
 .item-title {
   font-size: var(--fs-title);
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--ink);
   line-height: 1.3;
   white-space: nowrap;
   overflow: hidden;
@@ -112,7 +111,7 @@ const displayAmount = computed(() => {
 
 .item-sub {
   font-size: var(--fs-small);
-  color: var(--color-secondary-text);
+  color: var(--ink3);
   margin-top: 1px;
   white-space: nowrap;
   overflow: hidden;
@@ -129,9 +128,9 @@ const displayAmount = computed(() => {
   line-height: 1.3;
 }
 
-.amount-expense { color: var(--color-success); }
-.amount-income { color: var(--color-destructive); }
-.amount-transfer { color: var(--color-primary); }
+.amount-expense { color: var(--exp); }
+.amount-income { color: var(--inc); }
+.amount-transfer { color: var(--ink2); }
 
 .item-tags {
   display: flex;
@@ -142,7 +141,7 @@ const displayAmount = computed(() => {
 
 .item-tags span {
   font-size: var(--fs-micro);
-  color: var(--color-secondary-text);
+  color: var(--ink3);
   white-space: nowrap;
 }
 </style>

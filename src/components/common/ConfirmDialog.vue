@@ -129,7 +129,7 @@ function onCancel() {
 
 .confirm-btn--primary {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-on-primary);
 }
 
 .confirm-btn--danger {

@@ -35,6 +35,12 @@ const router = createRouter({
       name: 'glass',
       component: () => import('@/pages/glass/GlassDemoPage.vue'),
     },
+    {
+      // 沙盒：钱书新视觉「墨色账本」设计预览（记账/明细/统计/账户/设置 + 深浅切换）。不并入业务。
+      path: '/style-lab',
+      name: 'style-lab',
+      component: () => import('@/pages/glass/RedesignPreview.vue'),
+    },
   ],
 })
 

@@ -133,7 +133,7 @@
         <div v-else class="section-card">
           <button class="action-row" @click="changeStep = 1">
             <span>修改 PIN 码</span>
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#c7c7cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--ink3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="9 18 15 12 9 6" />
             </svg>
           </button>
@@ -304,6 +304,8 @@ if (!hasPin.value) {
 </script>
 
 <style scoped>
+/* ═ 沉浸式 ═ */
+
 .security-lock {
   padding: 16px;
 }
@@ -323,7 +325,7 @@ if (!hasPin.value) {
   border: none;
   background: none;
   font-size: var(--fs-amount);
-  color: var(--color-primary);
+  color: var(--ink);
   cursor: pointer;
   padding: 4px 0;
   -webkit-tap-highlight-color: transparent;
@@ -333,27 +335,25 @@ if (!hasPin.value) {
 .page-title {
   font-size: var(--fs-hero);
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--ink);
   flex: 1;
 }
 
 /* ── Section Card ── */
 .section-card {
-  background: var(--glass-highlight), var(--color-card);
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-md);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-big);
   padding: 20px 16px;
   margin-bottom: 16px;
-  box-shadow: var(--glass-shadow);
+  box-shadow: var(--shadow-sm);
 }
 
 /* ── PIN Input ── */
 .pin-prompt {
   text-align: center;
   font-size: var(--fs-title);
-  color: var(--color-text);
+  color: var(--ink);
   margin-bottom: 16px;
 }
 
@@ -383,20 +383,20 @@ if (!hasPin.value) {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  border: 2px solid var(--color-placeholder);
+  border: 2px solid var(--ink3);
   background: transparent;
   transition: all 0.2s;
 }
 
 .dot.filled {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
+  background: var(--ink);
+  border-color: var(--ink);
 }
 
 .pin-error {
   text-align: center;
   font-size: var(--fs-body);
-  color: var(--color-destructive);
+  color: var(--exp);
   margin-bottom: 12px;
 }
 
@@ -407,8 +407,8 @@ if (!hasPin.value) {
   height: 44px;
   border: none;
   border-radius: var(--radius-sm);
-  background: var(--color-primary);
-  color: #fff;
+  background: var(--ink);
+  color: var(--accent-fg);
   font-size: var(--fs-amount);
   font-weight: 500;
   cursor: pointer;
@@ -433,7 +433,7 @@ if (!hasPin.value) {
   border: none;
   background: none;
   font-size: var(--fs-body);
-  color: var(--color-secondary-text);
+  color: var(--ink3);
   cursor: pointer;
   text-align: center;
   font-family: inherit;
@@ -450,7 +450,7 @@ if (!hasPin.value) {
   border: none;
   background: none;
   font-size: var(--fs-amount);
-  color: var(--color-text);
+  color: var(--ink);
   cursor: pointer;
   font-family: inherit;
   -webkit-tap-highlight-color: transparent;
@@ -461,24 +461,24 @@ if (!hasPin.value) {
 }
 
 .action-row--danger {
-  color: var(--color-destructive);
+  color: var(--exp);
 }
 
 .separator {
   height: 1px;
-  background: var(--color-separator);
+  background: var(--line-soft);
   margin: 0;
 }
 
 /* ── Success ── */
 .success-card {
-  background: #e8f5e9;
+  background: var(--line-soft);
 }
 
 .success-text {
   text-align: center;
   font-size: var(--fs-title);
-  color: #2e7d32;
+  color: var(--inc);
 }
 
 </style>

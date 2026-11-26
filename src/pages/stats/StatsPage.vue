@@ -1,224 +1,161 @@
 <template>
   <div class="stats-page">
-    <!-- Header: 统计 + mode toggle -->
-    <div class="page-header">
-      <span class="page-title">统计</span>
-      <div class="mode-toggle">
-        <button
-          class="mode-btn"
-          :class="{ active: timeMode === 'week' }"
-          @click="timeMode = 'week'"
-        >周</button>
-        <button
-          class="mode-btn"
-          :class="{ active: timeMode === 'month' }"
-          @click="timeMode = 'month'"
-        >月</button>
-        <button
-          class="mode-btn"
-          :class="{ active: timeMode === 'year' }"
-          @click="timeMode = 'year'"
-        >年</button>
-        <button
-          class="mode-btn"
-          :class="{ active: timeMode === 'custom' }"
-          @click="timeMode = 'custom'"
-        >自选</button>
+    <!-- 沉浸式头部 -->
+    <header class="st-head">
+      <span class="st-title">统计</span>
+      <div class="st-mode">
+        <button class="st-mode-btn" :class="{ on: timeMode === 'week' }" @click="timeMode = 'week'">周</button>
+        <button class="st-mode-btn" :class="{ on: timeMode === 'month' }" @click="timeMode = 'month'">月</button>
+        <button class="st-mode-btn" :class="{ on: timeMode === 'year' }" @click="timeMode = 'year'">年</button>
+        <button class="st-mode-btn" :class="{ on: timeMode === 'custom' }" @click="timeMode = 'custom'">自选</button>
       </div>
-    </div>
+    </header>
 
-    <!-- Month/Year selector -->
+    <!-- 期间选择 -->
     <template v-if="timeMode === 'custom'">
-      <div class="period-selector custom">
-        <span class="period-label">从</span>
-        <button class="period-nav" @click="customRange.startMonth--; if(customRange.startMonth<1){customRange.startMonth=12;customRange.startYear--}">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6" /></svg>
+      <div class="st-period st-period--custom">
+        <span class="st-period-label">从</span>
+        <button class="st-period-nav" @click="customRange.startMonth--; if(customRange.startMonth<1){customRange.startMonth=12;customRange.startYear--}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6" /></svg>
         </button>
-        <span class="period-label small">{{ customRange.startYear }}年{{ customRange.startMonth }}月</span>
-        <button class="period-nav" @click="customRange.startMonth++; if(customRange.startMonth>12){customRange.startMonth=1;customRange.startYear++}">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2.5" stroke-linecap="round"><polyline points="9 6 15 12 9 18" /></svg>
+        <span class="st-period-label sm">{{ customRange.startYear }}年{{ customRange.startMonth }}月</span>
+        <button class="st-period-nav" @click="customRange.startMonth++; if(customRange.startMonth>12){customRange.startMonth=1;customRange.startYear++}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 6 15 12 9 18" /></svg>
         </button>
-        <span class="period-label small">至</span>
-        <button class="period-nav" @click="customRange.endMonth--; if(customRange.endMonth<1){customRange.endMonth=12;customRange.endYear--}">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6" /></svg>
+        <span class="st-period-label sm">至</span>
+        <button class="st-period-nav" @click="customRange.endMonth--; if(customRange.endMonth<1){customRange.endMonth=12;customRange.endYear--}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6" /></svg>
         </button>
-        <span class="period-label small">{{ customRange.endYear }}年{{ customRange.endMonth }}月</span>
-        <button class="period-nav" @click="customRange.endMonth++; if(customRange.endMonth>12){customRange.endMonth=1;customRange.endYear++}">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2.5" stroke-linecap="round"><polyline points="9 6 15 12 9 18" /></svg>
+        <span class="st-period-label sm">{{ customRange.endYear }}年{{ customRange.endMonth }}月</span>
+        <button class="st-period-nav" @click="customRange.endMonth++; if(customRange.endMonth>12){customRange.endMonth=1;customRange.endYear++}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 6 15 12 9 18" /></svg>
         </button>
       </div>
     </template>
     <template v-else>
-      <div class="period-selector">
-        <button class="period-nav" @click="prevPeriod">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6" /></svg>
+      <div class="st-period">
+        <button class="st-period-nav" @click="prevPeriod">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6" /></svg>
         </button>
-        <span class="period-label">{{ periodLabel }}</span>
-        <button class="period-nav" @click="nextPeriod">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2.5" stroke-linecap="round"><polyline points="9 6 15 12 9 18" /></svg>
+        <span class="st-period-label">{{ periodLabel }}</span>
+        <button class="st-period-nav" @click="nextPeriod">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 6 15 12 9 18" /></svg>
         </button>
       </div>
     </template>
 
-    <!-- Income / Expense Overview -->
-    <div class="overview-row">
-      <div class="overview-card income">
-        <div class="overview-label">收入</div>
-        <div class="overview-amount">{{ formatCurrency(totalIncome) }}</div>
-        <div class="overview-compare">
-          <span class="compare-item">
-            <span class="compare-label">{{ prevCompareLabel }}</span>
-            <span class="compare-val" :class="trendClass(totalIncome, prevIncome)">{{ compareLabel(totalIncome, prevIncome) }}</span>
-          </span>
-          <span v-if="yoyRange" class="compare-item">
-            <span class="compare-label">{{ yoyCompareLabel }}</span>
-            <span class="compare-val" :class="trendClass(totalIncome, yoyIncome)">{{ compareLabel(totalIncome, yoyIncome) }}</span>
-          </span>
-        </div>
+    <!-- 收支 hero：本月支出大数字 + 收入副行 -->
+    <div class="st-hero">
+      <span class="st-hero-label">本期支出</span>
+      <div class="st-hero-amount num c-exp">{{ formatCurrency(totalExpense) }}</div>
+      <div class="st-hero-comps">
+        <span class="st-hero-comp">
+          <span class="st-hero-comp-label">{{ prevCompareLabel }}</span>
+          <span class="st-hero-comp-val" :class="trendClass(totalExpense, prevExpense)">{{ compareLabel(totalExpense, prevExpense) }}</span>
+        </span>
+        <span v-if="yoyRange" class="st-hero-comp">
+          <span class="st-hero-comp-label">{{ yoyCompareLabel }}</span>
+          <span class="st-hero-comp-val" :class="trendClass(totalExpense, yoyExpense)">{{ compareLabel(totalExpense, yoyExpense) }}</span>
+        </span>
       </div>
-      <div class="overview-card expense">
-        <div class="overview-label">支出</div>
-        <div class="overview-amount">{{ formatCurrency(totalExpense) }}</div>
-        <div class="overview-compare">
-          <span class="compare-item">
-            <span class="compare-label">{{ prevCompareLabel }}</span>
-            <span class="compare-val" :class="trendClass(totalExpense, prevExpense)">{{ compareLabel(totalExpense, prevExpense) }}</span>
-          </span>
-          <span v-if="yoyRange" class="compare-item">
-            <span class="compare-label">{{ yoyCompareLabel }}</span>
-            <span class="compare-val" :class="trendClass(totalExpense, yoyExpense)">{{ compareLabel(totalExpense, yoyExpense) }}</span>
-          </span>
-        </div>
+      <div class="st-hero-sub">
+        <span>期间收入 <b class="num c-inc">{{ formatCurrency(totalIncome) }}</b></span>
       </div>
     </div>
 
-    <!-- Trend Line Chart -->
-    <div class="chart-card">
-      <div class="chart-title-row">
-        <span class="chart-title">收支趋势</span>
-        <div class="trend-toggle">
-          <button
-            class="toggle-btn"
-            :class="{ active: trendType === 'income' }"
-            @click="trendType = 'income'"
-          >收入</button>
-          <button
-            class="toggle-btn"
-            :class="{ active: trendType === 'expense' }"
-            @click="trendType = 'expense'"
-          >支出</button>
+    <!-- 收支趋势 -->
+    <section class="st-block">
+      <div class="st-block-row">
+        <span class="st-label">收支趋势</span>
+        <div class="st-seg">
+          <button class="st-seg-btn" :class="{ on: trendType === 'income' }" @click="trendType = 'income'">收入</button>
+          <button class="st-seg-btn" :class="{ on: trendType === 'expense' }" @click="trendType = 'expense'">支出</button>
         </div>
       </div>
       <v-chart class="echart-line" :option="lineOption" autoresize />
-    </div>
+    </section>
 
-    <!-- Expense Composition (Pie) -->
-    <div class="chart-card">
-      <div class="chart-title">支出构成</div>
+    <!-- 支出构成（饼图） -->
+    <section class="st-block">
+      <span class="st-label">支出构成</span>
       <v-chart class="echart-pie" :option="pieOption" autoresize />
-    </div>
+    </section>
 
-    <!-- Expense Ranking + Tags Grid -->
-      <div class="chart-card">
-        <div class="chart-title-row">
-          <span class="chart-title">支出排行</span>
-          <div class="ranking-toggle">
-            <button
-              class="toggle-btn"
-              :class="{ active: rankingLevel === 'parent' }"
-              @click="rankingLevel = 'parent'"
-            >一级</button>
-            <button
-              class="toggle-btn"
-              :class="{ active: rankingLevel === 'child' }"
-              @click="rankingLevel = 'child'"
-            >二级</button>
-          </div>
-        </div>
-        <div v-if="expenseRanking.length === 0" class="empty-text">暂无数据</div>
-        <div
-          v-for="(item, index) in expenseRanking"
-          :key="item.categoryId + '-' + rankingLevel"
-          class="ranking-row clickable"
-          @click="navigateToCategory(item)"
-        >
-          <span class="ranking-badge" :style="{ background: rankColor(index) }">{{ rankLabel(index) }}</span>
-          <span class="ranking-icon"><TwemojiIcon :emoji="item.icon" /></span>
-          <span class="ranking-name">{{ item.name }}</span>
-          <span class="ranking-amount">{{ formatCurrency(item.amount) }}</span>
-          <span class="ranking-pct">{{ item.percent }}%</span>
+    <!-- 支出排行 -->
+    <section class="st-block">
+      <div class="st-block-row">
+        <span class="st-label">支出排行</span>
+        <div class="st-seg">
+          <button class="st-seg-btn" :class="{ on: rankingLevel === 'parent' }" @click="rankingLevel = 'parent'">一级</button>
+          <button class="st-seg-btn" :class="{ on: rankingLevel === 'child' }" @click="rankingLevel = 'child'">二级</button>
         </div>
       </div>
-
-
-
-    <!-- High Frequency Expenses -->
-    <div class="chart-card freq-card">
-      <div class="chart-title">高频支出</div>
-      <div v-if="highFrequencyExpenses.length === 0" class="empty-text">暂无数据</div>
-      <div
-        v-for="(item, index) in highFrequencyExpenses"
-        :key="item.categoryId"
-        class="freq-row clickable"
-        @click="navigateToCategory(item)"
-      >
-        <span class="freq-rank">{{ index + 1 }}</span>
-        <span class="freq-icon"><TwemojiIcon :emoji="item.icon" /></span>
-        <span class="freq-name">{{ item.name }}</span>
-        <div class="freq-stats">
-          <span class="freq-count">{{ item.count }}次</span>
-          <span class="freq-amount">{{ formatCurrency(item.amount) }}</span>
-          <span class="freq-avg">均{{ formatCurrency(item.avgAmount) }}</span>
+      <div v-if="expenseRanking.length === 0" class="st-empty">暂无数据</div>
+      <div v-else class="st-rows">
+        <div v-for="(item, index) in expenseRanking" :key="item.categoryId + '-' + rankingLevel" class="st-rank-row clickable" @click="navigateToCategory(item)">
+          <span class="st-rank-badge" :style="{ background: rankColor(index) }">{{ rankLabel(index) }}</span>
+          <span class="st-rank-icon"><TwemojiIcon :emoji="item.icon" /></span>
+          <span class="st-rank-name">{{ item.name }}</span>
+          <span class="st-rank-pct">{{ item.percent }}%</span>
+          <span class="num st-rank-amt">{{ formatCurrency(item.amount) }}</span>
         </div>
       </div>
-    </div>
+    </section>
 
-      <!-- Large Expenses -->
-    <div class="chart-card large-expense-card">
-      <div class="chart-title-row">
-        <span class="chart-title">大额支出</span>
-        <button
-          class="hide-toggle"
-          :class="{ active: hideCarHousing }"
-          @click="hideCarHousing = !hideCarHousing"
-        >屏蔽车贷房贷</button>
-      </div>
-      <div v-if="largeExpenses.length === 0" class="empty-text">暂无数据</div>
-      <div
-        v-for="(item, index) in largeExpenses"
-        :key="item.id"
-        class="large-row"
-      >
-        <span class="large-rank">{{ index + 1 }}</span>
-        <span class="large-icon"><TwemojiIcon :emoji="item.icon" /></span>
-        <div class="large-info">
-          <span class="large-title">{{ item.title }}</span>
-          <span class="large-date">{{ item.shortDate }}</span>
-        </div>
-        <span class="large-amount">{{ formatCurrency(item.amount) }}</span>
-      </div>
-    </div>
-
-      <div class="chart-card">
-        <div class="chart-title">标签聚合</div>
-        <div v-if="tagAggregation.length === 0" class="empty-text">暂无数据</div>
-        <div class="tags-wrap" v-if="tagAggregation.length > 0">
-          <div class="tag-chip tag-chip--total" @click="navigateToTag('')">
-            <span class="tag-text">汇总</span>
-            <span class="tag-amount">{{ formatCurrency(tagTotalAmount) }}</span>
-          </div>
-          <div
-            v-for="tag in tagAggregation"
-            :key="tag.name"
-            class="tag-chip"
-            @click="navigateToTag(tag.name)"
-          >
-            <span class="tag-text">#{{ tag.name }}</span>
-            <span class="tag-amount">{{ formatCurrency(tag.amount) }}</span>
+    <!-- 高频支出 -->
+    <section class="st-block">
+      <span class="st-label">高频支出</span>
+      <div v-if="highFrequencyExpenses.length === 0" class="st-empty">暂无数据</div>
+      <div v-else class="st-rows">
+        <div v-for="(item, index) in highFrequencyExpenses" :key="item.categoryId" class="st-rank-row clickable" @click="navigateToCategory(item)">
+          <span class="st-rank-num">{{ index + 1 }}</span>
+          <span class="st-rank-icon"><TwemojiIcon :emoji="item.icon" /></span>
+          <span class="st-rank-name">{{ item.name }}</span>
+          <div class="st-freq">
+            <span class="st-freq-count">{{ item.count }}次</span>
+            <span class="num st-freq-amt">{{ formatCurrency(item.amount) }}</span>
+            <span class="st-freq-avg">均{{ formatCurrency(item.avgAmount) }}</span>
           </div>
         </div>
       </div>
-    </div>
+    </section>
+
+    <!-- 大额支出 -->
+    <section class="st-block">
+      <div class="st-block-row">
+        <span class="st-label">大额支出</span>
+        <button class="st-hide" :class="{ on: hideCarHousing }" @click="hideCarHousing = !hideCarHousing">屏蔽车贷房贷</button>
+      </div>
+      <div v-if="largeExpenses.length === 0" class="st-empty">暂无数据</div>
+      <div v-else class="st-rows">
+        <div v-for="(item, index) in largeExpenses" :key="item.id" class="st-rank-row">
+          <span class="st-rank-num">{{ index + 1 }}</span>
+          <span class="st-rank-icon"><TwemojiIcon :emoji="item.icon" /></span>
+          <div class="st-large-info">
+            <span class="st-large-title">{{ item.title }}</span>
+            <span class="st-large-date">{{ item.shortDate }}</span>
+          </div>
+          <span class="num st-rank-amt">{{ formatCurrency(item.amount) }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 标签聚合 -->
+    <section class="st-block">
+      <span class="st-label">标签聚合</span>
+      <div v-if="tagAggregation.length === 0" class="st-empty">暂无数据</div>
+      <div v-else class="st-tags">
+        <div class="st-tag st-tag--total" @click="navigateToTag('')">
+          <span class="st-tag-text">汇总</span>
+          <span class="num st-tag-amt">{{ formatCurrency(tagTotalAmount) }}</span>
+        </div>
+        <div v-for="tag in tagAggregation" :key="tag.name" class="st-tag" @click="navigateToTag(tag.name)">
+          <span class="st-tag-text">#{{ tag.name }}</span>
+          <span class="num st-tag-amt">{{ formatCurrency(tag.amount) }}</span>
+        </div>
+      </div>
+    </section>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -536,8 +473,8 @@ const lineOption = computed(() => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const _theme = uiStore.theme // ensure recompute on theme change
   const txType = trendType.value
-  const lineColor = txType === 'expense' ? '#34c759' : '#ff3b30'
-  const areaColor = txType === 'expense' ? 'rgba(52,199,89,0.12)' : 'rgba(255,59,48,0.12)'
+  const lineColor = txType === 'expense' ? '#d5503c' : '#17a065'
+  const areaColor = txType === 'expense' ? 'rgba(213,80,60,0.12)' : 'rgba(23,160,101,0.12)'
 
   let categories: string[] = []
   let values: number[] = []
@@ -651,7 +588,7 @@ const lineOption = computed(() => {
 })
 
 // 统一图表色板：前 3 项为排行榜前三渐变，其余为饼图补充色
-const chartColors = ['#ff3b30', '#ff9500', '#ffcc00', '#34c759', '#007aff', '#8e8e93', '#af52de', '#ff2d55']
+const chartColors = ['#d5503c', '#e0992e', '#e2b93b', '#17a065', '#2e9e9b', '#9a5e9e', '#5d6570', '#b34a3a']
 
 const pieOption = computed(() => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -831,7 +768,7 @@ const highFrequencyExpenses = computed(() => {
 })
 
 function rankColor(index: number): string {
-  return chartColors[index] || '#8e8e93'
+  return chartColors[index] || '#5d6570'
 }
 
 function rankLabel(index: number): string {
@@ -841,591 +778,93 @@ function rankLabel(index: number): string {
 
 <style scoped>
 .stats-page {
-  padding: 16px;
-  background: transparent;
-  /* min-height 用视口高度单位（% 相对 auto 高度父级会失效）：
-     内容不足一屏时也撑满整屏，避免底部露出背景空白 */
   min-height: 100%;
   min-height: 100svh;
-  padding-bottom: calc(80px + env(safe-area-inset-bottom));
-}
-
-.page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.page-title {
-  font-size: var(--fs-page-title);
-  font-weight: 700;
-  color: var(--color-text);
-}
-
-.mode-toggle {
-  display: flex;
-  background: var(--color-card);
-  border-radius: 8px;
-  padding: 3px;
-  gap: 2px;
-}
-
-.mode-btn {
-  padding: 4px 10px;
-  border: none;
-  background: transparent;
-  font-size: var(--fs-small);
-  font-weight: 500;
-  color: var(--color-secondary-text);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.15s;
-  font-family: inherit;
-}
-
-.mode-btn.active {
-  background: var(--color-primary);
-  color: #fff;
-  font-weight: 600;
-}
-
-/* Period selector */
-.period-selector {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.period-selector.custom {
-  gap: 2px;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  justify-content: center;
-  white-space: nowrap;
-}
-
-.period-selector.custom .period-nav {
-  width: 24px;
-  height: 32px;
-  flex-shrink: 0;
-}
-
-.period-selector.custom .period-label:first-child {
-  min-width: auto;
-  margin-right: 2px;
-}
-
-.period-selector.custom .period-label.small {
-  font-size: var(--fs-title);
-  min-width: auto;
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-
-.period-selector.custom .period-label.small:last-of-type {
-  margin-right: 4px;
-}
-
-.period-nav {
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border-radius: 50%;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.period-label {
-  font-size: var(--fs-title);
-  font-weight: 600;
-  color: var(--color-text);
-  min-width: 100px;
-  text-align: center;
-}
-
-/* Overview */
-.overview-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.overview-card {
-  border-radius: 12px;
-  padding: 10px 12px;
-}
-
-.overview-card.income { background: var(--color-destructive); }
-.overview-card.expense { background: var(--color-success); }
-
-.overview-label {
-  font-size: 11px;
-  color: rgba(255,255,255,0.7);
-  margin-bottom: 2px;
-}
-
-.overview-amount {
-  font-size: var(--fs-hero);
-  font-weight: 700;
-  color: #fff;
-  font-variant-numeric: tabular-nums;
-}
-
-.overview-compare {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 10px;
-  margin-top: 5px;
-  align-items: center;
-}
-
-.compare-item {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 3px;
-}
-
-.compare-label {
-  font-size: 10px;
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.compare-val {
-  font-size: 11px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-
-.compare-val.up { color: #ffcc00; }
-.compare-val.down { color: #a4f2c8; }
-.compare-val.flat { color: rgba(255, 255, 255, 0.55); }
-
-/* Chart Cards */
-.chart-card {
-  background: var(--glass-highlight), var(--color-card);
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  border: 1px solid var(--glass-border);
-  border-radius: 14px;
-  padding: 16px;
-  margin-bottom: 10px;
-}
-
-.chart-title {
-  font-size: var(--fs-ui);
-  font-weight: 600;
-  color: var(--color-text);
-  margin-bottom: 10px;
-}
-
-.chart-title-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-
-.chart-title-row .chart-title {
-  margin-bottom: 0;
-}
-
-.ranking-toggle {
-  display: flex;
-  background: var(--color-bg);
-  border-radius: 6px;
-  padding: 2px;
-  gap: 2px;
-}
-
-.toggle-btn {
-  padding: 2px 10px;
-  border: none;
-  background: transparent;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--color-secondary-text);
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.15s;
-  font-family: inherit;
-}
-
-.toggle-btn.active {
-  background: var(--color-surface);
-  color: var(--color-primary);
-  font-weight: 600;
-}
-
-.hide-toggle {
-  padding: 3px 10px;
-  border: 1px solid var(--color-placeholder);
-  background: transparent;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--color-secondary-text);
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.15s;
-  font-family: inherit;
-  white-space: nowrap;
-}
-
-.hide-toggle.active {
-  background: var(--color-destructive);
-  border-color: var(--color-destructive);
-  color: #fff;
-  font-weight: 600;
-}
-
-.empty-text {
-  text-align: center;
-  padding: 24px 0;
-  font-size: var(--fs-body);
-  color: var(--color-secondary-text);
-}
-
-/* ECharts containers */
-.echart-line {
-  width: 100%;
-  height: 160px;
-}
-
-.echart-pie {
-  width: 100%;
-  height: 200px;
-}
-
-/* Trend toggle */
-.trend-toggle {
-  display: flex;
-  background: var(--color-bg);
-  border-radius: 6px;
-  padding: 2px;
-  gap: 2px;
-}
-
-.trend-toggle .toggle-btn {
-  padding: 3px 12px;
-  border: none;
-  background: transparent;
-  font-size: var(--fs-small);
-  font-weight: 500;
-  color: var(--color-secondary-text);
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.15s;
-  font-family: inherit;
-}
-
-.trend-toggle .toggle-btn.active {
-  background: var(--color-surface);
-  color: var(--color-primary);
-  font-weight: 600;
-}
-
-/* Bottom Grid */
-.bottom-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-}
-
-@media (min-width: 768px) {
-  .bottom-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-/* Ranking */
-.ranking-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--color-separator);
-  transition: opacity 0.15s;
-}
-
-.ranking-row.clickable {
-  cursor: pointer;
-}
-
-.ranking-row.clickable:active {
-  opacity: 0.5;
-}
-
-.ranking-row:last-child { border-bottom: none; }
-
-.ranking-badge {
-  width: 18px;
-  height: 18px;
-  border-radius: 6px;
-  color: #fff;
-  font-size: var(--fs-micro);
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.ranking-icon {
-  font-size: var(--fs-body);
-  width: 20px;
-  text-align: center;
-  flex-shrink: 0;
-}
-
-.ranking-name {
-  flex: 1;
-  font-size: var(--fs-ui);
-  color: var(--color-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.ranking-amount {
-  font-size: var(--fs-ui);
-  font-weight: 600;
-  color: var(--color-success);
-  white-space: nowrap;
-}
-
-.ranking-pct {
-  font-size: 11px;
-  color: var(--color-secondary-text);
-  width: 28px;
-  text-align: right;
-}
-
-/* Large Expenses */
-.large-expense-card {
-  margin-top: 2px;
-}
-
-.large-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--color-separator);
-}
-
-.large-row:last-child {
-  border-bottom: none;
-}
-
-.large-rank {
-  width: 20px;
-  height: 20px;
-  border-radius: 6px;
-  background: var(--color-bg);
-  color: var(--color-secondary-text);
-  font-size: 11px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.large-row:nth-child(1) .large-rank {
-  background: var(--color-destructive);
-  color: #fff;
-}
-
-.large-row:nth-child(2) .large-rank {
-  background: var(--color-warning);
-  color: #fff;
-}
-
-.large-row:nth-child(3) .large-rank {
-  background: #ffcc00;
-  color: #fff;
-}
-
-.large-icon {
-  font-size: var(--fs-amount);
-  width: 24px;
-  text-align: center;
-  flex-shrink: 0;
-}
-
-.large-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.large-title {
-  font-size: var(--fs-ui);
-  font-weight: 500;
-  color: var(--color-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.large-date {
-  font-size: 11px;
-  color: var(--color-secondary-text);
-}
-
-.large-amount {
-  font-size: var(--fs-body);
-  font-weight: 700;
-  color: var(--color-destructive);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-/* High Frequency Expenses */
-.freq-card {
-  margin-top: 2px;
-}
-
-.freq-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 0;
-  border-bottom: 1px solid var(--color-separator);
-}
-
-.freq-row:last-child {
-  border-bottom: none;
-}
-
-.freq-row.clickable {
-  cursor: pointer;
-}
-
-.freq-row.clickable:active {
-  opacity: 0.5;
-}
-
-.freq-rank {
-  width: 18px;
-  height: 18px;
-  border-radius: 6px;
-  background: var(--color-bg);
-  color: var(--color-secondary-text);
-  font-size: var(--fs-micro);
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.freq-row:nth-child(1) .freq-rank {
-  background: var(--color-destructive);
-  color: #fff;
-}
-
-.freq-row:nth-child(2) .freq-rank {
-  background: var(--color-warning);
-  color: #fff;
-}
-
-.freq-row:nth-child(3) .freq-rank {
-  background: #ffcc00;
-  color: #fff;
-}
-
-.freq-icon {
-  font-size: var(--fs-body);
-  width: 20px;
-  text-align: center;
-  flex-shrink: 0;
-}
-
-.freq-name {
-  flex: 1;
-  font-size: var(--fs-ui);
-  font-weight: 500;
-  color: var(--color-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.freq-stats {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-.freq-count {
-  font-size: var(--fs-small);
-  font-weight: 600;
-  color: var(--color-primary);
-  white-space: nowrap;
-}
-
-.freq-amount {
-  font-size: var(--fs-ui);
-  font-weight: 600;
-  color: var(--color-success);
-  white-space: nowrap;
-}
-
-.freq-avg {
-  font-size: 11px;
-  color: var(--color-secondary-text);
-  white-space: nowrap;
-}
-
-/* Tags */
-.tags-wrap {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.tag-chip {
-  background: var(--color-bg);
-  border-radius: 10px;
-  padding: 6px 14px;
-  font-size: var(--fs-ui);
-  color: var(--color-text);
-  cursor: pointer;
-  transition: opacity 0.15s;
-  user-select: none;
-}
-
-.tag-chip:active {
-  opacity: 0.6;
-}
-
-.tag-chip--total {
-  background: var(--color-primary);
-  color: #fff;
-}
-
-.tag-chip--total .tag-amount {
-  color: rgba(255,255,255,0.85);
-}
-
-.tag-text {
-  font-weight: 500;
-}
-
-.tag-amount {
-  color: var(--color-secondary-text);
-  margin-left: 4px;
-}
+  padding: 0 24px 24px;
+  background: var(--surface);
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
+}
+
+/* ── 沉浸式头部 ── */
+.st-head { display: flex; align-items: center; justify-content: space-between; padding: 20px 2px 8px; }
+.st-title { font-size: 28px; font-weight: 800; letter-spacing: -0.03em; color: var(--ink); }
+.st-mode { display: flex; background: var(--act-bg); border-radius: 10px; padding: 3px; gap: 2px; }
+.st-mode-btn { padding: 5px 12px; border: none; background: transparent; font-size: 12px; font-weight: 500; color: var(--ink3); border-radius: 8px; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.st-mode-btn.on { background: var(--ink); color: var(--accent-fg); font-weight: 600; }
+
+/* ── 期间选择 ── */
+.st-period { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 10px 2px 0; }
+.st-period--custom { gap: 4px; flex-wrap: nowrap; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+.st-period--custom .st-period-nav { width: 26px; height: 30px; flex-shrink: 0; }
+.st-period--custom .st-period-label { gap: 0; margin: 0 2px; min-width: auto; }
+.st-period--custom .st-period-label.sm { font-size: 14px; flex-shrink: 0; }
+.st-period-nav { width: 32px; height: 32px; border: 1px solid var(--line); background: none; color: var(--ink2); display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 999px; -webkit-tap-highlight-color: transparent; transition: background 0.15s; }
+.st-period-nav:active { background: var(--act-bg); }
+.st-period-label { font-size: 15px; font-weight: 600; color: var(--ink); min-width: 104px; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 2px; }
+
+/* ── 收支 hero ── */
+.st-hero { padding: 20px 2px 34px; border-bottom: 1px solid var(--line-soft); margin: 8px 0 30px; }
+.st-hero-label { font-size: 13px; color: var(--ink2); font-weight: 600; letter-spacing: 0.3px; }
+.st-hero-amount { font-size: 58px; font-weight: 800; letter-spacing: -0.04em; margin: 8px 0 10px; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.c-inc { color: var(--inc); }
+.c-exp { color: var(--exp); }
+.st-hero-comps { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-bottom: 14px; align-items: center; }
+.st-hero-comp { display: inline-flex; align-items: baseline; gap: 5px; }
+.st-hero-comp-label { font-size: 11px; color: var(--ink3); }
+.st-hero-comp-val { font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.st-hero-comp-val.up { color: var(--inc); }
+.st-hero-comp-val.down { color: var(--exp); }
+.st-hero-comp-val.flat { color: var(--ink3); }
+.st-hero-sub { font-size: 12px; color: var(--ink3); }
+.st-hero-sub b { font-weight: 700; }
+
+/* ── 连续区块 ── */
+.st-block { margin-bottom: 36px; }
+.st-block-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.st-label { font-size: 13px; font-weight: 600; color: var(--ink2); margin-bottom: 16px; display: block; }
+.st-block-row .st-label { margin-bottom: 0; }
+.st-seg { display: flex; background: var(--act-bg); border-radius: 8px; padding: 2px; gap: 2px; }
+.st-seg-btn { padding: 3px 12px; border: none; background: transparent; font-size: 12px; font-weight: 500; color: var(--ink3); border-radius: 6px; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.st-seg-btn.on { background: var(--surface); color: var(--ink); font-weight: 600; }
+.st-hide { padding: 4px 12px; border: 1px solid var(--line); background: none; font-size: 11px; font-weight: 500; color: var(--ink2); border-radius: 999px; cursor: pointer; transition: all 0.15s; font-family: inherit; white-space: nowrap; }
+.st-hide.on { background: var(--exp); border-color: var(--exp); color: var(--accent-fg); font-weight: 600; }
+.st-empty { text-align: center; padding: 30px 0; font-size: 14px; color: var(--ink3); }
+
+/* ECharts 容器 */
+.echart-line { width: 100%; height: 160px; }
+.echart-pie { width: 100%; height: 200px; }
+
+/* ── 连续排行行 ── */
+.st-rows { }
+.st-rank-row { display: flex; align-items: center; gap: 12px; padding: 14px 0; }
+.st-rank-row + .st-rank-row { border-top: 1px solid var(--line-soft); }
+.st-rank-row.clickable { cursor: pointer; }
+.st-rank-row.clickable:active { background: var(--act-bg); }
+.st-rank-badge { width: 18px; height: 18px; border-radius: 6px; color: var(--accent-fg); font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.st-rank-num { width: 18px; height: 18px; font-size: 12px; font-weight: 700; color: var(--ink2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.st-rank-icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
+.st-rank-name { flex: 1; font-size: 14px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.st-rank-pct { font-size: 11px; color: var(--ink3); width: 36px; text-align: right; flex-shrink: 0; }
+.st-rank-amt { font-size: 14px; font-weight: 700; color: var(--exp); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* 高频支出 */
+.st-freq { display: flex; align-items: baseline; gap: 8px; flex-shrink: 0; }
+.st-freq-count { font-size: 12px; font-weight: 600; color: var(--ink); white-space: nowrap; }
+.st-freq-amt { font-size: 13px; font-weight: 700; color: var(--exp); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.st-freq-avg { font-size: 11px; color: var(--ink3); white-space: nowrap; }
+
+/* 大额支出 */
+.st-large-info { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.st-large-title { font-size: 14px; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.st-large-date { font-size: 11px; color: var(--ink3); }
+
+/* 标签聚合 */
+.st-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.st-tag { background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; font-size: 13px; color: var(--ink2); cursor: pointer; transition: all 0.15s; user-select: none; -webkit-tap-highlight-color: transparent; }
+.st-tag:active { opacity: 0.6; }
+.st-tag--total { background: var(--ink); border-color: var(--ink); color: var(--accent-fg); }
+.st-tag--total .st-tag-amt { color: var(--accent-fg); opacity: 0.85; }
+.st-tag-text { font-weight: 500; }
+.st-tag-amt { color: var(--ink3); margin-left: 4px; font-variant-numeric: tabular-nums; }
+.st-tag--total .st-tag-amt { color: var(--accent-fg); opacity: 0.85; }
 </style>

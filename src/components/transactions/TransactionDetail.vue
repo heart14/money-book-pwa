@@ -234,9 +234,9 @@ async function onExtractConfirm(name: string) {
 .sheet-title { font-size: var(--fs-heading); font-weight: 600; color: var(--color-text); }
 
 .sheet-type-badge { font-size: var(--fs-small); padding: 2px 10px; border-radius: 10px; margin-top: 6px; color: #fff; }
-.badge-expense { background: var(--color-success); }
-.badge-income { background: var(--color-destructive); }
-.badge-transfer { background: var(--color-primary); }
+.badge-expense { background: var(--color-destructive); }
+.badge-income { background: var(--color-success); }
+.badge-transfer { background: var(--color-primary); color: var(--color-on-primary); }
 
 .sheet-amount {
   text-align: center;
@@ -245,8 +245,8 @@ async function onExtractConfirm(name: string) {
   font-variant-numeric: tabular-nums;
   margin-bottom: 24px;
 }
-.sheet-amount.amount-expense { color: var(--color-success); }
-.sheet-amount.amount-income { color: var(--color-destructive); }
+.sheet-amount.amount-expense { color: var(--color-destructive); }
+.sheet-amount.amount-income { color: var(--color-success); }
 .sheet-amount.amount-transfer { color: var(--color-primary); }
 
 .sheet-details {

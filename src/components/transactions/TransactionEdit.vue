@@ -288,7 +288,7 @@ function handleSave() {
 .btn:active { opacity: 0.7; }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .btn-secondary { background: var(--color-bg); color: var(--color-text); }
-.btn-primary { background: var(--color-primary); color: #fff; }
+.btn-primary { background: var(--color-primary); color: var(--color-on-primary); }
 
 .edit-picker-trigger {
   display: flex;

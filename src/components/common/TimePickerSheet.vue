@@ -169,5 +169,5 @@ function onCancel() {
 }
 .btn:active { opacity: 0.7; }
 .btn-secondary { background: var(--color-bg); color: var(--color-text); }
-.btn-primary { background: var(--color-primary); color: #fff; }
+.btn-primary { background: var(--color-primary); color: var(--color-on-primary); }
 </style>

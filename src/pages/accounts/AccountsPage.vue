@@ -1,49 +1,47 @@
 <template>
   <div class="accounts-page">
-    <!-- Page Header -->
-    <div class="page-header">
-      <span class="page-title">资产</span>
-      <div class="header-actions">
-        <button class="header-icon-btn" @click="showAddModal = true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2.5" stroke-linecap="round">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-        </button>
+    <!-- 沉浸式头部 -->
+    <header class="ac-head">
+      <span class="ac-title">资产</span>
+      <button class="ac-action" @click="showAddModal = true" aria-label="添加资产">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+      </button>
+    </header>
+
+    <!-- 净资产开篇 -->
+    <div class="ac-net">
+      <span class="ac-net-label">净资产</span>
+      <div class="ac-net-value num">{{ formatCurrency(accountStore.totalBalance) }}</div>
+    </div>
+
+    <!-- 账户列表：连续分隔线 -->
+    <section class="ac-list">
+      <div v-if="accountStore.accounts.length === 0" class="ac-empty">
+        暂无资产，点击右上角 + 添加
       </div>
-    </div>
-
-    <!-- Total Balance Card -->
-    <div class="balance-card">
-      <div class="balance-label">总资产</div>
-      <div class="balance-amount">{{ formatCurrency(accountStore.totalBalance) }}</div>
-    </div>
-
-    <!-- Accounts List -->
-    <div class="accounts-list">
-      <div class="list-header">资产明细</div>
       <div
         v-for="acc in accountStore.accounts"
         :key="acc.id"
-        class="account-row"
+        class="ac-row"
         @click="openEdit(acc)"
       >
-        <span class="account-icon"><TwemojiIcon :emoji="acc.icon" /></span>
-        <div class="account-info">
-          <span class="account-name">{{ acc.name }}</span>
-          <span class="account-balance">{{ formatCurrency(acc.balance) }}</span>
+        <span class="ac-icon"><TwemojiIcon :emoji="acc.icon" /></span>
+        <div class="ac-mid">
+          <span class="ac-name">{{ acc.name }}</span>
+          <span class="ac-sub">余额</span>
         </div>
-        <button class="delete-btn" @click.stop="handleDelete(acc)">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#ff3b30" stroke-width="2" stroke-linecap="round">
+        <span class="num ac-amt">{{ formatCurrency(acc.balance) }}</span>
+        <button class="ac-del" @click.stop="handleDelete(acc)" aria-label="删除">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <polyline points="3 6 5 6 21 6"/>
             <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
           </svg>
         </button>
       </div>
-      <div v-if="accountStore.accounts.length === 0" class="empty-row">
-        暂无资产，点击右上角 + 添加
-      </div>
-    </div>
+    </section>
 
     <!-- Add Account Modal -->
     <CommonBottomSheet
@@ -191,207 +189,45 @@ async function handleConfirmDelete() {
 
 <style scoped>
 .accounts-page {
-  padding: 16px;
-  background: transparent;
-  /* min-height 用视口高度单位（% 相对 auto 高度父级会失效）：
-     内容不足一屏时也撑满整屏，避免底部露出背景空白 */
   min-height: 100%;
   min-height: 100svh;
-  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  padding: 0 24px 24px;
+  background: var(--surface);
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
 }
 
-.page-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 16px;
-}
+/* ── 沉浸式头部 ── */
+.ac-head { display: flex; align-items: center; justify-content: space-between; padding: 20px 2px 8px; }
+.ac-title { font-size: 28px; font-weight: 800; letter-spacing: -0.03em; color: var(--ink); }
+.ac-action { width: 38px; height: 38px; border: none; background: none; color: var(--ink); display: flex; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background 0.15s; }
+.ac-action:active { background: var(--act-bg); }
 
-.page-title {
-  font-size: var(--fs-page-title);
-  font-weight: 700;
-  color: var(--color-text);
-}
+/* ── 净资产开篇 ── */
+.ac-net { padding: 18px 2px 34px; border-bottom: 1px solid var(--line-soft); margin-bottom: 10px; }
+.ac-net-label { font-size: 13px; color: var(--ink2); font-weight: 600; letter-spacing: 0.3px; }
+.ac-net-value { font-size: 52px; font-weight: 800; letter-spacing: -0.04em; margin-top: 10px; color: var(--ink); font-variant-numeric: tabular-nums; }
 
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
+/* ── 连续账户列表 ── */
+.ac-empty { padding: 40px 0; text-align: center; font-size: 14px; color: var(--ink3); }
+.ac-row { display: flex; align-items: center; gap: 13px; padding: 16px 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.ac-row + .ac-row { border-top: 1px solid var(--line-soft); }
+.ac-row:active { background: var(--act-bg); }
+.ac-icon { font-size: 20px; width: 32px; flex-shrink: 0; display: grid; place-items: center; }
+.ac-mid { flex: 1; min-width: 0; }
+.ac-name { display: block; font-size: 15px; font-weight: 600; color: var(--ink); }
+.ac-sub { display: block; font-size: 11px; color: var(--ink3); margin-top: 2px; }
+.ac-amt { font-size: 15px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; flex-shrink: 0; }
+.ac-del { width: 32px; height: 32px; border: none; background: none; color: var(--exp); display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 8px; flex-shrink: 0; -webkit-tap-highlight-color: transparent; }
+.ac-del:active { background: rgba(213, 80, 60, 0.1); }
 
-.header-icon-btn {
-  width: 36px;
-  height: 36px;
-  border: none;
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border-radius: 8px;
-  -webkit-tap-highlight-color: transparent;
-  transition: background 0.15s;
-}
+/* ── Sheet 内表单 ── */
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: var(--fs-body); font-weight: 500; color: var(--ink2); margin-bottom: 6px; }
+.form-input { width: 100%; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); padding: 0 12px; font-size: var(--fs-title); color: var(--ink); outline: none; box-sizing: border-box; }
+.form-input:focus { border-color: var(--ink); }
 
-.header-icon-btn:active {
-  background: rgba(0, 122, 255, 0.1);
-}
-
-/* ── Balance Card ── */
-.balance-card {
-  background: linear-gradient(135deg, var(--color-text), #2c2c2e);
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 20px;
-}
-
-.balance-label {
-  font-size: var(--fs-ui);
-  color: rgba(255, 255, 255, 0.6);
-  margin-bottom: 4px;
-}
-
-.balance-amount {
-  font-size: var(--fs-amount-lg);
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: -1px;
-  font-variant-numeric: tabular-nums;
-}
-
-/* ── Accounts List ── */
-.accounts-list {
-  background: var(--glass-highlight), var(--color-card);
-  backdrop-filter: blur(var(--glass-blur-weak)) saturate(var(--glass-saturate));
-  -webkit-backdrop-filter: blur(var(--glass-blur-weak)) saturate(var(--glass-saturate));
-  border: 1px solid var(--glass-border);
-  border-radius: 14px;
-  overflow: hidden;
-}
-
-.list-header {
-  font-size: var(--fs-ui);
-  font-weight: 600;
-  color: var(--color-secondary-text);
-  padding: 14px 16px 8px;
-}
-
-.account-row {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  border-top: 1px solid var(--color-separator);
-}
-
-.account-row:active {
-  opacity: 0.7;
-}
-
-.account-icon {
-  font-size: 22px;
-  width: 32px;
-  flex-shrink: 0;
-}
-
-.account-info {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.account-name {
-  font-size: var(--fs-title);
-  font-weight: 500;
-  color: var(--color-text);
-}
-
-.account-balance {
-  font-size: var(--fs-title);
-  font-weight: 600;
-  color: var(--color-text);
-  font-variant-numeric: tabular-nums;
-  margin-left: auto;
-  margin-right: 12px;
-}
-
-.delete-btn {
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border-radius: 8px;
-  flex-shrink: 0;
-}
-
-.delete-btn:active {
-  background: rgba(255, 59, 48, 0.1);
-}
-
-.empty-row {
-  padding: 24px 16px;
-  text-align: center;
-  font-size: var(--fs-body);
-  color: var(--color-secondary-text);
-}
-
-.form-group {
-  margin-bottom: 16px;
-}
-
-.form-label {
-  display: block;
-  font-size: var(--fs-body);
-  font-weight: 500;
-  color: var(--color-secondary-text);
-  margin-bottom: 6px;
-}
-
-.form-input {
-  width: 100%;
-  height: 40px;
-  border-radius: 10px;
-  border: 1px solid var(--color-separator);
-  background: var(--color-input-bg);
-  padding: 0 12px;
-  font-size: var(--fs-title);
-  color: var(--color-text);
-  outline: none;
-  box-sizing: border-box;
-}
-
-.form-input:focus {
-  border-color: var(--color-primary);
-}
-
-.btn {
-  flex: 1;
-  height: 44px;
-  border-radius: 10px;
-  border: none;
-  font-size: var(--fs-amount);
-  font-weight: 500;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: opacity 0.15s;
-}
-
-.btn:active {
-  opacity: 0.7;
-}
-
-.btn-cancel {
-  background: var(--color-bg);
-  color: var(--color-text);
-}
-
-.btn-confirm {
-  background: var(--color-primary);
-  color: #fff;
-}
+.btn { flex: 1; height: 44px; border-radius: var(--radius-sm); border: none; font-size: var(--fs-amount); font-weight: 500; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: opacity 0.15s; }
+.btn:active { opacity: 0.7; }
+.btn-cancel { background: var(--act-bg); color: var(--ink); }
+.btn-confirm { background: var(--ink); color: var(--accent-fg); }
 </style>

@@ -1,99 +1,92 @@
 <template>
   <div class="transactions-page">
-    <!-- Header: 明细 + icons -->
-    <div class="page-header">
-      <span class="page-title">明细</span>
-      <div class="header-actions">
-        <button class="header-icon-btn" @click="showDatePicker = !showDatePicker">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- 沉浸式头部：大标题 + 图标动作 -->
+    <header class="tx-head">
+      <span class="tx-title">明细</span>
+      <div class="tx-actions">
+        <button class="tx-action" :class="{ on: showDatePicker }" @click="showDatePicker = !showDatePicker" aria-label="日期筛选">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
             <line x1="16" y1="2" x2="16" y2="6"></line>
             <line x1="8" y1="2" x2="8" y2="6"></line>
             <line x1="3" y1="10" x2="21" y2="10"></line>
           </svg>
         </button>
-        <button class="header-icon-btn" @click="searchOpen = !searchOpen">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button class="tx-action" :class="{ on: searchOpen }" @click="searchOpen = !searchOpen" aria-label="搜索">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="10.5" cy="10.5" r="7"></circle>
             <line x1="15.5" y1="15.5" x2="21" y2="21"></line>
           </svg>
         </button>
       </div>
-    </div>
+    </header>
 
-    <!-- Date filter bar (expandable) -->
-    <div v-if="showDatePicker" class="date-filter-bar">
-      <div class="date-filter-inner">
-        <div class="date-nav-group">
-          <button class="date-nav-btn" @click="prevMonth">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6" /></svg>
-          </button>
-          <span class="date-filter-label" v-if="isRangeFilter">{{ dateFrom.slice(5) }} ~ {{ dateTo.slice(5) }} {{ dateFrom.slice(0,4) }}年</span>
-          <span class="date-filter-label" v-else>{{ filterYear }}年{{ filterMonth }}月</span>
-          <button class="date-nav-btn" @click="nextMonth">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2.5" stroke-linecap="round"><polyline points="9 6 15 12 9 18" /></svg>
-          </button>
-        </div>
-        <button v-if="dateFilterActive" class="date-clear-btn" @click="clearDateFilter">清除</button>
+    <!-- 日期筛选条（展开） -->
+    <div v-if="showDatePicker" class="tx-datebar">
+      <div class="tx-datebar-inner">
+        <button class="tx-date-nav" @click="prevMonth">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6" /></svg>
+        </button>
+        <span class="tx-date-label" v-if="isRangeFilter">{{ dateFrom.slice(5) }} ~ {{ dateTo.slice(5) }}</span>
+        <span class="tx-date-label" v-else>{{ filterYear }}年{{ filterMonth }}月</span>
+        <button class="tx-date-nav" @click="nextMonth">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 6 15 12 9 18" /></svg>
+        </button>
+        <button v-if="dateFilterActive" class="tx-date-clear" @click="clearDateFilter">清除</button>
       </div>
     </div>
 
-    <!-- Search bar (expandable) -->
-    <div v-if="searchOpen" class="search-bar">
-      <div class="search-inner">
-        <!-- Field selector: 选中字段按钮 + 箭头 -->
-        <div class="search-field-selector" @click.stop="fieldSelectorOpen = !fieldSelectorOpen">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+    <!-- 搜索条（展开） -->
+    <div v-if="searchOpen" class="tx-search">
+      <div class="tx-search-inner">
+        <div class="tx-search-field" @click.stop="fieldSelectorOpen = !fieldSelectorOpen">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
             <circle cx="10.5" cy="10.5" r="7"></circle>
             <line x1="15.5" y1="15.5" x2="21" y2="21"></line>
           </svg>
-          <span class="search-field-label">{{ currentSearchFieldLabel }}</span>
-          <svg width="8" height="5" viewBox="0 0 8 5" fill="none" stroke="#007aff" stroke-width="1.5" stroke-linecap="round" style="flex-shrink:0;">
-            <path d="M1 1l3 3 3-3" />
-          </svg>
+          <span class="tx-search-field-label">{{ currentSearchFieldLabel }}</span>
+          <svg width="8" height="5" viewBox="0 0 8 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="flex-shrink:0;"><path d="M1 1l3 3 3-3" /></svg>
         </div>
-        <!-- 下拉菜单 -->
-        <div v-if="fieldSelectorOpen" class="search-field-dropdown">
+        <div v-if="fieldSelectorOpen" class="tx-search-dropdown">
           <button
             v-for="opt in searchFieldOptions"
             :key="opt.value"
-            class="search-field-option"
+            class="tx-search-option"
             :class="{ active: opt.value === searchField }"
             @click="searchField = opt.value; fieldSelectorOpen = false"
           >
-            <svg v-if="opt.value === searchField" class="search-field-check" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#007aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6l2.5 2.5 4.5-5" /></svg>
-            <span class="search-field-check-placeholder" v-else></span>
+            <svg v-if="opt.value === searchField" class="tx-search-check" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6l2.5 2.5 4.5-5" /></svg>
+            <span v-else class="tx-search-check-placeholder"></span>
             {{ opt.label }}
           </button>
         </div>
-        <span class="search-field-divider"></span>
+        <span class="tx-search-divider"></span>
         <input
           ref="searchInputRef"
           v-model="searchQuery"
-          class="search-input"
+          class="tx-search-input"
           :placeholder="searchPlaceholder"
         />
-        <button v-if="searchQuery" class="search-clear-btn" @click="searchQuery = ''">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="#007aff"><circle cx="12" cy="12" r="12"/></svg>
-          <span class="search-clear-x">✕</span>
-        </button>
+        <button v-if="searchQuery" class="tx-search-clear" @click="searchQuery = ''">✕</button>
       </div>
     </div>
 
-    <!-- Filter chips -->
-    <FilterChips
-      :categories="parentCategories"
-      :selected-id="chipSelectedId"
-      :context-id="isFilteringByChild ? effectiveSelectedParentId : null"
-      @select="onParentCategorySelect"
-    />
+    <!-- 分类筛选：横向流式 chips -->
+    <div class="tx-filter">
+      <FilterChips
+        :categories="parentCategories"
+        :selected-id="chipSelectedId"
+        :context-id="isFilteringByChild ? effectiveSelectedParentId : null"
+        @select="onParentCategorySelect"
+      />
+    </div>
 
-    <!-- Child category chips (shown when a parent or its child is selected) -->
-    <div v-if="childCategories.length > 0" class="children-bar">
-      <div class="children-scroll">
+    <!-- 子分类 chips（当父或子被选中时） -->
+    <div v-if="childCategories.length > 0" class="tx-children">
+      <div class="tx-children-scroll">
         <button
-          class="child-chip"
-          :class="{ active: isChildActive(child) }"
+          class="tx-child-chip"
+          :class="{ on: isChildActive(child) }"
           v-for="child in childCategories"
           :key="child.id!"
           @click="onChildCategorySelect(child)"
@@ -103,26 +96,24 @@
       </div>
     </div>
 
-    <!-- Content -->
-    <div class="content-area">
-      <!-- Empty state -->
+    <!-- 沉浸式连续账页 -->
+    <div class="tx-content">
       <EmptyState
         v-if="isEmpty && !isLoading"
         icon="📋"
         message="暂无流水记录"
       />
 
-      <!-- Transaction list -->
-      <div v-else class="transaction-list">
-        <div v-for="group in groupedTransactions" :key="group.dateStr" class="day-group">
-          <div class="day-header">
-            <span class="day-label">{{ group.dateLabel }}</span>
-            <span v-if="group.dayIncome > 0 || group.dayExpense > 0" class="day-total">
-              <span v-if="group.dayExpense > 0" class="total-expense">-{{ formatPure(group.dayExpense) }}</span>
-              <span v-if="group.dayIncome > 0" class="total-income">+{{ formatPure(group.dayIncome) }}</span>
+      <div v-else class="tx-list">
+        <div v-for="group in groupedTransactions" :key="group.dateStr" class="tx-day">
+          <div class="tx-day-label">
+            <span class="f6">{{ group.dateLabel }}</span>
+            <span v-if="group.dayIncome > 0 || group.dayExpense > 0" class="tx-day-sum">
+              <span v-if="group.dayExpense > 0" class="c-exp">-{{ formatPure(group.dayExpense) }}</span>
+              <span v-if="group.dayIncome > 0" class="c-inc">+{{ formatPure(group.dayIncome) }}</span>
             </span>
           </div>
-          <div class="day-items">
+          <div class="tx-rows">
             <TransactionItem
               v-for="tx in group.transactions"
               :key="tx.id"
@@ -135,13 +126,13 @@
           </div>
         </div>
 
-        <!-- Scroll sentinel + loading indicator for infinite scroll -->
-        <div ref="sentinelEl" class="scroll-sentinel">
-          <div v-if="isLoading" class="scroll-loading">
-            <div class="scroll-spinner" />
+        <!-- 无限滚动哨兵 -->
+        <div ref="sentinelEl" class="tx-sentinel">
+          <div v-if="isLoading" class="tx-loading">
+            <div class="tx-spinner" />
             <span>加载中…</span>
           </div>
-          <div v-else-if="allLoaded && transactions.length > 0" class="scroll-finished">
+          <div v-else-if="allLoaded && transactions.length > 0" class="tx-finished">
             — 没有更多账单了 —
           </div>
         </div>
@@ -891,386 +882,81 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 
 <style scoped>
 .transactions-page {
-  padding: 0;
-  background: transparent;
-  /* min-height 用视口高度单位（% 相对 auto 高度父级会失效）：
-     内容不足一屏时也撑满整屏，避免底部露出背景空白 */
   min-height: 100%;
   min-height: 100svh;
-  padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  padding: 0 24px 24px;
+  background: var(--surface);
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
 }
 
-.page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 16px 0;
+/* ── 沉浸式头部 ── */
+.tx-head { display: flex; align-items: center; justify-content: space-between; padding: 20px 2px 8px; }
+.tx-title { font-size: 28px; font-weight: 800; letter-spacing: -0.03em; color: var(--ink); }
+.tx-actions { display: flex; gap: 4px; }
+.tx-action {
+  width: 38px; height: 38px; border: none; background: none; color: var(--ink3);
+  display: flex; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer;
+  -webkit-tap-highlight-color: transparent; transition: background 0.15s, color 0.15s;
 }
+.tx-action:active { background: var(--act-bg); }
+.tx-action.on { color: var(--ink); background: var(--act-bg); }
 
-.page-title {
-  font-size: var(--fs-page-title);
-  font-weight: 700;
-  color: var(--color-text);
-}
+/* ── 日期筛选条 ── */
+.tx-datebar { padding: 10px 2px 4px; }
+.tx-datebar-inner { display: flex; align-items: center; justify-content: center; gap: 14px; height: 42px; border-bottom: 1px solid var(--line-soft); padding-bottom: 12px; }
+.tx-date-nav { width: 30px; height: 30px; border: 1px solid var(--line); background: none; color: var(--ink2); border-radius: 999px; display: grid; place-items: center; cursor: pointer; }
+.tx-date-label { font-size: 15px; font-weight: 600; color: var(--ink); min-width: 96px; text-align: center; }
+.tx-date-clear { border: none; background: none; color: var(--ink2); font-size: 12px; font-weight: 600; cursor: pointer; padding: 4px 8px; }
 
-.header-actions {
-  display: flex;
-  gap: 8px;
+/* ── 搜索条 ── */
+.tx-search { padding: 8px 2px 12px; }
+.tx-search-inner {
+  display: flex; align-items: center; gap: 6px; height: 40px;
+  border-bottom: 1px solid var(--line); padding: 0 2px;
+  color: var(--ink2);
 }
+.tx-search-field { display: flex; align-items: center; gap: 4px; cursor: pointer; flex-shrink: 0; padding: 4px 6px; border-radius: 6px; -webkit-tap-highlight-color: transparent; }
+.tx-search-field:active { background: var(--act-bg); }
+.tx-search-field-label { font-size: 13px; font-weight: 500; color: var(--ink); white-space: nowrap; }
+.tx-search-divider { width: 1px; height: 18px; background: var(--line); flex-shrink: 0; }
+.tx-search-input { flex: 1; min-width: 0; border: none; background: none; font-size: 15px; color: var(--ink); outline: none; font-family: inherit; }
+.tx-search-input::placeholder { color: var(--ink3); }
+.tx-search-clear { width: 20px; height: 20px; border: none; background: var(--line); color: var(--accent-fg); border-radius: 999px; font-size: 11px; cursor: pointer; display: grid; place-items: center; flex-shrink: 0; line-height: 1; }
+.tx-search-dropdown { position: absolute; top: calc(100% + 6px); left: 0; min-width: 128px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 10px 30px -12px rgba(22,24,28,0.25); padding: 6px; z-index: 1000; }
+.tx-search-option { display: flex; align-items: center; gap: 6px; width: 100%; padding: 9px 12px; border: none; background: none; font-size: 13px; color: var(--ink); cursor: pointer; border-radius: 8px; text-align: left; font-family: inherit; white-space: nowrap; }
+.tx-search-option:active { background: var(--act-bg); }
+.tx-search-option.active { color: var(--ink); font-weight: 600; }
+.tx-search-check, .tx-search-check-placeholder { width: 12px; height: 12px; flex-shrink: 0; }
 
-.header-icon-btn {
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border-radius: 8px;
-  -webkit-tap-highlight-color: transparent;
-}
+/* ── 分类筛选 chips（子组件自身样式，此处仅微调行距与底线） ── */
+.tx-filter { padding: 4px 0 0; }
+.tx-filter :deep(.filter-chips) { padding: 10px 0 12px; border-bottom: 1px solid var(--line-soft); }
 
-.header-icon-btn:active {
-  background: var(--color-press);
-}
+/* ── 子分类 chips ── */
+.tx-children { padding: 10px 0 0; }
+.tx-children-scroll { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.tx-children-scroll::-webkit-scrollbar { display: none; }
+.tx-child-chip { display: inline-flex; padding: 6px 14px; border: 1px solid var(--line); background: none; color: var(--ink2); font-size: 13px; font-weight: 500; border-radius: 999px; cursor: pointer; white-space: nowrap; font-family: inherit; }
+.tx-child-chip.on { background: var(--ink); border-color: var(--ink); color: var(--accent-fg); }
 
-/* Search bar */
-.search-bar {
-  padding: 8px 16px 0;
-  position: relative;
-  z-index: 100;
-}
+/* ── 连续账页 ── */
+.tx-content { padding-top: 8px; }
+.tx-day { padding-top: 18px; }
+.tx-day-label { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; font-weight: 600; color: var(--ink2); padding: 0 2px 6px; }
+.f6 { font-weight: 600; }
+.tx-day-sum { display: inline-flex; gap: 8px; font-weight: 500; }
+.c-inc { color: var(--inc); }
+.c-exp { color: var(--exp); }
+.tx-rows { }
 
-/* Date filter bar */
-.date-filter-bar {
-  padding: 8px 16px 0;
-}
+/* 连续流水行：无浮卡，靠细分隔线排布 */
+.tx-rows :deep(.transaction-item) { padding: 15px 0; }
+.tx-rows :deep(.transaction-item + .transaction-item) { border-top: 1px solid var(--line-soft); }
 
-.date-filter-inner {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 40px;
-  background: var(--glass-highlight), var(--color-card);
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  border: 1px solid var(--glass-border);
-  border-radius: 12px;
-  padding: 0 12px;
-}
-
-.date-nav-group {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.date-nav-btn {
-  width: 28px;
-  height: 28px;
-  border: none;
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border-radius: 6px;
-}
-
-.date-filter-label {
-  font-size: var(--fs-title);
-  font-weight: 600;
-  color: var(--color-text);
-  min-width: 80px;
-  text-align: center;
-}
-
-.date-clear-btn {
-  position: absolute;
-  right: 12px;
-  border: none;
-  background: var(--color-primary);
-  color: #fff;
-  font-size: var(--fs-small);
-  font-weight: 500;
-  padding: 4px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.search-inner {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  height: 36px;
-  background: var(--glass-highlight), var(--color-card);
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  border-radius: 10px;
-  padding: 0 8px 0 4px;
-  position: relative;
-  border: 1px solid var(--glass-border);
-}
-
-.search-input {
-  flex: 1;
-  min-width: 0;
-  border: none;
-  background: none;
-  font-size: var(--fs-title);
-  color: var(--color-text);
-  outline: none;
-  font-family: inherit;
-}
-
-.search-input::placeholder {
-  color: var(--color-placeholder);
-  font-weight: 400;
-}
-
-.search-clear-btn {
-  position: relative;
-  width: 18px;
-  height: 18px;
-  border: none;
-  background: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  flex-shrink: 0;
-}
-
-.search-clear-x {
-  position: absolute;
-  font-size: var(--fs-micro);
-  color: #fff;
-  line-height: 1;
-  pointer-events: none;
-}
-
-/* Search field selector */
-.search-field-selector {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 6px 4px 6px;
-  cursor: pointer;
-  flex-shrink: 0;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  border-radius: 6px;
-  transition: background 0.15s;
-}
-.search-field-selector:active {
-  background: var(--color-press);
-}
-
-/* 竖线分隔符 */
-.search-field-divider {
-  display: inline-block;
-  width: 1px;
-  height: 18px;
-  background: var(--color-separator-heavy);
-  flex-shrink: 0;
-}
-
-.search-field-label {
-  font-size: var(--fs-ui);
-  color: var(--color-primary);
-  font-weight: 500;
-  white-space: nowrap;
-  line-height: 1;
-}
-
-/* 下拉菜单：相对 field selector 定位，宽度自动 */
-.search-field-dropdown {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 16px;
-  min-width: 120px;
-  background: var(--glass-highlight), var(--color-card);
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  border: 1px solid var(--glass-border);
-  border-radius: 10px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-  padding: 4px;
-  z-index: 1000;
-  animation: dropdownFadeIn 0.15s ease;
-}
-
-@keyframes dropdownFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.search-field-option {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  width: 100%;
-  padding: 8px 12px;
-  border: none;
-  background: none;
-  font-size: var(--fs-body);
-  color: var(--color-text);
-  cursor: pointer;
-  border-radius: 8px;
-  text-align: left;
-  font-family: inherit;
-  white-space: nowrap;
-  transition: background 0.1s;
-}
-
-.search-field-option:active {
-  background: var(--color-press);
-}
-
-.search-field-option.active {
-  color: var(--color-primary);
-  font-weight: 600;
-  background: var(--color-press);
-}
-
-.search-field-check,
-.search-field-check-placeholder {
-  width: 12px;
-  height: 12px;
-  flex-shrink: 0;
-}
-
-/* Content area */
-.content-area {
-  padding: 0;
-}
-
-/* Day groups — unified glass card containing transparent rows */
-.day-group {
-  margin: 8px 12px;
-  background: var(--glass-highlight), var(--color-card);
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  box-shadow: var(--glass-shadow);
-}
-
-/* 最后一行不与圆角边相撞 */
-.day-group .transaction-item:last-child {
-  border-bottom: none;
-}
-
-.day-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px 6px;
-}
-
-.day-label {
-  font-size: var(--fs-ui);
-  font-weight: 600;
-  color: var(--color-secondary-text);
-}
-
-.day-total {
-  font-size: var(--fs-ui);
-  font-weight: 600;
-}
-
-.total-income {
-  color: var(--color-secondary-text);
-}
-
-.total-expense {
-  color: var(--color-secondary-text);
-}
-
-/* Scroll sentinel for infinite scroll */
-.scroll-sentinel {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  min-height: 48px;
-}
-
-.scroll-loading {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: var(--fs-ui);
-  color: var(--color-secondary-text);
-}
-
-.scroll-spinner {
-  width: 14px;
-  height: 14px;
-  border: 2px solid var(--color-placeholder);
-  border-top-color: var(--color-primary);
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.scroll-finished {
-  font-size: var(--fs-ui);
-  color: var(--color-placeholder);
-}
-
-/* Child category chips — matches CategoryPicker style */
-.children-bar {
-  display: flex;
-  align-items: center;
-  padding: 0 16px 4px;
-}
-
-.children-scroll {
-  overflow-x: auto;
-  white-space: nowrap;
-  display: flex;
-  gap: 6px;
-  flex: 1;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-}
-
-.children-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-.child-chip {
-  display: inline-flex;
-  padding: 6px 14px;
-  border: none;
-  border-radius: 16px;
-  background: var(--color-bg);
-  color: var(--color-text);
-  font-size: var(--fs-ui);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  -webkit-tap-highlight-color: transparent;
-  white-space: nowrap;
-  font-family: inherit;
-}
-
-.child-chip.active {
-  background: var(--color-primary);
-  color: #fff;
-}
+/* ── 无限滚动 ── */
+.tx-sentinel { display: flex; align-items: center; justify-content: center; padding: 20px; min-height: 48px; }
+.tx-loading { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink3); }
+.tx-spinner { width: 14px; height: 14px; border: 2px solid var(--line); border-top-color: var(--ink); border-radius: 50%; animation: txspin 0.6s linear infinite; }
+@keyframes txspin { to { transform: rotate(360deg); } }
+.tx-finished { font-size: 12px; color: var(--ink3); }
 </style>

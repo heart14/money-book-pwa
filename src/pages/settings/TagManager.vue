@@ -2,7 +2,7 @@
   <div>
     <button class="section-row" @click="expanded = !expanded">
       <div class="row-left"><span class="row-icon"><TwemojiIcon emoji="🏷️" /></span><span class="row-label">管理标签</span></div>
-      <svg class="chevron" :class="{ rotated: expanded }" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c7c7cc" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9" /></svg>
+      <svg class="chevron" :class="{ rotated: expanded }" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--ink3)" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9" /></svg>
     </button>
     <div v-if="expanded" class="expanded-content">
       <div v-if="tags.length === 0" class="empty-hint">暂无标签</div>
@@ -120,54 +120,56 @@ async function handleDeleteRegistryOnly() {
 </script>
 
 <style scoped>
+/* ═ 沉浸式 ═ */
+
 .section-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 12px 14px;
+  padding: 16px 0;
   border: none;
   background: none;
   font-family: inherit;
   font-size: var(--fs-title);
-  color: var(--color-text);
+  color: var(--ink);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   text-align: left;
-  transition: background 0.1s;
 }
-.section-row:active { background: var(--color-press); }
+.section-row:active { background: none; }
 
-.row-left { display: flex; align-items: center; gap: 10px; }
-.row-icon { font-size: 18px; line-height: 1; }
-.row-label { font-size: var(--fs-title); color: var(--color-text); }
+.row-left { display: flex; align-items: center; gap: 11px; }
+.row-icon { font-size: 17px; line-height: 1; }
+.row-label { font-size: 15px; font-weight: 600; color: var(--ink); }
 
-.chevron { color: var(--color-placeholder); flex-shrink: 0; transition: transform 0.2s; }
+.chevron { color: var(--ink3); flex-shrink: 0; transition: transform 0.2s; }
 .chevron.rotated { transform: rotate(180deg); }
 
-.expanded-content { padding: 4px 14px 12px; }
-.empty-hint { text-align: center; padding: 12px; font-size: var(--fs-body); color: var(--color-secondary-text); }
+.expanded-content { padding: 6px 0 10px; border-top: 1px solid var(--line-soft); }
+.empty-hint { text-align: center; padding: 16px; font-size: var(--fs-body); color: var(--ink3); }
 
-.tag-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; }
-.tag-name { font-size: var(--fs-body); color: var(--color-text); }
-.tag-delete { border: none; background: none; color: var(--color-destructive); font-size: var(--fs-small); cursor: pointer; font-family: inherit; }
-.tag-add-row { display: flex; gap: 8px; margin-top: 8px; }
-.tag-input { flex: 1; height: 36px; border-radius: 8px; border: 1px solid var(--color-disabled-bg); padding: 0 10px; font-size: var(--fs-body); outline: none; font-family: inherit; box-sizing: border-box; }
-.tag-add-btn { height: 36px; padding: 0 16px; border: none; border-radius: 8px; background: var(--color-primary); color: #fff; font-size: var(--fs-ui); cursor: pointer; font-family: inherit; }
+.tag-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; }
+.tag-item + .tag-item { border-top: 1px solid var(--line-soft); }
+.tag-name { font-size: var(--fs-body); font-weight: 500; color: var(--ink); }
+.tag-delete { border: none; background: none; color: var(--exp); font-size: var(--fs-small); font-weight: 600; cursor: pointer; font-family: inherit; padding: 4px 8px; }
+.tag-add-row { display: flex; gap: 8px; margin-top: 10px; }
+.tag-input { flex: 1; height: 38px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); padding: 0 12px; font-size: var(--fs-body); color: var(--ink); outline: none; font-family: inherit; box-sizing: border-box; }
+.tag-input:focus { border-color: var(--ink); }
+.tag-add-btn { height: 38px; padding: 0 18px; border: none; border-radius: 10px; background: var(--ink); color: var(--accent-fg); font-size: var(--fs-ui); font-weight: 600; cursor: pointer; font-family: inherit; }
 .tag-add-btn:disabled { opacity: 0.4; }
-
 
 /* Modal */
 .modal-overlay { position: fixed; inset: 0; background: var(--color-overlay); z-index: 1000; display: flex; align-items: center; justify-content: center; }
-.modal-content { width: 300px; background: var(--glass-highlight), var(--color-sheet-bg); backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)); -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); border-radius: 16px; padding: 24px; }
-.modal-desc { font-size: var(--fs-body); color: var(--color-text); text-align: center; margin-bottom: 8px; }
-.modal-hint { font-size: var(--fs-small); color: var(--color-secondary-text); }
+.modal-content { width: 300px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-big); padding: 24px; box-shadow: var(--shadow-lg); }
+.modal-desc { font-size: var(--fs-body); color: var(--ink); text-align: center; margin-bottom: 8px; line-height: 1.5; }
+.modal-hint { font-size: var(--fs-small); color: var(--ink2); }
 .modal-actions-col { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
 
-.btn-block { width: 100%; height: 44px; border-radius: 10px; border: none; font-size: var(--fs-title); font-weight: 500; cursor: pointer; font-family: inherit; }
+.btn-block { width: 100%; height: 44px; border-radius: var(--radius-sm); border: none; font-size: var(--fs-title); font-weight: 500; cursor: pointer; font-family: inherit; }
 .btn-block:active { opacity: 0.7; }
-.btn-danger { background: var(--color-destructive); color: #fff; }
-.btn-cancel { background: var(--color-bg); color: var(--color-text); }
+.btn-danger { background: var(--exp); color: var(--accent-fg); }
+.btn-cancel { background: var(--act-bg); color: var(--ink); }
 
 /* Toast */
 .toast-msg {
@@ -177,8 +179,8 @@ async function handleDeleteRegistryOnly() {
   transform: translateX(-50%);
   padding: 12px 24px;
   border-radius: 12px;
-  background: var(--color-text);
-  color: var(--color-bg);
+  background: var(--ink);
+  color: var(--accent-fg);
   font-size: var(--fs-body);
   font-weight: 500;
   z-index: 1100;

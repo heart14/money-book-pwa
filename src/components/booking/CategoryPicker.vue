@@ -149,12 +149,12 @@ watch(
 
 .parent-item.selected {
   background: var(--color-primary);
-  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25);
+  box-shadow: 0 2px 8px rgba(22, 24, 28, 0.15);
 }
 
 .parent-item.selected .parent-icon,
 .parent-item.selected .parent-name {
-  color: #fff;
+  color: var(--color-on-primary);
 }
 
 .parent-icon {
@@ -208,6 +208,6 @@ watch(
 
 .child-chip.active {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-on-primary);
 }
 </style>

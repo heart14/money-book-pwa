@@ -7,7 +7,7 @@
       :style="indicatorStyle"
     >
       <div v-if="refreshing" class="ptr-spinner" />
-      <svg v-else class="ptr-arrow" :class="{ 'ptr-arrow--flip': pullDist >= THRESHOLD }" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <svg v-else class="ptr-arrow" :class="{ 'ptr-arrow--flip': pullDist >= THRESHOLD }" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary-text)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="12 5 12 19" />
         <polyline points="5 12 12 5 19 12" />
       </svg>

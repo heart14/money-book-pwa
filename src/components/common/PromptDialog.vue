@@ -111,7 +111,7 @@ function onCancel() {
 }
 
 .prompt-input:focus {
-  border-color: var(--color-primary, #007aff);
+  border-color: var(--color-primary);
   background: var(--color-surface);
 }
 
@@ -142,8 +142,8 @@ function onCancel() {
 }
 
 .prompt-btn--confirm {
-  background: var(--color-primary, #007aff);
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
 }
 
 @keyframes fadeIn {

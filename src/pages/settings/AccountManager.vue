@@ -2,7 +2,7 @@
   <div>
     <button class="section-row" @click="expanded = !expanded">
       <div class="row-left"><span class="row-icon"><TwemojiIcon emoji="🏦" /></span><span class="row-label">管理账户</span></div>
-      <svg class="chevron" :class="{ rotated: expanded }" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c7c7cc" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9" /></svg>
+      <svg class="chevron" :class="{ rotated: expanded }" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--ink3)" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9" /></svg>
     </button>
     <div v-if="expanded" class="expanded-content">
       <div v-if="accountStore.accounts.length === 0" class="empty-hint">暂无账户</div>
@@ -201,92 +201,94 @@ async function handleDelete() {
 </script>
 
 <style scoped>
+/* ═ 沉浸式：标题行 + 连续展开内容 ═ */
+
 .section-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 12px 14px;
+  padding: 16px 0;
   border: none;
   background: none;
   font-family: inherit;
   font-size: var(--fs-title);
-  color: var(--color-text);
+  color: var(--ink);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   text-align: left;
-  transition: background 0.1s;
 }
-.section-row:active { background: var(--color-press); }
+.section-row:active { background: none; }
 
-.row-left { display: flex; align-items: center; gap: 10px; }
-.row-icon { font-size: 18px; line-height: 1; }
-.row-label { font-size: var(--fs-title); color: var(--color-text); }
+.row-left { display: flex; align-items: center; gap: 11px; }
+.row-icon { font-size: 17px; line-height: 1; }
+.row-label { font-size: 15px; font-weight: 600; color: var(--ink); }
 
-.chevron { color: var(--color-placeholder); flex-shrink: 0; transition: transform 0.2s; }
+.chevron { color: var(--ink3); flex-shrink: 0; transition: transform 0.2s; }
 .chevron.rotated { transform: rotate(180deg); }
 
-.expanded-content { padding: 4px 14px 12px; }
-.empty-hint { text-align: center; padding: 12px; font-size: var(--fs-body); color: var(--color-secondary-text); }
+.expanded-content { padding: 6px 0 10px; border-top: 1px solid var(--line-soft); }
+.empty-hint { text-align: center; padding: 16px; font-size: var(--fs-body); color: var(--ink3); }
 
 .account-item {
   display: flex;
   align-items: center;
   gap: 8px;
   border-radius: 6px;
-  margin: 0 -4px;
-  padding: 8px 4px;
+  padding: 10px 0;
 }
-.account-item.drag-over { background: rgba(0, 122, 255, 0.08); }
+.account-item + .account-item { border-top: 1px solid var(--line-soft); }
+.account-item.drag-over { background: var(--act-bg); }
 .drag-handle {
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: grab;
   flex-shrink: 0;
-  padding: 0 2px;
-  margin: -8px 0;
+  padding: 0 4px;
   height: 100%;
   -webkit-tap-highlight-color: transparent;
   touch-action: none;
 }
 .drag-handle-icon {
   font-size: 16px;
-  color: var(--color-placeholder);
+  color: var(--ink3);
   user-select: none;
   line-height: 1;
-  padding: 14px 10px;
+  padding: 12px 8px;
   border-radius: 8px;
 }
-.drag-handle-icon:active { background: var(--color-press); }
-.account-icon { font-size: 16px; }
+.drag-handle-icon:active { background: var(--act-bg); }
+.account-icon { font-size: 17px; }
 .account-info { flex: 1; display: flex; flex-direction: column; gap: 1px; }
-.account-name { font-size: var(--fs-body); color: var(--color-text); }
-.account-balance { font-size: var(--fs-small); color: var(--color-secondary-text); }
+.account-name { font-size: var(--fs-body); font-weight: 500; color: var(--ink); }
+.account-balance { font-size: var(--fs-small); color: var(--ink3); font-variant-numeric: tabular-nums; }
 
 .icon-btn {
-  width: 28px; height: 28px; border: none; background: var(--color-bg); border-radius: 6px;
-  display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--color-secondary-text);
+  width: 30px; height: 30px; border: none; background: var(--act-bg); border-radius: 9px;
+  display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--ink2);
 }
-.icon-btn--danger { color: var(--color-destructive); }
+.icon-btn:active { background: var(--line); }
+.icon-btn--danger { color: var(--exp); }
 
 .add-btn {
-  width: 100%; padding: 10px; border: 1px dashed var(--color-placeholder); border-radius: 8px;
-  background: none; font-size: var(--fs-body); color: var(--color-primary); cursor: pointer; margin-top: 8px;
+  width: 100%; padding: 10px; border: 1px dashed var(--line); border-radius: 10px;
+  background: none; font-size: var(--fs-body); font-weight: 600; color: var(--ink); cursor: pointer; margin-top: 10px;
 }
+.add-btn:active { background: var(--act-bg); }
 
 /* Delete confirm overlay */
 .modal-overlay { position: fixed; inset: 0; background: var(--color-overlay); z-index: 1000; display: flex; align-items: center; justify-content: center; }
-.modal-content { width: 280px; background: var(--glass-highlight), var(--color-sheet-bg); backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)); -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); border-radius: 16px; padding: 24px; }
-.modal-desc { font-size: var(--fs-body); color: var(--color-text); text-align: center; margin-bottom: 16px; }
+.modal-content { width: 280px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-big); padding: 24px; box-shadow: var(--shadow-lg); }
+.modal-desc { font-size: var(--fs-body); color: var(--ink); text-align: center; margin-bottom: 16px; }
 .modal-actions { display: flex; gap: 12px; justify-content: center; }
 .form-group { margin-bottom: 16px; }
-.form-label { display: block; font-size: var(--fs-body); font-weight: 500; color: var(--color-secondary-text); margin-bottom: 6px; }
-.form-input { width: 100%; height: 40px; border-radius: 10px; border: 1px solid var(--color-separator); background: var(--color-input-bg); padding: 0 12px; font-size: var(--fs-title); color: var(--color-text); outline: none; box-sizing: border-box; }
-.form-input:focus { border-color: var(--color-primary); }
-.btn-cancel { flex: 1; height: 44px; border-radius: 10px; border: none; background: var(--color-bg); color: var(--color-text); font-size: var(--fs-amount); font-weight: 500; cursor: pointer; }
-.btn-primary { flex: 1; height: 44px; border-radius: 10px; border: none; background: var(--color-primary); color: #fff; font-size: var(--fs-amount); font-weight: 500; cursor: pointer; }
+.form-label { display: block; font-size: var(--fs-body); font-weight: 500; color: var(--ink2); margin-bottom: 6px; }
+.form-input { width: 100%; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); padding: 0 12px; font-size: var(--fs-title); color: var(--ink); outline: none; box-sizing: border-box; }
+.form-input:focus { border-color: var(--ink); }
+.btn-cancel { flex: 1; height: 44px; border-radius: var(--radius-sm); border: none; background: var(--act-bg); color: var(--ink); font-size: var(--fs-amount); font-weight: 500; cursor: pointer; font-family: inherit; }
+.btn-primary { flex: 1; height: 44px; border-radius: var(--radius-sm); border: none; background: var(--ink); color: var(--accent-fg); font-size: var(--fs-amount); font-weight: 500; cursor: pointer; font-family: inherit; }
 .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
 .btn-primary:active { opacity: 0.7; }
-.btn-danger { height: 44px; padding: 0 24px; border-radius: 10px; border: none; background: var(--color-destructive); color: #fff; font-size: var(--fs-amount); font-weight: 500; cursor: pointer; }
+.btn-danger { height: 44px; padding: 0 24px; border-radius: var(--radius-sm); border: none; background: var(--exp); color: var(--accent-fg); font-size: var(--fs-amount); font-weight: 500; cursor: pointer; font-family: inherit; }
 </style>

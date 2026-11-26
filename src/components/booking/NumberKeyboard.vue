@@ -154,7 +154,7 @@ function handleComplete() {
   grid-column: 4;
   grid-row: 1 / -1;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-on-primary);
   font-size: 24px;
   font-weight: 500;
   border-radius: 10px;

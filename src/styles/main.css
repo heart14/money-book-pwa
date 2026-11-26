@@ -1,64 +1,61 @@
 :root {
-  /* ── 页面基础色 ── */
-  --color-bg: #f2f2f6;
-  --color-card: rgba(255, 255, 255, 0.55);
+  /* ── 页面基础色（墨色账本：米白纸底，少卡片无玻璃） ── */
+  --color-bg: #f3f4f5;
+  --color-card: #ffffff;
   --color-surface: #ffffff;
-  --color-tabbar-bg: rgba(255, 255, 255, 0.6);
-  --color-sheet-bg: rgba(255, 255, 255, 0.72);
+  --color-tabbar-bg: rgba(248, 249, 250, 0.92);
+  --color-sheet-bg: #ffffff;
 
-  /* ── Liquid Glass 环境背景（卡片 blur 的折射源，浅色） ── */
-  --color-app-bg:
-    radial-gradient(60% 50% at 15% 10%, rgba(96, 165, 250, 0.42), transparent 62%),
-    radial-gradient(50% 42% at 85% 16%, rgba(244, 114, 182, 0.36), transparent 60%),
-    radial-gradient(70% 60% at 18% 85%, rgba(129, 140, 248, 0.40), transparent 66%),
-    radial-gradient(55% 55% at 85% 78%, rgba(94, 234, 212, 0.38), transparent 62%),
-    linear-gradient(160deg, #dbeafe 0%, #fde8f4 38%, #ece4ff 66%, #ccf5f1 100%);
+  /* ── 环境背景：单色纸感，取消多彩渐变折射源 ── */
+  --color-app-bg: #f3f4f5;
 
-  /* ── Liquid Glass 玻璃描边 / 高光 / 阴影 / 模糊 ── */
-  --glass-blur: 20px;
-  --glass-blur-weak: 12px;
-  --glass-saturate: 180%;
-  --glass-border: rgba(255, 255, 255, 0.55);
-  --glass-highlight: radial-gradient(120% 80% at 50% 0%, rgba(255, 255, 255, 0.5), transparent 55%);
-  --glass-shadow: 0 8px 28px -10px rgba(70, 80, 150, 0.35),
-                  0 1px 1px rgba(255, 255, 255, 0.7) inset,
-                  0 0 0 0.5px rgba(120, 140, 220, 0.06);
+  /* ── 玻璃令牌已贬为"纸感"：无模糊、无高光、克制阴影 ──
+     保留变量名以兼容既有 .glass-card 布局，仅视觉效果由玻璃→纸。 ── */
+  --glass-blur: 0px;
+  --glass-blur-weak: 0px;
+  --glass-saturate: 100%;
+  --glass-border: rgba(22, 24, 28, 0.10);
+  --glass-highlight: none;
+  --glass-shadow: 0 1px 2px rgba(22, 24, 28, 0.05),
+                  0 6px 20px -12px rgba(22, 24, 28, 0.12);
 
-  /* ── 文字色 ── */
-  --color-text: #1c1c1e;
-  --color-secondary-text: #8e8e93;
-  --color-placeholder: #c7c7cc;
+  /* ── 文字色（墨色体系） ── */
+  --color-text: #16181c;
+  --color-secondary-text: #5d6570;
+  --color-placeholder: #9aa3ac;
 
   /* ── 分隔/边框 ── */
-  --color-separator: rgba(60, 60, 67, 0.08);
-  --color-separator-heavy: #d1d1d6;
-  --color-card-border: transparent;
+  --color-separator: rgba(22, 24, 28, 0.09);
+  --color-separator-heavy: #d1d5d9;
+  --color-card-border: rgba(22, 24, 28, 0.08);
 
   /* ── 输入区 ── */
-  --color-input-bg: #f2f2f7;
+  --color-input-bg: #ffffff;
 
   /* ── 遮罩 & 交互态 ── */
-  --color-overlay: rgba(0, 0, 0, 0.4);
-  --color-press: rgba(0, 0, 0, 0.03);
-  --color-disabled-bg: #e5e5ea;
+  --color-overlay: rgba(22, 24, 28, 0.40);
+  --color-press: rgba(22, 24, 28, 0.05);
+  --color-disabled-bg: #e5e7ea;
 
-  /* ── 主题色（深浅一致） ── */
-  --color-primary: #007aff;
-  --color-destructive: #ff3b30;
-  --color-success: #34c759;
-  --color-warning: #ff9500;
+  /* ── 主题色（墨色账本：全身唯一彩色=金额）
+         primary=墨，success=收入翡翠绿，destructive=支出珊瑚红 ── */
+  --color-primary: #16181c;
+  --color-on-primary: #ffffff;
+  --color-destructive: #d5503c;
+  --color-success: #17a065;
+  --color-warning: #e0992e;
   --color-white: #ffffff;
 
   /* ── 圆角 ── */
-  --radius-sm: 18px;
-  --radius-md: 20px;
-  --radius-lg: 20px;
-  --radius-xl: 20px;
+  --radius-sm: 12px;
+  --radius-md: 14px;
+  --radius-lg: 16px;
+  --radius-xl: 18px;
 
   /* ── 阴影 ── */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-sm: 0 1px 2px rgba(22, 24, 28, 0.05);
+  --shadow-md: 0 4px 12px rgba(22, 24, 28, 0.08);
+  --shadow-lg: 0 8px 24px rgba(22, 24, 28, 0.10);
 
   /* ── 字号令牌（5档字号：xs/sm/md(默认)/lg/xl） ── */
   --fs-micro: 10px;
@@ -72,54 +69,84 @@
   --fs-page-title: 27px;
   --fs-amount-lg: 34px;
   --fs-amount-xl: 68px;
+
+  /* ── 沉浸式令牌（「墨色账本」骨架基座，供业务页复用）
+         取自 glass/RedesignPreview.vue 的 .rs-app，提升为全局。
+         --bg/--surface/--ink 分层   --line/--line-soft 分隔线
+         --inc/--exp 唯一彩色（收入翡翠绿 / 支出珊瑚红） ── */
+  --ink: #16181c;
+  --ink2: #5d6570;
+  --ink3: #9aa3ac;
+  --surface: #ffffff;
+  --line: rgba(22, 24, 28, 0.10);
+  --line-soft: rgba(22, 24, 28, 0.06);
+  --accent: #16181c;
+  --accent-fg: #ffffff;
+  --inc: #17a065;
+  --exp: #d5503c;
+  --act-bg: rgba(22, 24, 28, 0.05);
+  --header-h: 64px;
+  --radius-big: 22px;
 }
 
 /* ── 深色主题 ── */
 :root.dark {
-  --color-bg: #000000;
-  --color-card: rgba(38, 38, 46, 0.72);
-  --color-surface: #1c1c1e;
-  --color-tabbar-bg: rgba(24, 24, 28, 0.62);
-  --color-sheet-bg: rgba(30, 30, 40, 0.82);
+  --color-bg: #0f1013;
+  --color-card: #18191d;
+  --color-surface: #18191d;
+  --color-tabbar-bg: rgba(24, 25, 29, 0.92);
+  --color-sheet-bg: #18191d;
 
-  /* ── Liquid Glass 环境背景（深色：降低饱和度、更暗） ── */
-  --color-app-bg:
-    radial-gradient(60% 50% at 15% 10%, rgba(59, 130, 246, 0.36), transparent 62%),
-    radial-gradient(50% 42% at 85% 16%, rgba(236, 72, 153, 0.26), transparent 60%),
-    radial-gradient(70% 60% at 18% 85%, rgba(129, 112, 245, 0.32), transparent 66%),
-    radial-gradient(55% 55% at 85% 78%, rgba(45, 212, 191, 0.26), transparent 62%),
-    linear-gradient(160deg, #0f0f18 0%, #1a1222 38%, #131128 66%, #0c191a 100%);
+  /* ── 环境背景（深色：单色墨夜，无玻璃折射） ── */
+  --color-app-bg: #0f1013;
 
-  /* ── Liquid Glass 玻璃令牌（深色） ── */
-  --glass-border: rgba(255, 255, 255, 0.16);
-  --glass-highlight: radial-gradient(120% 80% at 50% 0%, rgba(255, 255, 255, 0.16), transparent 55%);
-  --glass-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.6),
-                  0 1px 1px rgba(255, 255, 255, 0.18) inset,
-                  0 0 0 0.5px rgba(255, 255, 255, 0.04);
+  /* ── 玻璃令牌→纸感（深色） ── */
+  --glass-blur: 0px;
+  --glass-blur-weak: 0px;
+  --glass-saturate: 100%;
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glass-highlight: none;
+  --glass-shadow: 0 1px 2px rgba(0, 0, 0, 0.4),
+                  0 10px 28px -14px rgba(0, 0, 0, 0.5);
 
-  --color-text: #ffffff;
-  --color-secondary-text: #98989e;
-  --color-placeholder: #636366;
+  --color-text: #f1f2f4;
+  --color-secondary-text: #a6acb4;
+  --color-placeholder: #6f747b;
 
-  --color-separator: rgba(84, 84, 88, 0.36);
-  --color-separator-heavy: #3a3a3c;
+  --color-separator: rgba(255, 255, 255, 0.09);
+  --color-separator-heavy: #3a3e44;
   --color-card-border: rgba(255, 255, 255, 0.08);
 
-  --color-input-bg: #1c1c1e;
+  --color-input-bg: #18191d;
 
   --color-overlay: rgba(0, 0, 0, 0.6);
-  --color-press: rgba(255, 255, 255, 0.08);
-  --color-disabled-bg: #2c2c2e;
+  --color-press: rgba(255, 255, 255, 0.07);
+  --color-disabled-bg: #2c2e33;
 
-  /* 主题色保持不变 */
-  --color-primary: #0a84ff;
-  --color-destructive: #ff453a;
-  --color-success: #30d158;
-  --color-warning: #ff9f0a;
+  /* 主题色（深浅一致墨色体系）
+     primary=亮墨，success=收入翡翠绿，destructive=支出珊瑚红 */
+  --color-primary: #f1f2f4;
+  --color-on-primary: #16181c;
+  --color-destructive: #ff6b5c;
+  --color-success: #2fc98b;
+  --color-warning: #e0a24a;
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+
+  /* ── 沉浸式令牌（暗色变体） ── */
+  --ink: #f1f2f4;
+  --ink2: #a6acb4;
+  --ink3: #6f747b;
+  --surface: #17181c;
+  --line: rgba(255, 255, 255, 0.12);
+  --line-soft: rgba(255, 255, 255, 0.07);
+  --accent: #f1f2f4;
+  --accent-fg: #111316;
+  --inc: #2fc98b;
+  --exp: #ff6b5c;
+  --act-bg: rgba(255, 255, 255, 0.07);
 }
 
 * {
@@ -134,9 +161,8 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* 底色兜底 + 环境渐变铺满整个文档体。即便 fixed 渐变层(::before)在 iOS
-     standalone 安全区/Home 指示条处未覆盖，露出的也是渐变而非浅色留白 */
-  background: var(--color-app-bg) var(--color-bg);
+  /* 纸感底色铺满整个文档体（墨色账本：单色纸底，无环境渐变） */
+  background: var(--color-bg);
   color: var(--color-text);
   transition: background-color 0.2s, color 0.2s;
   position: relative;
@@ -148,17 +174,7 @@ body {
   overscroll-behavior-x: none;
 }
 
-/* 环境渐变固定背景层：作为所有玻璃卡 backdrop-filter 的折射来源。
-   不用 background-attachment（iOS Safari 支持不稳定），改独立 fixed 层 */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: var(--color-app-bg);
-}
-
+/* 纸感背景由 body 直接承载，无需 fixed 折射层（玻璃已去除） */
 #app {
   position: relative;
   z-index: 1;
@@ -242,6 +258,13 @@ html {
   -webkit-user-select: none;
 }
 
+/* 金额/数字统一等宽表格数字（沉浸式体系） */
+.num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+  letter-spacing: -0.01em;
+}
+
 /* Shared glass card mixin */
 .glass-card {
   background: var(--glass-highlight), var(--color-card);
@@ -282,70 +305,26 @@ html {
 }
 
 /* ════════════════════════════════════════════════════════════
-   Liquid Glass 光效层（批次 C）
+   墨色账本 · 移除 Liquid Glass 光效层（镜面高光已随纸感设计删除）
    ════════════════════════════════════════════════════════════ */
 
-/* 全局镜面高光：跟随指针的"光线掠过玻璃"层。
-   由 useLiquidSheen 动态注入位置变量，仅一层，固定于视口 */
-.liquid-sheen {
-  position: fixed;
-  inset: 0;
-  z-index: 9990;
-  pointer-events: none;
-  mix-blend-mode: soft-light;
-  background: radial-gradient(
-    420px circle at var(--sx, 50%) var(--sy, -20%),
-    rgba(255, 255, 255, 0.55),
-    rgba(255, 255, 255, 0) 46%
-  );
-  opacity: 0;
-  transition: opacity 0.35s ease;
-  will-change: opacity, background;
-}
-
-.liquid-sheen.is-active { opacity: 1; }
-
-/* 深色下更克制，防止过曝 */
-:root.dark .liquid-sheen {
-  background: radial-gradient(
-    420px circle at var(--sx, 50%) var(--sy, -20%),
-    rgba(255, 255, 255, 0.22),
-    rgba(255, 255, 255, 0) 46%
-  );
-  mix-blend-mode: overlay;
-}
-
-/* 按下时的内聚冷光脉冲（作用于玻璃卡，改善按压反馈） */
+/* 按下时的内聚轻压反馈（纸感：仅缩放 + 阴影收敛，无冷光脉冲） */
 .glass-card {
   transition: background-color 0.2s, border-color 0.2s, color 0.2s,
               box-shadow 0.15s, transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .glass-card:active {
   transform: scale(0.985);
-  box-shadow: var(--glass-shadow), 0 0 0 1px var(--glass-border) inset,
-              0 0 18px rgba(255, 255, 255, 0.45) inset;
+  box-shadow: var(--glass-shadow);
 }
 
-/* 不支持 backdrop-filter 的旧浏览器：把玻璃令牌降为近实色，
-   保证内容在彩色环境上仍清晰可读，并关闭动态高光 */
+/* 不支持 backdrop-filter 的旧浏览器：纸感风格本就无需模糊，
+   无需额外降级；仅收敛阴影保证可读 */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .liquid-sheen { opacity: 0 !important; display: none; }
-  :root {
-    --color-card: rgba(255, 255, 255, 0.94);
-    --color-sheet-bg: rgba(255, 255, 255, 0.97);
-    --color-tabbar-bg: #f4f4f7;
-    --glass-border: rgba(60, 60, 67, 0.1);
-    --glass-highlight: none;
-  }
-  :root.dark {
-    --color-card: #1c1c1f;
-    --color-sheet-bg: #1c1c1f;
-    --color-tabbar-bg: #161618;
-  }
+  .glass-card { box-shadow: var(--shadow-sm); }
 }
 
-/* 减少动态效果：彻底关闭高光与缩放反馈 */
+/* 减少动态效果：关闭缩放反馈 */
 @media (prefers-reduced-motion: reduce) {
-  .liquid-sheen { opacity: 0 !important; display: none; }
-  .glass-card:active { transform: none; }
+  .glass-card:active { transform: none; box-shadow: var(--glass-shadow); }
 }

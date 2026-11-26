@@ -5,7 +5,7 @@
         <span class="row-icon"><TwemojiIcon emoji="⚡" /></span>
         <span class="row-label">管理快记模板</span>
       </div>
-      <svg class="chevron" :class="{ rotated: expanded }" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c7c7cc" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9" /></svg>
+      <svg class="chevron" :class="{ rotated: expanded }" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--ink3)" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9" /></svg>
     </button>
     <div v-if="expanded" class="expanded-content">
       <template v-if="store.templates.length === 0">
@@ -35,7 +35,7 @@
             <span class="qt-row-amount">{{ formatShortCurrency(tpl.amount) }}</span>
           </div>
           <button class="qt-edit-btn" @click="startEdit(tpl)">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--ink2)" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           </button>
         </div>
       </div>
@@ -300,63 +300,42 @@ function showToast(msg: string) {
 </script>
 
 <style scoped>
-/* ── Collapsible header (matches RuleManager pattern) ── */
+/* ═ 沉浸式 ═ */
+
 .section-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 12px 14px;
+  padding: 16px 0;
   border: none;
   background: none;
   font-family: inherit;
   font-size: var(--fs-title);
-  color: var(--color-text);
+  color: var(--ink);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   text-align: left;
-  transition: background 0.1s;
 }
-.section-row:active { background: var(--color-press); }
+.section-row:active { background: none; }
 
-.row-left { display: flex; align-items: center; gap: 10px; }
-.row-icon { font-size: 18px; line-height: 1; }
-.row-label { font-size: var(--fs-title); color: var(--color-text); }
+.row-left { display: flex; align-items: center; gap: 11px; }
+.row-icon { font-size: 17px; line-height: 1; }
+.row-label { font-size: 15px; font-weight: 600; color: var(--ink); }
 
-.chevron { color: var(--color-placeholder); flex-shrink: 0; transition: transform 0.2s; }
+.chevron { color: var(--ink3); flex-shrink: 0; transition: transform 0.2s; }
 .chevron.rotated { transform: rotate(180deg); }
 
-.expanded-content { padding: 4px 14px 12px; }
+.expanded-content { padding: 6px 0 10px; border-top: 1px solid var(--line-soft); }
+.empty-hint { text-align: center; padding: 12px; font-size: var(--fs-body); color: var(--ink3); }
 
-.qt-empty {
-  text-align: center;
-  padding: 12px;
-}
+.qt-empty { text-align: center; padding: 12px; }
+.qt-empty-text { font-size: var(--fs-body); color: var(--ink3); }
+.qt-empty-hint { font-size: var(--fs-body); color: var(--ink3); margin-top: 2px; }
 
-.qt-empty-text {
-  font-size: var(--fs-body);
-  color: var(--color-secondary-text);
-}
-
-.qt-empty-hint {
-  font-size: var(--fs-body);
-  color: var(--color-secondary-text);
-  margin-top: 2px;
-}
-
-.qt-row {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--color-separator);
-}
-
-.qt-row:last-child {
-  border-bottom: none;
-}
-
-.qt-row.drag-over { background: rgba(0, 122, 255, 0.08); }
+.qt-row { display: flex; align-items: center; gap: 4px; padding: 10px 0; }
+.qt-row + .qt-row { border-top: 1px solid var(--line-soft); }
+.qt-row.drag-over { background: var(--act-bg); }
 
 .qt-drag-handle {
   display: flex;
@@ -370,17 +349,15 @@ function showToast(msg: string) {
   -webkit-tap-highlight-color: transparent;
   touch-action: none;
 }
-
 .qt-drag-handle-icon {
   font-size: 16px;
-  color: var(--color-placeholder);
+  color: var(--ink3);
   user-select: none;
   line-height: 1;
   padding: 16px 10px;
   border-radius: 8px;
 }
-
-.qt-drag-handle-icon:active { background: var(--color-press); }
+.qt-drag-handle-icon:active { background: var(--act-bg); }
 
 .qt-row-content {
   flex: 1;
@@ -391,26 +368,19 @@ function showToast(msg: string) {
   padding: 4px 0;
   min-width: 0;
 }
-
-.qt-row-icon {
-  font-size: 16px;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
+.qt-row-icon { font-size: 16px; line-height: 1; flex-shrink: 0; }
 .qt-row-name {
   font-size: var(--fs-body);
   font-weight: 500;
-  color: var(--color-text);
+  color: var(--ink);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
 .qt-row-amount {
   font-size: var(--fs-ui);
   font-weight: 600;
-  color: var(--color-secondary-text);
+  color: var(--ink3);
   margin-left: auto;
   margin-right: 4px;
   flex-shrink: 0;
@@ -426,12 +396,10 @@ function showToast(msg: string) {
   align-items: center;
   justify-content: center;
   border-radius: 6px;
+  color: var(--ink3);
   -webkit-tap-highlight-color: transparent;
 }
-
-.qt-edit-btn:active {
-  background: var(--color-bg);
-}
+.qt-edit-btn:active { background: var(--act-bg); }
 
 .qt-add-btn {
   display: flex;
@@ -440,26 +408,19 @@ function showToast(msg: string) {
   gap: 6px;
   width: 100%;
   padding: 10px;
-  border: 1px dashed var(--color-placeholder);
-  border-radius: 8px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
   background: none;
   font-size: var(--fs-body);
-  color: var(--color-primary);
+  font-weight: 600;
+  color: var(--ink);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   font-family: inherit;
-  margin-top: 8px;
+  margin-top: 10px;
 }
-
-.qt-add-btn:active {
-  background: var(--color-bg);
-}
-
-.qt-add-icon {
-  font-size: 18px;
-  font-weight: 300;
-  line-height: 1;
-}
+.qt-add-btn:active { background: var(--act-bg); }
+.qt-add-icon { font-size: 18px; font-weight: 300; line-height: 1; }
 
 /* ── Dialog ── */
 .qt-dialog-overlay {
@@ -478,12 +439,10 @@ function showToast(msg: string) {
   max-width: 480px;
   max-height: 85vh;
   overflow-y: auto;
-  background: var(--glass-highlight), var(--color-sheet-bg);
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  border: 1px solid var(--glass-border);
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-bottom: none;
-  border-radius: 16px 16px 0 0;
+  border-radius: var(--radius-big) var(--radius-big) 0 0;
   animation: slideUp 0.3s ease;
   padding: 24px 20px 32px;
 }
@@ -491,7 +450,7 @@ function showToast(msg: string) {
 .qt-dialog-title {
   font-size: var(--fs-heading);
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--ink);
   text-align: center;
   margin-bottom: 20px;
 }
@@ -500,7 +459,7 @@ function showToast(msg: string) {
   display: block;
   font-size: var(--fs-ui);
   font-weight: 500;
-  color: var(--color-secondary-text);
+  color: var(--ink2);
   margin-bottom: 6px;
   margin-top: 14px;
 }
@@ -513,11 +472,11 @@ function showToast(msg: string) {
   display: block;
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid var(--color-separator);
+  border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  background: var(--color-input-bg);
+  background: var(--surface);
   font-size: var(--fs-title);
-  color: var(--color-text);
+  color: var(--ink);
   outline: none;
   font-family: inherit;
   box-sizing: border-box;
@@ -525,8 +484,8 @@ function showToast(msg: string) {
 }
 
 .qt-input:focus, .qt-select:focus {
-  background: var(--color-surface);
-  border-color: var(--color-primary);
+  background: var(--surface);
+  border-color: var(--ink);
 }
 
 .qt-mode-group {
@@ -539,10 +498,10 @@ function showToast(msg: string) {
   padding: 8px 0;
   border: none;
   border-radius: var(--radius-sm);
-  background: var(--color-bg);
+  background: var(--act-bg);
   font-size: var(--fs-body);
   font-weight: 500;
-  color: var(--color-secondary-text);
+  color: var(--ink2);
   cursor: pointer;
   font-family: inherit;
   transition: all 0.15s;
@@ -550,8 +509,8 @@ function showToast(msg: string) {
 }
 
 .qt-mode-btn.active {
-  background: var(--color-primary);
-  color: #fff;
+  background: var(--ink);
+  color: var(--accent-fg);
 }
 
 .qt-dialog-actions {
@@ -577,20 +536,20 @@ function showToast(msg: string) {
 .qt-btn:disabled { opacity: 0.4; }
 
 .qt-btn--cancel {
-  background: var(--color-bg);
-  color: var(--color-text);
+  background: var(--act-bg);
+  color: var(--ink);
   flex: 0.5;
 }
 
 .qt-btn--confirm {
-  background: var(--color-primary);
-  color: #fff;
+  background: var(--ink);
+  color: var(--accent-fg);
   flex: 0.5;
 }
 
 .qt-btn--danger {
-  background: var(--color-destructive);
-  color: #fff;
+  background: var(--exp);
+  color: var(--accent-fg);
   flex: 0.5;
 }
 
@@ -600,8 +559,8 @@ function showToast(msg: string) {
   bottom: 120px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
+  background: var(--ink);
+  color: var(--accent-fg);
   font-size: var(--fs-body);
   font-weight: 500;
   padding: 10px 24px;
@@ -609,7 +568,6 @@ function showToast(msg: string) {
   white-space: nowrap;
   z-index: 2000;
   pointer-events: none;
-  backdrop-filter: blur(4px);
 }
 
 @keyframes fadeIn {

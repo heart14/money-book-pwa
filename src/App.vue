@@ -15,12 +15,10 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useUiStore } from '@/stores/uiStore'
 import { hashPIN, getStoredPINHash } from '@/utils/crypto'
-import { useLiquidSheen } from '@/composables/useLiquidSheen'
 import MobileLayout from '@/components/layout/MobileLayout.vue'
 import PinDialog from '@/components/common/PinDialog.vue'
 
 const uiStore = useUiStore()
-useLiquidSheen()
 
 // ── Theme management ──
 function resolveTheme(): 'light' | 'dark' {
@@ -34,7 +32,7 @@ function applyTheme() {
   const isDark = resolveTheme() === 'dark'
   document.documentElement.classList.toggle('dark', isDark)
   const meta = document.querySelector('meta[name="theme-color"]')
-  if (meta) meta.setAttribute('content', isDark ? '#000000' : '#f2f2f6')
+  if (meta) meta.setAttribute('content', isDark ? '#0f1013' : '#f3f4f5')
 }
 
 function applyFontSize() {
