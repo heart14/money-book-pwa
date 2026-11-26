@@ -884,7 +884,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 .transactions-page {
   min-height: 100%;
   min-height: 100svh;
-  padding: 0 24px 24px;
+  padding: 0 16px 16px;
   background: transparent;
   padding-bottom: calc(24px + env(safe-area-inset-bottom));
 }
