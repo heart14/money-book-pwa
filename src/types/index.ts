@@ -1,11 +1,3 @@
-export interface Account {
-  id?: number
-  name: string
-  balance: number
-  icon: string
-  sort: number
-}
-
 export interface Category {
   id?: number
   type: 'expense' | 'income' | 'transfer'

@@ -1,8 +1,7 @@
 import Dexie, { type Table } from 'dexie'
-import type { Account, Category, Transaction, RecurringRule, Tag, QuickTemplate } from '@/types'
+import type { Category, Transaction, RecurringRule, Tag, QuickTemplate } from '@/types'
 
 export class MoneyBookDB extends Dexie {
-  accounts!: Table<Account, number>
   categories!: Table<Category, number>
   transactions!: Table<Transaction, number>
   recurringRules!: Table<RecurringRule, number>
@@ -52,6 +51,15 @@ export class MoneyBookDB extends Dexie {
     // v5: 快捷记账气泡模板
     this.version(5).stores({
       accounts: '++id, name',
+      categories: '++id, type, parentId',
+      transactions: '++id, type, date, categoryId, [date+id]',
+      recurringRules: '++id, enabled, dayOfMonth',
+      tags: '++id, &name',
+      quickTemplates: '++id, type, sort',
+    })
+
+    // v6: 移除独立账户体系。accounts 表不再被 schema 声明，Dexie 升级时自动丢弃该表。
+    this.version(6).stores({
       categories: '++id, type, parentId',
       transactions: '++id, type, date, categoryId, [date+id]',
       recurringRules: '++id, enabled, dayOfMonth',

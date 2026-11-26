@@ -1,19 +1,5 @@
 import { db } from './index'
-import type { Account, Category } from '@/types'
-
-async function seedAccounts() {
-  const count = await db.accounts.count()
-  if (count > 0) return
-
-  const accounts: Account[] = [
-    { name: '银行卡', balance: 0, icon: '💳', sort: 1 },
-    { name: '支付宝', balance: 0, icon: '💳', sort: 2 },
-    { name: '微信', balance: 0, icon: '💳', sort: 3 },
-    { name: '现金', balance: 0, icon: '💳', sort: 4 },
-  ]
-
-  await db.accounts.bulkAdd(accounts)
-}
+import type { Category } from '@/types'
 
 async function seedCategories() {
   const count = await db.categories.count()
@@ -178,6 +164,5 @@ async function seedCategories() {
 }
 
 export async function seedData() {
-  await seedAccounts()
   await seedCategories()
 }

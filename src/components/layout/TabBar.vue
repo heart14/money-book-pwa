@@ -54,16 +54,6 @@
       </div>
     </div>
 
-    <!-- 账户 -->
-    <button class="tab-item" :class="{ on: currentRoute === 'accounts' }" @click="navigate('accounts')">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 4px;">
-        <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-        <line x1="2" y1="10" x2="22" y2="10"></line>
-        <path d="M16 14h2"></path>
-      </svg>
-      <span class="tab-label">账户</span>
-    </button>
-
     <!-- 设置 -->
     <button class="tab-item" :class="{ on: currentRoute === 'settings' }" @click="navigate('settings')">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 4px;">

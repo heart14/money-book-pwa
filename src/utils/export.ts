@@ -1,12 +1,11 @@
 import { db } from '@/db'
 
 /**
- * Export all data (accounts, categories, transactions, tags, recurring rules)
+ * Export all data (categories, transactions, tags, recurring rules, quick templates)
  * as a JSON file download.
  */
 export async function exportData(): Promise<void> {
-  const [accounts, categories, transactions, tags, recurringRules, quickTemplates] = await Promise.all([
-    db.accounts.toArray(),
+  const [categories, transactions, tags, recurringRules, quickTemplates] = await Promise.all([
     db.categories.toArray(),
     db.transactions.toArray(),
     db.tags.toArray(),
@@ -14,7 +13,7 @@ export async function exportData(): Promise<void> {
     db.quickTemplates.toArray(),
   ])
 
-  const data = { accounts, categories, transactions, tags, recurringRules, quickTemplates }
+  const data = { categories, transactions, tags, recurringRules, quickTemplates }
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
 
@@ -46,16 +45,14 @@ export async function importData(file: File): Promise<void> {
     throw new Error('文件格式无效，请选择有效的 JSON 备份文件')
   }
 
-  const accounts = data.accounts ?? []
   const categories = data.categories ?? []
   const transactions = data.transactions ?? []
   const tags = data.tags ?? []
   const recurringRules = data.recurringRules ?? []
   const quickTemplates = data.quickTemplates ?? []
 
-  await db.transaction('rw', [db.accounts, db.categories, db.transactions, db.tags, db.recurringRules, db.quickTemplates], async () => {
+  await db.transaction('rw', [db.categories, db.transactions, db.tags, db.recurringRules, db.quickTemplates], async () => {
     await Promise.all([
-      db.accounts.clear(),
       db.categories.clear(),
       db.transactions.clear(),
       db.tags.clear(),
@@ -64,7 +61,6 @@ export async function importData(file: File): Promise<void> {
     ])
 
     await Promise.all([
-      db.accounts.bulkAdd(accounts),
       db.categories.bulkAdd(categories),
       db.transactions.bulkAdd(transactions),
       db.recurringRules.bulkAdd(recurringRules),
@@ -91,9 +87,8 @@ export async function importData(file: File): Promise<void> {
  * Destroy all data: clear all tables, delete all caches, and unregister service workers.
  */
 export async function destroyAllData(): Promise<void> {
-  await db.transaction('rw', [db.accounts, db.categories, db.transactions, db.tags, db.recurringRules, db.quickTemplates], async () => {
+  await db.transaction('rw', [db.categories, db.transactions, db.tags, db.recurringRules, db.quickTemplates], async () => {
     await Promise.all([
-      db.accounts.clear(),
       db.categories.clear(),
       db.transactions.clear(),
       db.tags.clear(),

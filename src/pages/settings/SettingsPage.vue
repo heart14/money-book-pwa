@@ -65,14 +65,6 @@
         </div>
       </section>
 
-      <!-- ── 4. 账户管理 ── -->
-      <section class="se-group glass">
-        <span class="se-group-label">账户管理</span>
-        <div class="se-rows">
-          <AccountManager />
-        </div>
-      </section>
-
       <!-- ── 5. 分类与标签 ── -->
       <section class="se-group glass">
         <span class="se-group-label">分类与标签</span>
@@ -148,7 +140,6 @@ import { useUiStore } from '@/stores/uiStore'
 import { getStoredPINHash } from '@/utils/crypto'
 import { exportData, importData, destroyAllData } from '@/utils/export'
 import SecurityLock from './SecurityLock.vue'
-import AccountManager from './AccountManager.vue'
 import CategoryManager from './CategoryManager.vue'
 import TagManager from './TagManager.vue'
 import RuleManager from './RuleManager.vue'
