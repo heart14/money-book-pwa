@@ -798,14 +798,14 @@ function rankLabel(index: number): string {
 }
 
 /* ── 沉浸式头部 ── */
-.st-head { display: flex; align-items: center; justify-content: space-between; padding: 20px 2px 8px; }
+.st-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 2px 14px; }
 .st-title { font-size: var(--fs-page-title); font-weight: 800; letter-spacing: -0.03em; color: var(--ink); }
 .st-mode { display: flex; background: var(--act-bg); border-radius: 10px; padding: 3px; gap: 2px; }
 .st-mode-btn { padding: 5px 12px; border: none; background: transparent; font-size: var(--fs-small); font-weight: 500; color: var(--ink3); border-radius: 8px; cursor: pointer; transition: all 0.15s; font-family: inherit; }
 .st-mode-btn.on { background: var(--ink); color: var(--accent-fg); font-weight: 600; }
 
 /* ── 期间选择 ── */
-.st-period { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 10px 2px 0; }
+.st-period { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 14px 2px 0; }
 .st-period--custom { gap: 4px; flex-wrap: nowrap; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
 .st-period--custom .st-period-nav { width: 26px; height: 30px; flex-shrink: 0; }
 .st-period--custom .st-period-label { gap: 0; margin: 0 2px; min-width: auto; }
@@ -815,13 +815,13 @@ function rankLabel(index: number): string {
 .st-period-label { font-size: var(--fs-title); font-weight: 600; color: var(--ink); min-width: 104px; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 2px; }
 
 /* ── 收支 hero ── */
-.st-hero { padding: 20px 18px 24px; border-radius: var(--radius-big); margin: 8px 0 30px; }
+.st-hero { padding: 14px 18px 14px; border-radius: var(--radius-big); margin: 14px 0; }
 .st-hero-head { display: flex; align-items: center; justify-content: space-between; }
 .st-hero-label { font-size: var(--fs-ui); color: var(--ink2); font-weight: 600; letter-spacing: 0.3px; }
 .st-hero-seg { display: flex; background: var(--act-bg); border-radius: 8px; padding: 2px; gap: 2px; }
 .st-hero-seg-btn { padding: 3px 12px; border: none; background: transparent; font-size: var(--fs-small); font-weight: 500; color: var(--ink3); border-radius: 6px; cursor: pointer; transition: all 0.15s; font-family: inherit; }
 .st-hero-seg-btn.on { background: var(--ink); color: var(--accent-fg); font-weight: 600; }
-.st-hero-amount { font-size: var(--fs-amount-xl); font-weight: 800; letter-spacing: -0.04em; margin: 8px 0 10px; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.st-hero-amount { font-size: var(--fs-amount-xl); font-weight: 800; letter-spacing: -0.04em; margin: 14px 0; font-variant-numeric: tabular-nums; line-height: 1.1; }
 .c-inc { color: var(--inc); }
 .c-exp { color: var(--exp); }
 .st-hero-comps { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-bottom: 14px; align-items: center; }
@@ -835,9 +835,9 @@ function rankLabel(index: number): string {
 .st-hero-sub b { font-weight: 700; }
 
 /* ── 连续区块 ── */
-.st-block { padding: 18px; border-radius: var(--radius-big); margin-bottom: 20px; }
-.st-block-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-.st-label { font-size: var(--fs-ui); font-weight: 600; color: var(--ink2); margin-bottom: 16px; display: block; }
+.st-block { padding: 14px 18px; border-radius: var(--radius-big); margin-bottom: 14px; }
+.st-block-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.st-label { font-size: var(--fs-ui); font-weight: 600; color: var(--ink2); margin-bottom: 14px; display: block; }
 .st-block-row .st-label { margin-bottom: 0; }
 .st-seg { display: flex; background: var(--act-bg); border-radius: 8px; padding: 2px; gap: 2px; }
 .st-seg-btn { padding: 3px 12px; border: none; background: transparent; font-size: var(--fs-small); font-weight: 500; color: var(--ink3); border-radius: 6px; cursor: pointer; transition: all 0.15s; font-family: inherit; }
