@@ -922,7 +922,7 @@ async function handleEditSave(id: number, updates: Partial<Transaction>) {
 .tx-search-input { flex: 1; min-width: 0; border: none; background: none; font-size: 15px; color: var(--ink); outline: none; font-family: inherit; }
 .tx-search-input::placeholder { color: var(--ink3); }
 .tx-search-clear { width: 20px; height: 20px; border: none; background: var(--line); color: var(--accent-fg); border-radius: 999px; font-size: 11px; cursor: pointer; display: grid; place-items: center; flex-shrink: 0; line-height: 1; }
-.tx-search-dropdown { position: absolute; top: calc(100% + 6px); left: 0; min-width: 128px; /* 玻璃浮层，背景由 .glass 提供 */ border-radius: 12px; box-shadow: 0 10px 30px -12px rgba(22,24,28,0.25); padding: 6px; z-index: 1000; }
+.tx-search-dropdown { position: absolute; top: calc(100% + 6px); left: 0; min-width: 128px; /* 玻璃浮层，背景/描边/阴影由 .glass 提供 */ border-radius: 12px; padding: 6px; z-index: 1000; }
 .tx-search-option { display: flex; align-items: center; gap: 6px; width: 100%; padding: 9px 12px; border: none; background: none; font-size: 13px; color: var(--ink); cursor: pointer; border-radius: 8px; text-align: left; font-family: inherit; white-space: nowrap; }
 .tx-search-option:active { background: var(--act-bg); }
 .tx-search-option.active { color: var(--ink); font-weight: 600; }

@@ -595,7 +595,7 @@ watch(() => uiStore.bookingSaveTrigger, () => {
 
 /* 半屏九宫格 */
 .bk-sheet-backdrop { position: absolute; inset: 0; background: var(--color-overlay, rgba(0,0,0,0.35)); z-index: 12; display: flex; align-items: flex-end; }
-.bk-sheet { width: 100%; /* background 由全局 .glass 提供 */ border-radius: 22px 22px 0 0; padding: 10px 24px 28px; box-shadow: 0 -10px 40px -16px rgba(0,0,0,0.3); }
+.bk-sheet { width: 100%; /* 背景/描边/阴影由全局 .glass 提供 */ border-radius: 22px 22px 0 0; padding: 10px 24px 28px; }
 .rs-handle { width: 36px; height: 4px; border-radius: 2px; background: var(--ink3); opacity: 0.4; margin: 0 auto 12px; }
 .bk-sheet-title { font-size: 16px; font-weight: 700; text-align: center; margin-bottom: 18px; color: var(--ink); }
 .bk-sheet-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
