@@ -6,7 +6,7 @@
       <header class="se-title">设置</header>
 
       <!-- ── 1. 安全 ── -->
-      <section class="se-group">
+      <section class="se-group glass">
         <span class="se-group-label">安全</span>
         <div class="se-rows">
           <button class="se-row" @click="currentView = 'security'">
@@ -19,7 +19,7 @@
       </section>
 
       <!-- ── 2. 外观 ── -->
-      <section class="se-group">
+      <section class="se-group glass">
         <span class="se-group-label">外观</span>
         <div class="se-rows">
           <button class="se-row" @click="showAppearance = !showAppearance">
@@ -46,7 +46,7 @@
       </section>
 
       <!-- ── 3. 数据管理 ── -->
-      <section class="se-group">
+      <section class="se-group glass">
         <span class="se-group-label">数据管理</span>
         <div class="se-rows">
           <button class="se-row" @click="handleExport">
@@ -66,7 +66,7 @@
       </section>
 
       <!-- ── 4. 账户管理 ── -->
-      <section class="se-group">
+      <section class="se-group glass">
         <span class="se-group-label">账户管理</span>
         <div class="se-rows">
           <AccountManager />
@@ -74,7 +74,7 @@
       </section>
 
       <!-- ── 5. 分类与标签 ── -->
-      <section class="se-group">
+      <section class="se-group glass">
         <span class="se-group-label">分类与标签</span>
         <div class="se-rows">
           <CategoryManager />
@@ -83,7 +83,7 @@
       </section>
 
       <!-- ── 6. 模板管理 ── -->
-      <section class="se-group">
+      <section class="se-group glass">
         <span class="se-group-label">模板管理</span>
         <div class="se-rows">
           <RuleManager />
@@ -92,7 +92,7 @@
       </section>
 
       <!-- ── 7. 关于 ── -->
-      <section class="se-group">
+      <section class="se-group glass">
         <span class="se-group-label">关于</span>
         <div class="se-rows">
           <div class="se-row no-hover">
@@ -243,7 +243,7 @@ async function handleDestroy() {
   min-height: 100%;
   min-height: 100svh;
   padding: 0 24px 24px;
-  background: var(--surface);
+  background: transparent;
   padding-bottom: calc(24px + env(safe-area-inset-bottom));
 }
 
@@ -251,7 +251,7 @@ async function handleDestroy() {
 .se-title { font-size: 28px; font-weight: 800; letter-spacing: -0.03em; color: var(--ink); padding: 20px 2px 6px; margin-bottom: 10px; }
 
 /* ── 抽屉式分组 ── */
-.se-group { margin-bottom: 30px; }
+.se-group { margin-bottom: 30px; padding: 8px 16px 12px; border-radius: var(--radius-big); }
 .se-group-label { display: block; font-size: 12px; font-weight: 600; color: var(--ink3); letter-spacing: 0.3px; margin: 0 2px 4px; }
 
 .se-rows { }
@@ -289,7 +289,7 @@ async function handleDestroy() {
 .se-setting-label { font-size: 14px; color: var(--ink); font-weight: 500; }
 .se-toggle { display: flex; background: var(--act-bg); border-radius: 8px; padding: 2px; gap: 2px; }
 .se-toggle-btn { padding: 4px 11px; border: none; background: transparent; font-size: 12px; font-weight: 500; color: var(--ink3); border-radius: 7px; cursor: pointer; transition: all 0.15s; font-family: inherit; }
-.se-toggle-btn.on { background: var(--surface); color: var(--ink); font-weight: 600; }
+.se-toggle-btn.on { background: var(--ink); color: var(--accent-fg); font-weight: 600; }
 
 /* Toast messages */
 .data-msg {

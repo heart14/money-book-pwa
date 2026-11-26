@@ -282,7 +282,7 @@ watch(() => props.resetKey, () => {
   max-height: 84px;
   border: 1px solid var(--glass-border);
   border-radius: 50%;
-  background: var(--glass-highlight), var(--color-card);
+  background: var(--glass-tint);
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   cursor: pointer;

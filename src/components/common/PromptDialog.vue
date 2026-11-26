@@ -78,7 +78,7 @@ function onCancel() {
 
 .prompt-dialog {
   width: 280px;
-  background: var(--glass-highlight), var(--color-sheet-bg);
+  background: var(--glass-tint);
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   border: 1px solid var(--glass-border);
