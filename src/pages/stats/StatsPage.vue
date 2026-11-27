@@ -53,7 +53,7 @@
           <button class="st-hero-seg-btn" :class="{ on: mode === 'income' }" @click="mode = 'income'">收入</button>
         </div>
       </div>
-      <div class="st-hero-amount num" :class="mode === 'expense' ? 'c-exp' : 'c-inc'">{{ formatCurrency(heroAmount) }}</div>
+      <div class="st-hero-amount num" :class="mode === 'expense' ? 'c-exp' : 'c-inc'" :style="{ '--amount-scale': heroAmountScale }">{{ formatCurrency(heroAmount) }}</div>
       <div class="st-hero-comps">
         <span class="st-hero-comp">
           <span class="st-hero-comp-label">{{ prevCompareLabel }}</span>
@@ -352,6 +352,14 @@ const heroAmount = computed(() => mode.value === 'expense' ? totalExpense.value 
 const heroSubAmount = computed(() => mode.value === 'expense' ? totalIncome.value : totalExpense.value)
 const heroPrev = computed(() => mode.value === 'expense' ? prevExpense.value : prevIncome.value)
 const heroYoy = computed(() => mode.value === 'expense' ? yoyExpense.value : yoyIncome.value)
+
+// 本期大数字：按格式化后字符数自动缩字，避免过长金额横向溢出卡片/屏幕
+const heroAmountScale = computed(() => {
+  const len = formatCurrency(heroAmount.value).length
+  if (len <= 10) return 1
+  // 每多约 1.7 字符降一档，下限 0.5（约 34px），配合 overflow-wrap 兜底换行
+  return Math.max(0.5, Math.round((1 - (len - 10) * 0.06) * 100) / 100)
+})
 
 // ---------- 环比 / 同比 对比区间 ----------
 
@@ -828,7 +836,7 @@ function rankLabel(index: number): string {
 .st-hero-seg { display: flex; background: var(--act-bg); border-radius: 8px; padding: 2px; gap: 2px; }
 .st-hero-seg-btn { padding: 3px 12px; border: none; background: transparent; font-size: var(--fs-small); font-weight: 500; color: var(--ink3); border-radius: 6px; cursor: pointer; transition: all 0.15s; font-family: inherit; }
 .st-hero-seg-btn.on { background: var(--ink); color: var(--accent-fg); font-weight: 600; }
-.st-hero-amount { font-size: var(--fs-amount-xl); font-weight: 800; letter-spacing: -0.04em; margin: 14px 0; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.st-hero-amount { font-size: calc(var(--fs-amount-xl) * var(--amount-scale, 1)); font-weight: 800; letter-spacing: -0.04em; margin: 14px 0; font-variant-numeric: tabular-nums; line-height: 1.1; overflow-wrap: anywhere; word-break: break-word; }
 .c-inc { color: var(--inc); }
 .c-exp { color: var(--exp); }
 .st-hero-comps { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-bottom: 14px; align-items: center; }
