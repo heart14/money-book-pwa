@@ -176,7 +176,7 @@ onUnmounted(() => {
 .diary-page {
   height: 100%;
   height: 100svh;
-  padding: 0 8px;
+  padding: 0 16px;
   display: flex;
   flex-direction: column;
   background: transparent;
@@ -205,7 +205,6 @@ onUnmounted(() => {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: background 0.15s, color 0.15s;
-  margin-right: -8px; /* 抵消页面 8px 内边距，让按钮贴齐屏幕边缘 */
 }
 .di-add:active { background: var(--act-bg); }
 
