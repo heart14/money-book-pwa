@@ -77,6 +77,31 @@ export class MoneyBookDB extends Dexie {
       quickTemplates: '++id, type, sort',
       diaries: '++id, date',
     })
+
+    // v8: 日记「一天一条」强制——date 改为唯一索引 &date。
+    //   迁移时先按日期去重（同日期仅保留 id 最大的一条），避免唯一索引建立失败。
+    this.version(8).stores({
+      categories: '++id, type, parentId',
+      transactions: '++id, type, date, categoryId, [date+id]',
+      recurringRules: '++id, enabled, dayOfMonth',
+      tags: '++id, &name',
+      quickTemplates: '++id, type, sort',
+      diaries: '++id, &date',
+    }).upgrade(async (tx) => {
+      const all = await tx.table('diaries').toArray()
+      const newestByDate = new Map<string, number>() // date → 最大 id
+      for (const d of all) {
+        if (d.id == null) continue
+        const prev = newestByDate.get(d.date)
+        if (prev == null || d.id > prev) newestByDate.set(d.date, d.id)
+      }
+      const toRemove = all
+        .filter((d) => d.id != null && newestByDate.get(d.date) !== d.id)
+        .map((d) => d.id as number)
+      if (toRemove.length > 0) {
+        await tx.table('diaries').bulkDelete(toRemove)
+      }
+    })
   }
 }
 

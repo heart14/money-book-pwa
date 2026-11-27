@@ -47,7 +47,7 @@
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { db } from '@/db'
 import { useLiveQuery } from '@/composables/useLiveQuery'
-import { formatDate } from '@/utils/format'
+import { formatDate, toDateString } from '@/utils/format'
 import type { Diary } from '@/types'
 import EmptyState from '@/components/common/EmptyState.vue'
 import DiaryEditSheet from '@/components/diary/DiaryEditSheet.vue'
@@ -67,8 +67,15 @@ const diaries = computed(() => allDiaries.value)
 const sheetVisible = ref(false)
 const editingDiary = ref<Diary | null>(null)
 
-function openNew() {
-  editingDiary.value = null
+async function openNew() {
+  // 一天一条：若今天已有日记，直接打开今天那篇继续编辑，避免产生第二条
+  const today = toDateString(new Date())
+  const existing = await db.diaries.where('date').equals(today).first()
+  if (existing) {
+    editingDiary.value = existing
+  } else {
+    editingDiary.value = null
+  }
   sheetVisible.value = true
 }
 

@@ -1,77 +1,74 @@
 <template>
-  <Teleport to="body">
-    <div class="sheet-overlay" @click.self="$emit('close')">
-      <div class="sheet">
-        <div class="sheet-handle"></div>
-        <div class="sheet-body">
-          <h3 class="edit-sheet-title">编辑交易</h3>
-          <div class="edit-form">
-            <div class="edit-row">
-              <label class="edit-label">标题</label>
-              <input v-model="form.title" class="edit-input" maxlength="100" />
-            </div>
-            <div class="edit-row">
-              <label class="edit-label">金额</label>
-              <div class="edit-amount-wrap">
-                <span class="edit-amount-sign">¥</span>
-                <input v-model.number="form.amountYuan" class="edit-input edit-amount-input" type="number" step="0.01" min="0" />
-              </div>
-            </div>
-            <div class="edit-row">
-              <label class="edit-label">日期</label>
-              <div class="edit-input edit-picker-trigger" @click="datePickerOpen = true">
-                {{ form.date }}
-              </div>
-            </div>
-            <div class="edit-row">
-              <label class="edit-label">时间</label>
-              <div class="edit-input edit-picker-trigger" @click="timePickerOpen = true">
-                {{ form.time }}
-              </div>
-            </div>
-            <div class="edit-row">
-              <label class="edit-label">备注</label>
-              <input v-model="form.note" class="edit-input" maxlength="200" />
-            </div>
-            <div class="edit-row">
-              <label class="edit-label">标签</label>
-              <div class="edit-tags-area">
-                <span v-for="(tag, idx) in form.tags" :key="idx" class="edit-tag-chip">
-                  {{ tag }}
-                  <button class="edit-tag-remove" @click="form.tags.splice(idx, 1)">&times;</button>
-                </span>
-                <input
-                  v-model="tagInput"
-                  class="edit-tag-input"
-                  placeholder="添加标签"
-                  maxlength="20"
-                  @keydown.enter.prevent="addTag"
-                  @keydown.,.prevent="addTag"
-                />
-              </div>
-            </div>
-            <div class="edit-row edit-row--meta">
-              <span class="edit-label">分类</span>
-              <span class="edit-meta">{{ categoryName }}</span>
-            </div>
-          </div>
-          <div class="edit-actions">
-            <button class="btn btn-secondary" @click="$emit('close')">取消</button>
-            <button class="btn btn-primary" :disabled="!canSave" @click="handleSave">保存</button>
-          </div>
+  <CommonBottomSheet :visible="true" title="编辑交易" @close="$emit('close')">
+    <div class="edit-form">
+      <div class="edit-row">
+        <label class="edit-label">标题</label>
+        <input v-model="form.title" class="edit-input" maxlength="100" />
+      </div>
+      <div class="edit-row">
+        <label class="edit-label">金额</label>
+        <div class="edit-amount-wrap">
+          <span class="edit-amount-sign">¥</span>
+          <input v-model.number="form.amountYuan" class="edit-input edit-amount-input" type="number" step="0.01" min="0" />
         </div>
       </div>
-      <!-- Date/Time Pickers -->
-      <DatePickerSheet v-model:visible="datePickerOpen" v-model="form.date" />
-      <TimePickerSheet v-model:visible="timePickerOpen" v-model="form.time" :selected-date="form.date" />
+      <div class="edit-row">
+        <label class="edit-label">日期</label>
+        <div class="edit-input edit-picker-trigger" @click="datePickerOpen = true">
+          {{ form.date }}
+        </div>
+      </div>
+      <div class="edit-row">
+        <label class="edit-label">时间</label>
+        <div class="edit-input edit-picker-trigger" @click="timePickerOpen = true">
+          {{ form.time }}
+        </div>
+      </div>
+      <div class="edit-row">
+        <label class="edit-label">备注</label>
+        <input v-model="form.note" class="edit-input" maxlength="200" />
+      </div>
+      <div class="edit-row">
+        <label class="edit-label">标签</label>
+        <div class="edit-tags-area">
+          <span v-for="(tag, idx) in form.tags" :key="idx" class="edit-tag-chip">
+            {{ tag }}
+            <button class="edit-tag-remove" @click="form.tags.splice(idx, 1)">&times;</button>
+          </span>
+          <input
+            v-model="tagInput"
+            class="edit-tag-input"
+            placeholder="添加标签"
+            maxlength="20"
+            @keydown.enter.prevent="addTag"
+            @keydown.,.prevent="addTag"
+          />
+        </div>
+      </div>
+      <div class="edit-row edit-row--meta">
+        <span class="edit-label">分类</span>
+        <span class="edit-meta">
+          {{ categoryName || (props.transaction.type === 'expense' ? '支出' : '收入') }}
+        </span>
+      </div>
     </div>
-  </Teleport>
+
+    <template #actions>
+      <button class="edit-btn edit-btn--secondary" @click="$emit('close')">取消</button>
+      <button class="edit-btn edit-btn--primary" :disabled="!canSave" @click="handleSave">保存</button>
+    </template>
+
+    <!-- Date/Time Pickers -->
+    <DatePickerSheet v-model:visible="datePickerOpen" v-model="form.date" />
+    <TimePickerSheet v-model:visible="timePickerOpen" v-model="form.time" :selected-date="form.date" />
+  </CommonBottomSheet>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue'
 import { useCategoryStore } from '@/stores/categoryStore'
 import type { Transaction } from '@/types'
+import CommonBottomSheet from '@/components/common/CommonBottomSheet.vue'
 import DatePickerSheet from '@/components/common/DatePickerSheet.vue'
 import TimePickerSheet from '@/components/common/TimePickerSheet.vue'
 
@@ -130,71 +127,37 @@ function handleSave() {
 </script>
 
 <style scoped>
-.sheet-overlay {
-  position: fixed;
-  inset: 0;
-  background: var(--color-overlay);
-  z-index: 1000;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  animation: fadeIn 0.2s ease;
-}
-
-.sheet {
-  width: 100%;
-  max-width: 480px;
-  background: var(--glass-tint);
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  border: 1px solid var(--glass-border);
-  border-bottom: none;
-  border-radius: 16px 16px 0 0;
-  animation: slideUp 0.3s ease;
-  max-height: 85vh;
-  overflow-y: auto;
-}
-
-.sheet-handle {
-  width: 36px;
-  height: 4px;
-  border-radius: 2px;
-  background: var(--color-separator-heavy);
-  margin: 8px auto 0;
-}
-
-.sheet-body { padding: 16px 24px 32px; }
-
-.edit-sheet-title {
-  font-size: var(--fs-hero);
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: 20px;
-  color: var(--color-text);
-}
-
-.edit-form { margin-bottom: 24px; }
+.edit-form { margin-bottom: 20px; }
 
 .edit-row {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 12px;
+  min-height: 48px;
+  border-bottom: 1px solid var(--line-soft);
 }
 
-.edit-label { width: 48px; flex-shrink: 0; font-size: var(--fs-body); color: var(--color-secondary-text); }
+.edit-label {
+  width: 48px;
+  flex-shrink: 0;
+  font-size: var(--fs-body);
+  color: var(--ink2);
+}
 
 .edit-input {
   flex: 1;
   height: 36px;
   padding: 0 12px;
-  border: none;
-  border-radius: 8px;
-  background: var(--color-bg);
+  border: 1px solid var(--line-soft);
+  border-radius: 10px;
+  background: var(--act-bg);
   font-size: var(--fs-title);
-  color: var(--color-text);
+  color: var(--ink);
   outline: none;
   font-family: inherit;
+}
+.edit-input:focus {
+  border-color: var(--ink3);
 }
 
 .edit-amount-wrap {
@@ -202,18 +165,32 @@ function handleSave() {
   display: flex;
   align-items: center;
   gap: 4px;
-  background: var(--color-bg);
-  border-radius: 8px;
+  background: var(--act-bg);
+  border: 1px solid var(--line-soft);
+  border-radius: 10px;
   padding: 0 12px;
 }
 
-.edit-amount-sign { font-size: var(--fs-amount); font-weight: 600; color: var(--color-secondary-text); }
+.edit-amount-sign { font-size: var(--fs-amount); font-weight: 600; color: var(--ink2); }
 
-.edit-amount-input { flex: 1; background: none; padding: 0; }
+.edit-amount-input { flex: 1; background: none; border: none; padding: 0; }
 
 .edit-amount-input::-webkit-outer-spin-button,
 .edit-amount-input::-webkit-inner-spin-button {
   -webkit-appearance: none;
+}
+
+.edit-picker-trigger {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--ink);
+  transition: border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.edit-picker-trigger:active {
+  border-color: var(--ink3);
 }
 
 .edit-tags-area {
@@ -222,9 +199,10 @@ function handleSave() {
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
-  padding: 6px 8px;
-  background: var(--color-bg);
-  border-radius: 8px;
+  padding: 6px 10px;
+  background: var(--act-bg);
+  border: 1px solid var(--line-soft);
+  border-radius: 10px;
   min-height: 36px;
 }
 
@@ -234,15 +212,15 @@ function handleSave() {
   gap: 4px;
   font-size: var(--fs-small);
   padding: 2px 8px;
-  border-radius: 4px;
-  background: var(--color-surface);
-  color: var(--color-primary);
+  border-radius: 6px;
+  background: var(--line-soft);
+  color: var(--ink);
 }
 
 .edit-tag-remove {
   border: none;
   background: none;
-  color: var(--color-secondary-text);
+  color: var(--ink3);
   font-size: var(--fs-body);
   cursor: pointer;
   padding: 0;
@@ -255,26 +233,19 @@ function handleSave() {
   border: none;
   background: none;
   font-size: var(--fs-ui);
-  color: var(--color-text);
+  color: var(--ink);
   outline: none;
   font-family: inherit;
   padding: 2px 0;
 }
 
-.edit-tag-input::placeholder { color: var(--color-placeholder); }
+.edit-tag-input::placeholder { color: var(--ink3); }
 
-.edit-row--meta {
-  padding: 4px 0;
-  border-top: 1px solid #f2f2f2;
-  margin-top: 4px;
-  padding-top: 12px;
-}
+.edit-row--meta { min-height: 40px; }
 
-.edit-meta { font-size: var(--fs-body); color: var(--color-text); }
+.edit-meta { font-size: var(--fs-body); color: var(--ink); }
 
-.edit-actions { display: flex; gap: 12px; }
-
-.btn {
+.edit-btn {
   flex: 1;
   height: 44px;
   border-radius: 10px;
@@ -285,21 +256,8 @@ function handleSave() {
   transition: opacity 0.15s;
   font-family: inherit;
 }
-.btn:active { opacity: 0.7; }
-.btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.btn-secondary { background: var(--color-bg); color: var(--color-text); }
-.btn-primary { background: var(--color-primary); color: var(--color-on-primary); }
-
-.edit-picker-trigger {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  font-weight: 500;
-  color: var(--color-text);
-  transition: background 0.15s;
-  -webkit-tap-highlight-color: transparent;
-}
-.edit-picker-trigger:active {
-  background: var(--color-disabled-bg);
-}
+.edit-btn:active { opacity: 0.7; }
+.edit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.edit-btn--secondary { background: var(--act-bg); color: var(--ink); }
+.edit-btn--primary { background: var(--accent); color: var(--accent-fg); }
 </style>

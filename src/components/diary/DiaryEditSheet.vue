@@ -13,6 +13,7 @@
         </svg>
       </span>
     </button>
+    <p v-if="dateError" class="di-date-error">{{ dateError }}</p>
 
     <!-- 内容编辑 -->
     <textarea
@@ -54,6 +55,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
 import type { Diary } from '@/types'
+import { db } from '@/db'
 import { formatDate, toDateString } from '@/utils/format'
 import CommonBottomSheet from '@/components/common/CommonBottomSheet.vue'
 import DatePickerSheet from '@/components/common/DatePickerSheet.vue'
@@ -80,6 +82,7 @@ const draftContent = ref('')
 const contentInput = ref<HTMLTextAreaElement | null>(null)
 const showDatePicker = ref(false)
 const showDeleteConfirm = ref(false)
+const dateError = ref('')
 
 const contentPlaceholder = computed(() =>
   isEdit.value ? '修改这篇日记…' : '此刻的心情或想说的话…',
@@ -96,6 +99,7 @@ watch(() => props.visible, (open) => {
       draftDate.value = toDateString(new Date())
       draftContent.value = ''
     }
+    dateError.value = ''
     showDatePicker.value = false
     showDeleteConfirm.value = false
     nextTick(() => contentInput.value?.focus())
@@ -104,8 +108,15 @@ watch(() => props.visible, (open) => {
   }
 })
 
-function onSave() {
+async function onSave() {
   if (!canSave.value) return
+  // 一天一条：目标日期是否已被另一篇日记占用
+  dateError.value = ''
+  const occupied = await db.diaries.where('date').equals(draftDate.value).first()
+  if (occupied && occupied.id !== props.diary?.id) {
+    dateError.value = '这一天已有一篇日记（每篇 1 天）'
+    return
+  }
   emit('save', {
     id: props.diary?.id,
     date: draftDate.value,
@@ -176,6 +187,12 @@ function onDelete() {
   font-size: var(--fs-small, 12px);
   color: var(--ink3, #9aa3ac);
   margin-top: 6px;
+}
+
+.di-date-error {
+  font-size: var(--fs-small, 12px);
+  color: var(--exp, #d5503c);
+  margin: 4px 0 0;
 }
 
 .di-btn {

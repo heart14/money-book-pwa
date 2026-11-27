@@ -61,7 +61,6 @@
   --fs-amount-xl: 68px;
 
   /* ── 沉浸式令牌（「墨色账本」骨架基座，供业务页复用）
-         取自 glass/RedesignPreview.vue 的 .rs-app，提升为全局。
          --bg/--surface/--ink 分层   --line/--line-soft 分隔线
          --inc/--exp 唯一彩色（收入翡翠绿 / 支出珊瑚红） ── */
   --ink: #16181c;

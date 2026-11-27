@@ -165,16 +165,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, defineAsyncComponent } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUiStore } from '@/stores/uiStore'
 import { db } from '@/db'
 import { useCategoryStore } from '@/stores/categoryStore'
 import { useLiveQuery } from '@/composables/useLiveQuery'
 import { formatCurrency } from '@/utils/format'
-import VChart from 'vue-echarts'
 import type { Transaction } from '@/types'
 import TwemojiIcon from '@/components/common/TwemojiIcon.vue'
+
+// ECharts 异步加载：先注册所用模块（tree-shake），再取 vue-echarts。
+// 单独分包，避免把 ECharts 打进主入口 chunk。
+const VChart = defineAsyncComponent(async () => {
+  await import('@/utils/echarts-setup')
+  const mod = await import('vue-echarts')
+  return mod.default
+})
 const categoryStore = useCategoryStore()
 const uiStore = useUiStore()
 
